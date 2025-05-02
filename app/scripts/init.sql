@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS disciplina (
     codigo TEXT NOT NULL,
     carga_horaria INTEGER NOT NULL,
     semestre_id INTEGER NOT NULL,
+    observacao TEXT,
     FOREIGN KEY (semestre_id) REFERENCES semestre(id) ON DELETE CASCADE
 );
 
