@@ -10,26 +10,22 @@ class Disciplina(ABC):
         self.atividades = []
         self.observacao = observacao
         self.id = id
-        pass
 
     def adicionar_bd(self, conexao):
         cursor = conexao.cursor()
         cursor.execute("INSERT INTO disciplina (nome, carga_horaria, semestre_id, observacao) VALUES (?, ?, ?, ?)", (self.nome, self.carga_horaria, self.semestre_id, self.observacao))
         conexao.commit()
         self.id = cursor.lastrowid()
-        pass
     
     def editar_bd(self, conexao):
         cursor = conexao.cursor()
         cursor.execute("UPDATE disciplina SET nome = ?, carga_horaria = ?, semestre_id = ?, observacao = ? WHERE id = ?", (self.nome, self.carga_horaria, self.semestre_id, self.observacao, self.id))
         conexao.commit()
-        pass
     
     def deletar_bd(self, conexao):
         cursor = conexao.cursor()
         cursor.execute("DELETE FROM disciplina WHERE id = ?", (self.id,))
         conexao.commit()
-        pass
     
     def adicionar_atividade(self, atividade):
         self.atividades.append(atividade)
