@@ -8,44 +8,76 @@ class TipoAtividade(Enum):
     APRESENTACAO = "Apresentação de Trabalho"
     REVISAO = "Aula de revisão"
 
-class Atividade:
-    def __init__(self, nome, data, id_disciplina, observacoes = None):
+class Atividade(ABC):
+    def __init__(self, nome, data, disciplina_id, observacao = None):
         self.nome = nome
         self.data = data
-        self.id_disciplina = id_disciplina
-        self.observacoes = observacoes
+        self.disciplina_id = disciplina_id
+        self.observacao = observacao
+        pass
+
+
+    @abstractmethod
+    def adicionar_bd(self, conexao):
         pass
 
 
 class Trabalho(Atividade):
-    def __init__(self, nome, data, id_disciplina, nota_maxima, nota = None, observacoes = None):
-        super().__init__(nome, data, id_disciplina, observacoes)
+    def __init__(self, nome, data, disciplina_id, nota_total, nota = None, observacao = None):
+        super().__init__(nome, data, disciplina_id, observacao)
         self.tipo = TipoAtividade.TRABALHO
-        self.nota_maxima = nota_maxima
+        self.nota_total = nota_total
         self.nota = nota
+
+    def adicionar_bd(self, conexao):
+        cursor = conexao.cursor()
+        cursor.execute("INSERT INTO atividade (nome, data, disciplina_id, tipo, nota_total, nota, observacao) VALUES (?, ?, ?, ?, ?, ?, ?)", (self.nome, self.data, self.disciplina_id, self.tipo.value, self.nota_total, self.nota, self.observacao))
+        conexao.commit()
+        
 
 class Prova(Atividade):
-    def __init__(self, nome, data, id_disciplina, nota_maxima, nota = None, observacoes = None):
-        super().__init__(nome, data, id_disciplina, observacoes)
+    def __init__(self, nome, data, disciplina_id, nota_total, nota = None, observacao = None):
+        super().__init__(nome, data, disciplina_id, observacao)
         self.tipo = TipoAtividade.PROVA
-        self.nota_maxima = nota_maxima
+        self.nota_total = nota_total
         self.nota = nota
+
+    def adicionar_bd(self, conexao):
+        cursor = conexao.cursor()
+        cursor.execute("INSERT INTO atividade (nome, data, disciplina_id, tipo, nota_total, nota, observacao) VALUES (?, ?, ?, ?, ?, ?, ?)", (self.nome, self.data, self.disciplina_id, self.tipo.value, self.nota_total, self.nota, self.observacao))
+        conexao.commit()
 
 class Aula_de_Campo(Atividade):
-    def __init__(self, nome, data, id_disciplina, observacoes = None):
-        super().__init__(nome, data, id_disciplina, observacoes)
+    def __init__(self, nome, data, disciplina_id, observacao = None):
+        super().__init__(nome, data, disciplina_id, observacao)
         self.tipo = TipoAtividade.CAMPO
 
+    def adicionar_bd(self, conexao):
+        cursor = conexao.cursor()
+        cursor.execute("INSERT INTO atividade (nome, data, disciplina_id, tipo, observacao) VALUES (?, ?, ?, ?, ?)", (self.nome, self.data, self.disciplina_id, self.tipo.value, self.observacao))
+        conexao.commit()
+
 class Apresentacao(Atividade):
-    def __init__(self, nome, data, id_disciplina, nota_maxima, nota = None, observacoes = None):
-        super().__init__(nome, data, id_disciplina, observacoes)
+    def __init__(self, nome, data, disciplina_id, nota_total, nota = None, observacao = None):
+        super().__init__(nome, data, disciplina_id, observacao)
         self.tipo = TipoAtividade.APRESENTACAO
-        self.nota_maxima = nota_maxima
+        self.nota_total = nota_total
         self.nota = nota
+
+    def adicionar_bd(self, conexao):
+        cursor = conexao.cursor()
+        cursor.execute("INSERT INTO atividade (nome, data, disciplina_id, tipo, nota_total, nota, observacao) VALUES (?, ?, ?, ?, ?, ?, ?)", (self.nome, self.data, self.disciplina_id, self.tipo.value, self.nota_total, self.nota, self.observacao))
+        conexao.commit()
 
 
 class Revisao(Atividade):
-    def __init__(self, nome, data, id_disciplina, observacoes = None, nota = None):
-        super().__init__(nome, data, id_disciplina, observacoes)
+    def __init__(self, nome, data, disciplina_id, observacao = None, nota = None):
+        super().__init__(nome, data, disciplina_id, observacao)
         self.tipo = TipoAtividade.REVISAO
         self.nota = nota
+
+    def adicionar_bd(self, conexao):
+        cursor = conexao.cursor()
+        cursor.execute("INSERT INTO atividade (nome, data, disciplina_id, tipo, nota, observacao) VALUES (?, ?, ?, ?, ?, ?)", (self.nome, self.data, self.disciplina_id, self.tipo.value, self.nota, self.observacao))
+        conexao.commit()
+        
