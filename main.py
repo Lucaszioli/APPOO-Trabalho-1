@@ -1,5 +1,6 @@
 from app.utils.database import Database
 from app.models.atividade import Atividade, Trabalho
+from app.views.pagina_inicial import PaginaInicial
 
 def main():
     # Inicializar o banco de dados e criar tabelas usando o script SQL
@@ -13,3 +14,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+    app = PaginaInicial()
+    app.mainloop()
