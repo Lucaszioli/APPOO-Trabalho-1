@@ -47,5 +47,8 @@ class Disciplina(ABC):
                 self.atividades.append(Apresentacao(atividade[1], atividade[2], atividade[3], atividade[5], atividade[6], atividade[7]))
         return self.atividades
     
+    def listar_atividades(self):
+        for atividade in self.atividades:
+            print(f"Atividade: {atividade.nome}, Data: {atividade.data}, Nota Total: {atividade.nota_total}, Observação: {atividade.observacao}")   
     
     
