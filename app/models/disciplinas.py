@@ -15,6 +15,7 @@ class Disciplina(ABC):
         cursor = conexao.cursor()
         cursor.execute("INSERT INTO disciplina (nome, carga_horaria, semestre_id, observacao) VALUES (?, ?, ?, ?)", (self.nome, self.carga_horaria, self.semestre_id, self.observacao))
         conexao.commit()
+        self.id = cursor.lastrowid()
         pass
     
     def editar_bd(self, conexao):
