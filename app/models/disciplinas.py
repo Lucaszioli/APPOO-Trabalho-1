@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from enum import Enum
+from atividade import Trabalho, Prova, Aula_de_Campo, Apresentacao
 
 class Disciplina(ABC):
     def __init__(self, nome, carga_horaria, semestre_id, observacao = None, id = None):
@@ -29,5 +30,8 @@ class Disciplina(ABC):
         cursor.execute("DELETE FROM disciplina WHERE id = ?", (self.id,))
         conexao.commit()
         pass
+    
+    def adicionar_atividade(self, atividade):
+        self.atividades.append(atividade)
     
     
