@@ -88,29 +88,30 @@ class PaginaInicial(customtkinter.CTk):
         main.grid_columnconfigure(0, weight=1)
 
         # Semestre
-        customtkinter.CTkLabel(main, text="Semestre:", anchor="w").grid(row=0, column=0, sticky="w")
+        customtkinter.CTkLabel(main, text="Semestre:", anchor="w").grid(row=0, column=0, sticky="w", padx=(10,0))
         self.cmb_semester = customtkinter.CTkComboBox(main, values=[s.term for s in self.manager.semesters], command=self.on_semester_selected)
-        self.cmb_semester.grid(row=1, column=0, sticky="ew")
+        self.cmb_semester.grid(row=1, column=0, sticky="ew", padx=(10,0))
         self.cmb_semester.configure(state="readonly")
         customtkinter.CTkButton(main, text="Adicionar Semestre", command=self.add_semester).grid(row=1, column=1, padx=10)
 
         # Disciplina
-        customtkinter.CTkLabel(main, text="Disciplina:", anchor="w").grid(row=2, column=0, sticky="w", pady=(20,0))
+        customtkinter.CTkLabel(main, text="Disciplina:", anchor="w").grid(row=2, column=0, sticky="w", pady=(20,0), padx=(10,0))
         self.cmb_discipline = customtkinter.CTkComboBox(main, values=[], command=self.on_discipline_selected)
-        self.cmb_discipline.grid(row=3, column=0, sticky="ew")
+        self.cmb_discipline.grid(row=3, column=0, sticky="ew", padx=(10,0))
         self.cmb_discipline.configure(state="readonly")
         customtkinter.CTkButton(main, text="Adicionar Disciplina", command=self.add_discipline).grid(row=3, column=1, padx=10)
 
         # Atividade
-        customtkinter.CTkLabel(main, text="Atividade:", anchor="w").grid(row=4, column=0, sticky="w", pady=(20,0))
+        customtkinter.CTkLabel(main, text="Atividade:", anchor="w").grid(row=4, column=0, sticky="w", pady=(20,0), padx=(10,0))
         self.cmb_activity = customtkinter.CTkComboBox(main, values=[], command=self.on_activity_selected)
-        self.cmb_activity.grid(row=5, column=0, sticky="ew")
+        self.cmb_activity.grid(row=5, column=0, sticky="ew", padx=(10,0))
         self.cmb_activity.configure(state="readonly")
         customtkinter.CTkButton(main, text="Adicionar Atividade", command=self.add_activity).grid(row=5, column=1, padx=10)
 
         # Detalhes
-        self.txt_details = customtkinter.CTkTextbox(main, width=400, height=200)
-        self.txt_details.grid(row=6, column=0, columnspan=2, pady=(20,0), sticky="nsew")
+        self.txt_details = customtkinter.CTkTextbox(main, width=400, height=200, corner_radius=10)
+        self.txt_details.configure(state="normal")
+        self.txt_details.grid(row=6, column=0, columnspan=2, pady=(20,20), sticky="nsew", padx=10)
 
         # inicia seleção
         if self.manager.semesters:
