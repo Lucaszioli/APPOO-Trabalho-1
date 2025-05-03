@@ -3,9 +3,9 @@ import tkinter.messagebox as messagebox
 import customtkinter
 
 customtkinter.set_appearance_mode("System")  # Modes: "System", "Dark", "Light"
-customtkinter.set_default_color_theme("blue")  # Themes: "blue", "green", "dark-blue"
+customtkinter.set_default_color_theme("app/themes/vaporwave.json")  # Themes: "blue", "green", "dark-blue"
 
-# ----------- Modelo de Dados -----------
+# Dados de exemplo
 class Activity:
     def __init__(self, title):
         self.title = title
@@ -58,7 +58,7 @@ class AcademicManager:
                 return s
         return None
 
-# ----------- Interface Gráfica -----------
+# Interface Gráfica
 class PaginaInicial(customtkinter.CTk):
     def __init__(self):
         super().__init__()
@@ -72,17 +72,17 @@ class PaginaInicial(customtkinter.CTk):
         # dados iniciais de exemplo
         self._load_sample_data()
 
-        # --- SIDEBAR ---
+        # Sidebar
         sidebar = customtkinter.CTkFrame(self, width=180, corner_radius=0)
         sidebar.grid(row=0, column=0, sticky="nsew")
         sidebar.grid_rowconfigure(4, weight=1)
 
-        customtkinter.CTkLabel(sidebar, text="📚 Acadêmico", font=customtkinter.CTkFont(size=20, weight="bold")).grid(row=0, column=0, padx=20, pady=(20,10))
+        customtkinter.CTkLabel(sidebar, text="HUB Acadêmico", font=customtkinter.CTkFont(size=20, weight="bold")).grid(row=0, column=0, padx=20, pady=(20,10))
         customtkinter.CTkButton(sidebar, text="Semestres", command=self.focus_semester).grid(row=1, column=0, padx=20, pady=10)
         customtkinter.CTkButton(sidebar, text="Disciplinas", command=self.focus_discipline).grid(row=2, column=0, padx=20, pady=10)
         customtkinter.CTkButton(sidebar, text="Atividades", command=self.focus_activity).grid(row=3, column=0, padx=20, pady=10)
 
-        # --- MAIN ---
+        # Main
         main = customtkinter.CTkFrame(self)
         main.grid(row=0, column=1, sticky="nsew", padx=20, pady=20)
         main.grid_columnconfigure(0, weight=1)
@@ -91,21 +91,21 @@ class PaginaInicial(customtkinter.CTk):
         customtkinter.CTkLabel(main, text="Semestre:", anchor="w").grid(row=0, column=0, sticky="w")
         self.cmb_semester = customtkinter.CTkComboBox(main, values=[s.term for s in self.manager.semesters], command=self.on_semester_selected)
         self.cmb_semester.grid(row=1, column=0, sticky="ew")
-        self.cmb_semester.configure(state="normal")
+        self.cmb_semester.configure(state="readonly")
         customtkinter.CTkButton(main, text="Adicionar Semestre", command=self.add_semester).grid(row=1, column=1, padx=10)
 
         # Disciplina
         customtkinter.CTkLabel(main, text="Disciplina:", anchor="w").grid(row=2, column=0, sticky="w", pady=(20,0))
         self.cmb_discipline = customtkinter.CTkComboBox(main, values=[], command=self.on_discipline_selected)
         self.cmb_discipline.grid(row=3, column=0, sticky="ew")
-        self.cmb_discipline.configure(state="disabled")
+        self.cmb_discipline.configure(state="readonly")
         customtkinter.CTkButton(main, text="Adicionar Disciplina", command=self.add_discipline).grid(row=3, column=1, padx=10)
 
         # Atividade
         customtkinter.CTkLabel(main, text="Atividade:", anchor="w").grid(row=4, column=0, sticky="w", pady=(20,0))
         self.cmb_activity = customtkinter.CTkComboBox(main, values=[], command=self.on_activity_selected)
         self.cmb_activity.grid(row=5, column=0, sticky="ew")
-        self.cmb_activity.configure(state="disabled")
+        self.cmb_activity.configure(state="readonly")
         customtkinter.CTkButton(main, text="Adicionar Atividade", command=self.add_activity).grid(row=5, column=1, padx=10)
 
         # Detalhes
