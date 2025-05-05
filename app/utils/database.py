@@ -4,7 +4,9 @@ class Database:
         self.db_path = db_path
 
     def conectar(self):
-        return sqlite3.connect(self.db_path)
+        conexao = sqlite3.connect(self.db_path)
+        conexao.execute("PRAGMA foreign_keys = ON")
+        return conexao
     
     def criar(self, script_path):
         with open(script_path, 'r', encoding='utf-8') as script_file:
