@@ -22,8 +22,6 @@ class PaginaInicial(customtkinter.CTk):
 
     def setup_ui(self):
         self.setup_sidebar()
-        # Aqui você pode adicionar outros setups para diferentes áreas da interface
-        # Exemplo: self.setup_main_content(), self.setup_header(), etc.
 
     def setup_sidebar(self):
         # Frame da barra lateral
