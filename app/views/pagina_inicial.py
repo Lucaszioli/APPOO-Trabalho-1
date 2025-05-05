@@ -35,7 +35,8 @@ class PaginaInicial(customtkinter.CTk):
             "Azul": "blue",
             "Verde": "green",
             "Azul Escuro": "dark-blue",
-            "Rosa": "app/themes/rose.json"
+            "Rosa": "app/themes/rose.json",
+            "Violeta": "app/themes/violet.json"
         }
         customtkinter.set_default_color_theme(theme_map.get(new_theme, "blue"))
         self.selected_theme.set(new_theme)

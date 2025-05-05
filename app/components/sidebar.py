@@ -45,7 +45,7 @@ class SidebarFrame(customtkinter.CTkFrame):
 
         self.theme_mode_optionemenu = customtkinter.CTkOptionMenu(
             self,
-            values=["Azul", "Verde", "Azul Escuro", "Rosa"],
+            values=["Azul", "Verde", "Azul Escuro", "Rosa", "Violeta"],
             command=self.controller.change_theme_mode_event,
             variable=self.controller.selected_theme
         )
