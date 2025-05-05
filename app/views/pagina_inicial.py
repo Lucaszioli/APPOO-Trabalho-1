@@ -39,11 +39,17 @@ class PaginaInicial(customtkinter.CTk):
                                                                        command=self.change_appearance_mode_event)
         self.appearance_mode_optionemenu.grid(row=6, column=0, padx=20, pady=(10, 10))
         
-        self.scaling_label = customtkinter.CTkLabel(self.sidebar_frame, text="Escala UI:", anchor="w")
-        self.scaling_label.grid(row=7, column=0, padx=20, pady=(10, 0))
+        self.theme_mode_label = customtkinter.CTkLabel(self.sidebar_frame, text="Tema:", anchor="w")
+        self.theme_mode_label.grid(row=7, column=0, padx=20, pady=(10, 0))
+        self.theme_mode_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["Tema 1", "Tema 2", "Tema 3"],
+                                                                   command=self.change_appearance_mode_event)
+        self.theme_mode_optionemenu.grid(row=8, column=0, padx=20, pady=(10, 10))
+        
+        self.scaling_label = customtkinter.CTkLabel(self.sidebar_frame, text="Escala:", anchor="w")
+        self.scaling_label.grid(row=9, column=0, padx=20, pady=(10, 0))
         self.scaling_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["80%", "90%", "100%", "110%", "120%"],
                                                                command=self.change_scaling_event)
-        self.scaling_optionemenu.grid(row=8, column=0, padx=20, pady=(10, 20))
+        self.scaling_optionemenu.grid(row=10, column=0, padx=20, pady=(10, 20))
         
     # Funções
     def change_appearance_mode_event(self, new_appearance_mode: str):
