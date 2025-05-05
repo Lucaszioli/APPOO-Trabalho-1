@@ -3,7 +3,7 @@ import tkinter.messagebox as messagebox
 import customtkinter
 
 customtkinter.set_appearance_mode("System")  # Modes: "System", "Dark", "Light"
-customtkinter.set_default_color_theme("app/themes/vaporwave.json")  # Themes: "blue", "green", "dark-blue"
+customtkinter.set_default_color_theme("app/themes/rose.json")  # Themes: "blue", "green", "dark-blue"
 
 class PaginaInicial(customtkinter.CTk):
     def __init__(self):
@@ -29,4 +29,6 @@ class PaginaInicial(customtkinter.CTk):
         title.grid(row=0, column=0, padx=20, pady=20)
         title.grid_columnconfigure(0, weight=1)
         title.grid_rowconfigure(0, weight=1)
+        title.configure(font=("CTkFont", 24))
+    
         
