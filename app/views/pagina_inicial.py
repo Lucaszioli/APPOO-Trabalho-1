@@ -3,7 +3,7 @@ import tkinter.messagebox as messagebox
 import customtkinter
 
 customtkinter.set_appearance_mode("System")  # Modes: "System", "Dark", "Light"
-customtkinter.set_default_color_theme("app/themes/rose.json")  # Themes: "blue", "green", "dark-blue"
+customtkinter.set_default_color_theme("blue")  # Themes: "blue", "green", "dark-blue"
 
 class PaginaInicial(customtkinter.CTk):
     def __init__(self):
@@ -41,8 +41,8 @@ class PaginaInicial(customtkinter.CTk):
         
         self.theme_mode_label = customtkinter.CTkLabel(self.sidebar_frame, text="Tema:", anchor="w")
         self.theme_mode_label.grid(row=7, column=0, padx=20, pady=(10, 0))
-        self.theme_mode_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["Tema 1", "Tema 2", "Tema 3"],
-                                                                   command=self.change_appearance_mode_event)
+        self.theme_mode_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["Azul", "Verde", "Azul Escuro", "Rosa"],
+                                                                   command=self.change_theme_mode_event)
         self.theme_mode_optionemenu.grid(row=8, column=0, padx=20, pady=(10, 10))
         
         self.scaling_label = customtkinter.CTkLabel(self.sidebar_frame, text="Escala:", anchor="w")
@@ -60,6 +60,17 @@ class PaginaInicial(customtkinter.CTk):
         elif new_appearance_mode == "Sistema":
             new_appearance_mode = "System"
         customtkinter.set_appearance_mode(new_appearance_mode)
+        
+    def change_theme_mode_event(self, new_theme: str):
+        if new_theme == "Azul":
+            new_theme = "blue"
+        elif new_theme == "Verde":
+            new_theme = "green"
+        elif new_theme == "Azul Escuro":
+            new_theme = "dark-blue"
+        elif new_theme == "Rosa":
+            new_theme = "app/themes/rose.json"
+        customtkinter.set_default_color_theme(new_theme)
 
     def change_scaling_event(self, new_scaling: str):
         new_scaling_float = int(new_scaling.replace("%", "")) / 100
