@@ -9,12 +9,13 @@ class SidebarFrame(customtkinter.CTkFrame):
         super().__init__(master, *args, **kwargs)
         self.controller = controller
         self.configure(width=140, corner_radius=0)
+        self.grid_rowconfigure(0, weight=1)  
+        self.grid_columnconfigure(0, weight=1)  
         
         # Criar frama
         self.frame = customtkinter.CTkFrame(self)
         self.frame.grid(row=0, column=0, sticky="nsew")
         self.frame.grid_rowconfigure(4, weight=1)
-        self.frame.grid_rowconfigure(11, weight=1)
 
         # Widgets
         self.logo_label = customtkinter.CTkLabel(self.frame, text="Menu", font=customtkinter.CTkFont(size=20, weight="bold"))

@@ -14,8 +14,9 @@ class PaginaInicial(customtkinter.CTk):
         # Janela
         self.title("Sistema de Gerenciamento Acadêmico")
         self.geometry("1000x600")
-        self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=0)
+        self.grid_columnconfigure(1, weight=1)
 
         # Controle de estado
         self.selected_appearance = tkinter.StringVar(value="Sistema")
@@ -26,7 +27,7 @@ class PaginaInicial(customtkinter.CTk):
 
     def build_ui(self):
         self.sidebar_frame = SidebarFrame(self, controller=self)
-        self.sidebar_frame.grid(row=0, column=0, sticky="nsew")
+        self.sidebar_frame.grid(row=0, column=0 , sticky="ns") 
         
         self.semestres_frame = SemestresFrame(self.conexao, master=self)
         self.semestres_frame.grid(row=0, column=1, sticky="nsew")
