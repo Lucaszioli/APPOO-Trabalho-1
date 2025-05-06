@@ -24,9 +24,9 @@ class SemestreService:
         cursor.execute("DELETE FROM semestre WHERE id = ?", (semestre.id,))
         conexao.commit()
     
-    
     @staticmethod
     def listar_semestres(conexao):
+        from app.models.semestre import Semestre
         cursor = conexao.cursor()
         cursor.execute("SELECT * FROM semestre")
         semestres = cursor.fetchall()
