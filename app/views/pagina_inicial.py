@@ -26,7 +26,7 @@ class PaginaInicial(customtkinter.CTk):
 
     def build_ui(self):
         self.sidebar_frame = SidebarFrame(self, controller=self)
-        self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
+        self.sidebar_frame.grid(row=0, column=0, sticky="nsew")
         
         self.semestres_frame = SemestresFrame(self.conexao, master=self)
         self.semestres_frame.grid(row=0, column=1, sticky="nsew")
@@ -44,7 +44,8 @@ class PaginaInicial(customtkinter.CTk):
             "Verde": "green",
             "Azul Escuro": "dark-blue",
             "Rosa": "app/themes/rose.json",
-            "Violeta": "app/themes/violet.json"
+            "Violeta": "app/themes/violet.json",
+            "Vaporwave": "app/themes/vaporwave.json",
         }
         customtkinter.set_default_color_theme(theme_map.get(new_theme, "blue"))
         self.selected_theme.set(new_theme)
