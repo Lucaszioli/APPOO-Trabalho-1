@@ -39,9 +39,10 @@ class DisciplinaServices:
         return disciplina.atividades
     
     @staticmethod
-    def criar(nome, carga_horaria, semestre_id, codigo,conexao, observacao = None):
+    def criar(nome, carga_horaria, codigo,conexao, semestre, observacao = None):
         from app.models.disciplinas import Disciplina
-        disciplina = Disciplina(nome, carga_horaria, semestre_id, codigo, observacao)
+        disciplina = Disciplina(nome, carga_horaria, semestre.id, codigo, observacao)
         DisciplinaServices.adicionar_bd(disciplina, conexao)
+        semestre.adicionar_disciplina(disciplina)
         return disciplina
         
