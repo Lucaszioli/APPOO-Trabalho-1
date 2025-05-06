@@ -2,10 +2,14 @@ import tkinter
 import customtkinter
 
 from app.components.sidebar import SidebarFrame
+from app.services.semestre_services import SemestreService
 
 class PaginaInicial(customtkinter.CTk):
     def __init__(self, conexao):
         super().__init__()
+        
+        # Configurações 
+        self.conexao = conexao
 
         # Janela
         self.title("Sistema de Gerenciamento Acadêmico")
@@ -21,8 +25,12 @@ class PaginaInicial(customtkinter.CTk):
         self.build_ui()
 
     def build_ui(self):
-        self.sidebar_frame = SidebarFrame(self, controller=self)
-        self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
+        # self.sidebar_frame = SidebarFrame(self, controller=self)
+        # self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
+        
+        self.semestres_frame = SemestresFrame(self.conexao, master=self)
+        self.semestres_frame.grid(row=0, column=1, sticky="nsew")
+        
 
     # Eventos
     def change_appearance_mode_event(self, new_mode: str):
@@ -50,3 +58,23 @@ class PaginaInicial(customtkinter.CTk):
         scale = int(new_scaling.replace("%", "")) / 100
         customtkinter.set_widget_scaling(scale)
         self.selected_scaling.set(new_scaling)
+
+class SemestresFrame(customtkinter.CTkFrame):
+    def __init__(self, conexao, master=None, controller=None):
+        super().__init__(master)
+        # Configurações da janela
+        self.controller = controller
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+
+        # Carregar semestres do banco de dados
+        self.semestres = SemestreService.listar_semestres(conexao)
+        
+        # Criar widgets
+        self.build_ui()
+        
+    def build_ui(self):
+        
+        # Titulo da página
+        self.titulo = customtkinter.CTkLabel(self, text="Semestres", font=("Arial", 24))
+        self.titulo.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")        
