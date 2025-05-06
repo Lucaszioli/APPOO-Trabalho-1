@@ -37,3 +37,11 @@ class DisciplinaServices:
             elif atividade[6] == TipoAtividade.REVISAO.value:
                 disciplina,atividade.append(Revisao(atividade[1], atividade[2], atividade[3], atividade[5], atividade[6], atividade[7]))
         return disciplina.atividades
+    
+    @staticmethod
+    def criar(nome, carga_horaria, semestre_id, codigo,conexao, observacao = None):
+        from app.models.disciplinas import Disciplina
+        disciplina = Disciplina(nome, carga_horaria, semestre_id, codigo, observacao)
+        DisciplinaServices.adicionar_bd(disciplina, conexao)
+        return disciplina
+        
