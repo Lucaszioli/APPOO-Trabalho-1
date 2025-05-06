@@ -1,13 +1,18 @@
 import customtkinter
-
 from app.services.semestre_services import SemestreService
 from app.components.modal_nsemestre import ModalNovoSemestre
+from CTkMessagebox import CTkMessagebox
 
 class SemestresFrame(customtkinter.CTkFrame):
     def __init__(self, conexao, master=None):
         super().__init__(master)
+
+        if conexao is None:
+            raise ValueError("Conexão com o banco de dados não pode ser nula.")
+
         self.conexao = conexao
         self.semestres = []
+
         self._configurar_layout()
         self._carregar_semestres()
         self._criar_widgets()
@@ -19,7 +24,12 @@ class SemestresFrame(customtkinter.CTkFrame):
         self.grid_rowconfigure(6, weight=1)
 
     def _carregar_semestres(self):
-        self.semestres = SemestreService.listar_semestres(self.conexao)
+        try:
+            self.semestres = SemestreService.listar_semestres(self.conexao)
+        except Exception as e:
+            self.semestres = []
+            CTkMessagebox(title="Erro", message="Erro ao carregar semestres do banco de dados.", icon="cancel")
+            print(f"[ERRO] Falha ao carregar semestres: {e}")
 
     def _criar_widgets(self):
         self._criar_titulo()
@@ -49,34 +59,48 @@ class SemestresFrame(customtkinter.CTkFrame):
         self.semestres_frame.grid_rowconfigure(0, weight=1)
         self.semestres_frame.grid_columnconfigure(0, weight=1)
 
+        self._popular_semestres()
+
+    def _popular_semestres(self):
+        if not self.semestres:
+            aviso = customtkinter.CTkLabel(
+                self.semestres_frame, text="Nenhum semestre cadastrado.",
+                font=customtkinter.CTkFont(size=14, slant="italic")
+            )
+            aviso.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
+            return
+
         for i, semestre in enumerate(self.semestres):
+            if not hasattr(semestre, "nome"):
+                continue  # Pula semestres malformados
+
             btn = customtkinter.CTkButton(
                 self.semestres_frame,
                 text=semestre.nome,
                 command=lambda s=semestre: self._selecionar_semestre(s)
             )
-            btn.grid(row=i+2, column=0, padx=20, pady=10, sticky="nsew")
+            btn.grid(row=i + 2, column=0, padx=20, pady=10, sticky="nsew")
 
     # Ações
     def _adicionar_semestre(self):
-        ModalNovoSemestre(self.conexao, master=self, callback_atualizacao=self._recarregar_lista)
-             
+        ModalNovoSemestre(
+            self.conexao,
+            master=self,
+            callback_atualizacao=self._recarregar_lista
+        )
+
     def _selecionar_semestre(self, semestre):
-        print(f"Selecionado: {semestre.nome}")
-        
+        try:
+            print(f"Selecionado: {semestre.nome}")
+        except AttributeError:
+            print("[ERRO] Objeto semestre inválido.")
+
     def _recarregar_lista(self):
-        # Remove widgets antigos
-        for widget in self.semestres_frame.winfo_children():
-            widget.destroy()
-
-        # Recarrega do banco
-        self._carregar_semestres()
-
-        # Recria os botões
-        for i, semestre in enumerate(self.semestres):
-            btn = customtkinter.CTkButton(
-                self.semestres_frame,
-                text=semestre.nome,
-                command=lambda s=semestre: self._selecionar_semestre(s)
-            )
-            btn.grid(row=i + 2, column=0, padx=20, pady=10, sticky="nsew")        
+        try:
+            for widget in self.semestres_frame.winfo_children():
+                widget.destroy()
+            self._carregar_semestres()
+            self._popular_semestres()
+        except Exception as e:
+            CTkMessagebox(title="Erro", message="Erro ao atualizar lista de semestres.", icon="cancel")
+            print(f"[ERRO] Falha ao recarregar lista: {e}")
