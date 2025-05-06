@@ -1,5 +1,7 @@
 import customtkinter
+
 from app.services.semestre_services import SemestreService
+from app.components.modal_nsemestre import ModalNovoSemestre
 
 class SemestresFrame(customtkinter.CTkFrame):
     def __init__(self, conexao, master=None):
@@ -77,34 +79,4 @@ class SemestresFrame(customtkinter.CTkFrame):
                 text=semestre.nome,
                 command=lambda s=semestre: self._selecionar_semestre(s)
             )
-            btn.grid(row=i + 2, column=0, padx=20, pady=10, sticky="nsew")
-
-        
-class ModalNovoSemestre(customtkinter.CTkToplevel):
-    def __init__(self, conexao, master=None, callback_atualizacao=None):
-        super().__init__(master)
-        self.conexao = conexao
-        self.callback_atualizacao = callback_atualizacao
-        self.title("Adicionar Novo Semestre")
-        self.geometry("400x300")
-        self._criar_widgets()
-
-    def _criar_widgets(self):
-        label_nome = customtkinter.CTkLabel(self, text="Nome do Semestre:")
-        label_nome.pack(pady=10)
-
-        self.entry_nome = customtkinter.CTkEntry(self)
-        self.entry_nome.pack(pady=10)
-
-        btn_adicionar = customtkinter.CTkButton(self, text="Adicionar", command=self._adicionar_semestre)
-        btn_adicionar.pack(pady=20)
-
-    def _adicionar_semestre(self):
-        nome = self.entry_nome.get()
-        if nome:
-            SemestreService.criar(nome, "2023-01-01", "2023-12-31", self.conexao)
-            if self.callback_atualizacao:
-                self.callback_atualizacao()
-            self.destroy()
-
-        
+            btn.grid(row=i + 2, column=0, padx=20, pady=10, sticky="nsew")        
