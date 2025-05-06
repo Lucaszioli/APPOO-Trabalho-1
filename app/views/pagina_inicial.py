@@ -1,39 +1,52 @@
+import tkinter
 import customtkinter
 
-# Configurações globais
-customtkinter.set_appearance_mode("system")
-customtkinter.set_default_color_theme("app/themes/vaporwave.json")
-
-TITULO_APP = "Hub Acadêmico"
+from app.components.sidebar import SidebarFrame
 
 class PaginaInicial(customtkinter.CTk):
-    """Classe principal da interface inicial do Hub Acadêmico."""
-
     def __init__(self):
         super().__init__()
-        self._configurar_janela()
-        self._criar_widgets()
 
-    def _configurar_janela(self):
-        """Define propriedades da janela principal."""
-        self.title(TITULO_APP)
-        largura = self.winfo_screenwidth()
-        altura = self.winfo_screenheight()
-        self.geometry(f"{largura}x{altura}")
+        # Janela
+        self.title("Sistema de Gerenciamento Acadêmico")
+        self.geometry("1000x600")
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(0, weight=1)
 
-    def _criar_widgets(self):
-        """Cria e posiciona os widgets da interface."""
-        # Frame principal
-        self.frame = customtkinter.CTkFrame(master=self)
-        self.frame.pack(fill="both", expand=True)
-        self.frame.grid_rowconfigure(0, weight=1)
-        self.frame.grid_columnconfigure(0, weight=1)
+        # Controle de estado
+        self.selected_appearance = tkinter.StringVar(value="Sistema")
+        self.selected_theme = tkinter.StringVar(value="Azul")
+        self.selected_scaling = tkinter.StringVar(value="100%")
 
-        # Título centralizado
-        self.titulo = customtkinter.CTkLabel(
-            master=self.frame,
-            text= "Seja bem-vindo ao " + TITULO_APP,
-            font=customtkinter.CTkFont(size=28, weight="bold"),
-            anchor="center"
-        )
-        self.titulo.grid(row=0, column=0, padx=20, pady=20, sticky="n")
+        self.build_ui()
+
+    def build_ui(self):
+        self.sidebar_frame = SidebarFrame(self, controller=self)
+        self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
+
+    # Eventos
+    def change_appearance_mode_event(self, new_mode: str):
+        mode_map = {"Claro": "Light", "Escuro": "Dark", "Sistema": "System"}
+        customtkinter.set_appearance_mode(mode_map.get(new_mode, "System"))
+        self.selected_appearance.set(new_mode)
+
+    def change_theme_mode_event(self, new_theme: str):
+        theme_map = {
+            "Azul": "blue",
+            "Verde": "green",
+            "Azul Escuro": "dark-blue",
+            "Rosa": "app/themes/rose.json",
+            "Violeta": "app/themes/violet.json"
+        }
+        customtkinter.set_default_color_theme(theme_map.get(new_theme, "blue"))
+        self.selected_theme.set(new_theme)
+
+        # Recriar UI
+        for widget in self.winfo_children():
+            widget.destroy()
+        self.build_ui()
+
+    def change_scaling_event(self, new_scaling: str):
+        scale = int(new_scaling.replace("%", "")) / 100
+        customtkinter.set_widget_scaling(scale)
+        self.selected_scaling.set(new_scaling)
