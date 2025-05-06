@@ -9,9 +9,9 @@ def main():
     db.criar("app/scripts/init.sql")
     conexao = db.conectar()
     semestre = SemestreService.criar("Teste", "Inicio", "Fim", conexao )
-    DisciplinaServices.criar(nome="Teste1", semestre_id=semestre.id,codigo="MAT60", carga_horaria=60, conexao=conexao)
-    DisciplinaServices.criar(nome="Teste1", semestre_id=semestre.id,codigo="MAT61", carga_horaria=60, conexao=conexao)
-    semestre.carregar_disciplinas(conexao)
+    DisciplinaServices.criar(nome="Teste1", semestre=semestre,codigo="MAT60", carga_horaria=60, conexao=conexao)
+    DisciplinaServices.criar(nome="Teste1", semestre=semestre,codigo="MAT61", carga_horaria=60, conexao=conexao)
+    # semestre.carregar_disciplinas(conexao)
     semestre.listar_disciplinas()
     print("Tabelas criadas com sucesso!")
 
