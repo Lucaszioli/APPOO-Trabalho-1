@@ -1,13 +1,17 @@
 import tkinter
 import customtkinter
-
 from app.components.sidebar import SidebarFrame
 from app.components.semestres_list import SemestresFrame
 from app.services.semestre_services import SemestreService
 
+
 class PaginaInicial(customtkinter.CTk):
     def __init__(self, conexao):
         super().__init__()
+
+        if conexao is None:
+            raise ValueError("Conexão com o banco de dados não pode ser nula.")
+
         self.conexao = conexao
         self._configurar_janela()
         self._inicializar_estado()
@@ -26,16 +30,28 @@ class PaginaInicial(customtkinter.CTk):
         self.selected_scaling = tkinter.StringVar(value="100%")
 
     def _criar_interface(self):
-        self.sidebar_frame = SidebarFrame(self, controller=self)
-        self.sidebar_frame.grid(row=0, column=0, sticky="ns")
+        try:
+            self.sidebar_frame = SidebarFrame(self, controller=self)
+            self.sidebar_frame.grid(row=0, column=0, sticky="ns")
 
-        self.semestres_frame = SemestresFrame(self.conexao, master=self)
-        self.semestres_frame.grid(row=0, column=1, sticky="nsew")
+            self.semestres_frame = SemestresFrame(self.conexao, master=self)
+            self.semestres_frame.grid(row=0, column=1, sticky="nsew")
+
+        except Exception as e:
+            print(f"Erro ao criar interface: {e}")
+            customtkinter.CTkMessagebox(
+                title="Erro",
+                message="Erro ao inicializar a interface gráfica.",
+                icon="cancel"
+            )
 
     # Eventos
     def change_appearance_mode_event(self, new_mode: str):
-        modo = {"Claro": "Light", "Escuro": "Dark", "Sistema": "System"}
-        customtkinter.set_appearance_mode(modo.get(new_mode, "System"))
+        modo_map = {"Claro": "Light", "Escuro": "Dark", "Sistema": "System"}
+        if new_mode not in modo_map:
+            print(f"[Aviso] Modo de aparência desconhecido: {new_mode}")
+            return
+        customtkinter.set_appearance_mode(modo_map[new_mode])
         self.selected_appearance.set(new_mode)
 
     def change_theme_mode_event(self, new_theme: str):
@@ -47,17 +63,47 @@ class PaginaInicial(customtkinter.CTk):
             "Violeta": "app/themes/violet.json",
             "Vaporwave": "app/themes/vaporwave.json",
         }
-        customtkinter.set_default_color_theme(temas.get(new_theme, "blue"))
-        self.selected_theme.set(new_theme)
+        caminho_tema = temas.get(new_theme)
+        if not caminho_tema:
+            print(f"[Aviso] Tema não reconhecido: {new_theme}")
+            return
 
-        self._reconstruir_interface()
+        try:
+            customtkinter.set_default_color_theme(caminho_tema)
+            self.selected_theme.set(new_theme)
+            self._reconstruir_interface()
+        except Exception as e:
+            print(f"Erro ao aplicar tema '{new_theme}': {e}")
+            customtkinter.CTkMessagebox(
+                title="Erro",
+                message=f"Erro ao aplicar o tema '{new_theme}'.",
+                icon="cancel"
+            )
 
     def change_scaling_event(self, new_scaling: str):
-        escala = int(new_scaling.replace("%", "")) / 100
-        customtkinter.set_widget_scaling(escala)
-        self.selected_scaling.set(new_scaling)
+        try:
+            escala = int(new_scaling.replace("%", "")) / 100
+            if not 0.5 <= escala <= 2:
+                raise ValueError("Escala fora do intervalo permitido.")
+            customtkinter.set_widget_scaling(escala)
+            self.selected_scaling.set(new_scaling)
+        except ValueError:
+            print(f"[Erro] Escala inválida: {new_scaling}")
+            customtkinter.CTkMessagebox(
+                title="Erro",
+                message="Valor de escala inválido. Use entre 50% e 200%.",
+                icon="cancel"
+            )
 
     def _reconstruir_interface(self):
-        for widget in self.winfo_children():
-            widget.destroy()
-        self._criar_interface()
+        try:
+            for widget in self.winfo_children():
+                widget.destroy()
+            self._criar_interface()
+        except Exception as e:
+            print(f"Erro ao reconstruir interface: {e}")
+            customtkinter.CTkMessagebox(
+                title="Erro",
+                message="Erro ao reconstruir interface.",
+                icon="cancel"
+            )
