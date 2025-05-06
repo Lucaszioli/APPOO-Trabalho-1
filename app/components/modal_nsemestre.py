@@ -3,7 +3,7 @@ from CTkMessagebox import CTkMessagebox
 from app.components.date_picker import CTkDatePicker
 from datetime import datetime
 from app.services.semestre_services import SemestreService
-
+from app.errors.nomeSemestre import NomeRepetidoError
 class ModalNovoSemestre(customtkinter.CTkToplevel):
     def __init__(self, conexao, master=None, callback_atualizacao=None):
         super().__init__(master)
@@ -71,6 +71,9 @@ class ModalNovoSemestre(customtkinter.CTkToplevel):
                 data_fim.strftime("%Y-%m-%d"),
                 self.conexao
             )
+        except NomeRepetidoError as e:
+            CTkMessagebox(title="Erro", message=str(e), icon="cancel")
+            return
         except Exception as e:
             CTkMessagebox(title="Erro", message="Erro ao salvar semestre no banco de dados.", icon="cancel")
             print(f"[ERRO] Falha na criação do semestre: {e}")
