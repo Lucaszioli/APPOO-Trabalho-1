@@ -8,11 +8,15 @@ def main():
     db = Database(db_path="db.db")
     db.criar("app/scripts/init.sql")
     conexao = db.conectar()
+    
+    # Criar um semestre
     semestre = SemestreService.criar("Teste", "Inicio", "Fim", conexao )
+    
+    # Adicionar disciplinas ao semestre
     DisciplinaServices.criar(nome="Teste1", semestre=semestre,codigo="MAT60", carga_horaria=60, conexao=conexao)
     DisciplinaServices.criar(nome="Teste1", semestre=semestre,codigo="MAT61", carga_horaria=60, conexao=conexao)
-    # semestre.carregar_disciplinas(conexao)
     semestre.listar_disciplinas()
+    
     print("Tabelas criadas com sucesso!")
 
 if __name__ == "__main__":
