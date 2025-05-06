@@ -46,6 +46,7 @@ class SemestreService:
         cursor = conexao.cursor()
         cursor.execute("SELECT * FROM disciplina WHERE semestre_id = ?", (semestre.id,))
         disciplinas = cursor.fetchall()
+        semestre.disciplinas = []
         for disciplina in disciplinas:
             semestre.disciplinas.append(Disciplina(nome=disciplina[1], carga_horaria=disciplina[2], semestre_id=disciplina[3], codigo=disciplina[4], observacao=disciplina[5], id=disciplina[0]))
 
