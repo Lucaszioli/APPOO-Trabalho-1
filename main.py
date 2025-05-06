@@ -19,7 +19,8 @@ def main():
     
     print("Tabelas criadas com sucesso!")
 
+    app = PaginaInicial(conexao)
+    app.mainloop()
+    
 if __name__ == "__main__":
     main()
-    app = PaginaInicial()
-    app.mainloop()

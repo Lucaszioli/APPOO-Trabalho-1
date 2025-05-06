@@ -4,7 +4,7 @@ import customtkinter
 from app.components.sidebar import SidebarFrame
 
 class PaginaInicial(customtkinter.CTk):
-    def __init__(self):
+    def __init__(self, conexao):
         super().__init__()
 
         # Janela
