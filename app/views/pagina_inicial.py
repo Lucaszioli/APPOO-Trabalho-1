@@ -71,10 +71,13 @@ class SemestresFrame(customtkinter.CTkFrame):
         self.semestres = SemestreService.listar_semestres(conexao)
         
         # Criar widgets
-        self.build_ui()
+        self.header()
         
-    def build_ui(self):
+    def header(self):
+        header_frame = customtkinter.CTkFrame(self)
+        header_frame.grid(row=0, column=0, sticky="nsew")
         
-        # Titulo da página
-        self.titulo = customtkinter.CTkLabel(self, text="Semestres", font=("Arial", 24))
-        self.titulo.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")        
+        header_label = customtkinter.CTkLabel(header_frame, text="Seja Bem-Vindo!", font=("CtkFont", 24))
+        header_label.pack(pady=10)
+        
+        return header_frame
