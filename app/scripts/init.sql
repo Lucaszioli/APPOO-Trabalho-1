@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS semestre (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nome TEXT NOT NULL,
+    nome TEXT NOT NULL UNIQUE,
     data_inicio TEXT NOT NULL,
     data_fim TEXT NOT NULL
 );
