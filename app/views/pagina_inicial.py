@@ -65,19 +65,30 @@ class SemestresFrame(customtkinter.CTkFrame):
         # Configurações da janela
         self.controller = controller
         self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(2, weight=1)
+        self.grid_rowconfigure(3, weight=1)
+        self.grid_rowconfigure(5, weight=1)
 
         # Carregar semestres do banco de dados
         self.semestres = SemestreService.listar_semestres(conexao)
+         
+        # Criar titulo
+        self.titulo_label = customtkinter.CTkLabel(self, text="Seja Bem-Vindo(a)", font=customtkinter.CTkFont(size=24, weight="bold"))
+        self.titulo_label.grid(row=0, column=1, padx=20, pady=(20, 0), sticky="nsew")
         
-        # Criar widgets
-        self.header()
+        # Criar subtitulo
+        self.subtitulo_label = customtkinter.CTkLabel(self, text="Selecione um semestre:", font=customtkinter.CTkFont(size=15, weight="bold"))
+        self.subtitulo_label.grid(row=1, column=1, padx=20, pady=(0, 30), sticky="nsew")
         
-    def header(self):
-        header_frame = customtkinter.CTkFrame(self)
-        header_frame.grid(row=0, column=0, sticky="nsew")
+        # Criar frama rolavel para os semestres
+        self.semestres_frame = customtkinter.CTkScrollableFrame(self, width=300, height=400)
+        self.semestres_frame.grid(row=4, column=1, padx=20, pady=(0, 10), sticky="nsew")
+        self.semestres_frame.grid_rowconfigure(0, weight=1)
+        self.semestres_frame.grid_columnconfigure(0, weight=1)
         
-        header_label = customtkinter.CTkLabel(header_frame, text="Seja Bem-Vindo!", font=("CtkFont", 24))
-        header_label.pack(pady=10)
-        
-        return header_frame
+        # Criar lista de semestres
+        for i, semestre in enumerate(self.semestres):
+            semestre_button = customtkinter.CTkButton(self.semestres_frame, text=semestre.nome, command=lambda s=semestre: self.abrir_semestre(s))
+            semestre_button.grid(row=i+2, column=0, padx=20, pady=(0, 10), sticky="nsew")
+
+    
