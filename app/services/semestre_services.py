@@ -1,4 +1,5 @@
 from app.models.disciplinas import Disciplina
+from app.errors.nomeSemestre import NomeRepetidoError
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from app.models.semestre import Semestre 
@@ -49,10 +50,18 @@ class SemestreService:
         semestre.disciplinas = []
         for disciplina in disciplinas:
             semestre.disciplinas.append(Disciplina(nome=disciplina[1], carga_horaria=disciplina[2], semestre_id=disciplina[3], codigo=disciplina[4], observacao=disciplina[5], id=disciplina[0]))
-
+    @staticmethod
+    def buscar_por_nome(nome, conexao):
+        cursor = conexao.cursor()
+        cursor.execute("SELECT * FROM semestre WHERE nome = ?", (nome,))
+        semestre = cursor.fetchone()
+        if semestre:
+            raise NomeRepetidoError(nome)
+            
     @staticmethod
     def criar(nome, data_inicio, data_fim, conexao):
         from app.models.semestre import Semestre
+        SemestreService.buscar_por_nome(nome, conexao)
         semestre = Semestre(nome, data_inicio, data_fim)
         SemestreService.adicionar_bd(semestre, conexao)
         return semestre
