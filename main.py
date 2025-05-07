@@ -1,6 +1,6 @@
 from app.utils.database import Database
 from app.models.atividade import Atividade, Trabalho
-from app.views.pagina_inicial import PaginaInicial
+from app.windows.pagina_inicial import PaginaInicial
 from app.services.semestre_services import SemestreService
 from app.services.disciplinas_services import DisciplinaServices
 def main():
