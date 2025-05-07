@@ -4,7 +4,7 @@ from typing import Any
 
 from app.components.base_list_frame import BaseListFrame
 from app.services.disciplinas_services import DisciplinaServices
-from app.components.modal_novo_semestre import ModalNovoSemestre
+from app.components.modal_nova_disciplina import ModalNovaDisciplina
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,7 @@ class DisciplinasFrame(BaseListFrame):
 
     def modal_class(self):
         """Classe do modal usado para criar nova disciplina."""
-        return ModalNovoSemestre
+        return ModalNovaDisciplina(self.semestre, self.conexao)
 
     def detail_view_class(self):
         """Classe da view de detalhe de disciplina."""
@@ -47,3 +47,24 @@ class DisciplinasFrame(BaseListFrame):
 
     def add_button_text(self):
         return "Adicionar Disciplina"
+    
+    def _on_add(self):
+        """
+        Abre o modal de nova disciplina com os argumentos corretos
+        (semestre, conexão, master e callback).
+        """
+        try:
+            ModalNovaDisciplina(
+                semestre=self.semestre,
+                conexao=self.conexao,
+                master=self,
+                callback=self._reload
+            )
+        except Exception as e:
+            # opcional: mostrar caixa de erro
+            from CTkMessagebox import CTkMessagebox
+            CTkMessagebox(
+                title="Erro",
+                message=f"Não foi possível abrir o formulário de disciplina.\n{e}",
+                icon="cancel"
+            )
