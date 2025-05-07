@@ -8,6 +8,6 @@ class PaginaInicial(BaseWindow):
         super().__init__(conexao, title="Sistema de Gerenciamento Acadêmico")
 
     def _create_body(self) -> None:
-        sem_frame = SemestresFrame(self.conexao, master=self)
+        sem_frame = SemestresFrame(self.conexao, semestre=None, master=self)
         sem_frame.configure(corner_radius=0)
         sem_frame.grid(row=0, column=1, sticky="nsew")

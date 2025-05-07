@@ -9,5 +9,5 @@ class PaginaSemestre(BaseWindow):
         super().__init__(conexao, title=f"Semestre {semestre.nome}")
 
     def _create_body(self) -> None:
-        sem_frame = DisciplinasFrame(self.conexao, master=self)
+        sem_frame = DisciplinasFrame(self.conexao, semestre=self.semestre, master=self)
         sem_frame.grid(row=0, column=1, sticky="nsew")
