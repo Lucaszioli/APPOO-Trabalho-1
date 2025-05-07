@@ -1,5 +1,5 @@
 from app.windows.base_window import BaseWindow
-from app.components.semestres_list import SemestresFrame
+from app.components.semestres_frame import SemestresFrame
 
 class PaginaSemestre(BaseWindow):
     """Janela de detalhes de um semestre específico."""
