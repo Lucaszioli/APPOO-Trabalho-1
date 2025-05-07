@@ -112,6 +112,12 @@ class SemestresFrame(customtkinter.CTkFrame):
 
         except AttributeError:
             print("[ERRO] Objeto semestre inválido.")
+            
+    def _fechar_semestre(self, key, window):
+        try:
+            window.destroy()
+        finally:
+            self.semestre_views.pop(key, None)
 
     def _recarregar_lista(self):
         try:
