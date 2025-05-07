@@ -3,8 +3,6 @@ import customtkinter
 from CTkMessagebox import CTkMessagebox
 from app.components.sidebar import SidebarFrame
 from app.components.semestres_list import SemestresFrame
-from app.views.pagina_semestre import PaginaSemestre
-from app.services.semestre_services import SemestreService
 
 
 class PaginaInicial(customtkinter.CTk):
