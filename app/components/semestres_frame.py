@@ -1,152 +1,146 @@
+import logging
+import tkinter
 import customtkinter
-from app.services.semestre_services import SemestreService
-from app.components.modal_nsemestre import ModalNovoSemestre
+from typing import Any, Dict, List, Optional
 from CTkMessagebox import CTkMessagebox
+from app.services.semestre_services import SemestreService
+from app.components.modal_novo_semestre import ModalNovoSemestre
+
+logger = logging.getLogger(__name__)
 
 class SemestresFrame(customtkinter.CTkFrame):
-    def __init__(self, conexao, master=None):
+    """Frame que exibe semestres cadastrados e permite adicionar/selecionar semestres."""
+    def __init__(
+        self,
+        conexao: Any,
+        master: Optional[tkinter.Widget] = None
+    ) -> None:
         super().__init__(master)
-
         if conexao is None:
             raise ValueError("Conexão com o banco de dados não pode ser nula.")
-
         self.conexao = conexao
-        self.semestres = []
-        self.semestre_views = {}
+        self.semestres: List[Any] = []
+        self.semestre_views: Dict[int, customtkinter.CTk] = {}
+        self._configure_layout()
+        self._load_semestres()
+        self._create_widgets()
 
-        self._configurar_layout()
-        self._carregar_semestres()
-        self._criar_widgets()
-
-    def _configurar_layout(self):
+    def _configure_layout(self) -> None:
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(2, weight=1)
         self.grid_rowconfigure(3, weight=1)
         self.grid_rowconfigure(6, weight=1)
 
-    def _carregar_semestres(self):
+    def _load_semestres(self) -> None:
         try:
             self.semestres = SemestreService.listar_semestres(self.conexao)
-        except Exception as e:
+        except Exception:
+            logger.exception("Falha ao carregar semestres")
             self.semestres = []
-            CTkMessagebox(title="Erro", message="Erro ao carregar semestres do banco de dados.", icon="cancel")
-            print(f"[ERRO] Falha ao carregar semestres: {e}")
+            CTkMessagebox(title="Erro", message="Erro ao carregar semestres.", icon="cancel")
 
-    def _criar_widgets(self):
-        self._criar_titulo()
-        self._criar_botao_adicionar()
-        self._criar_lista_semestres()
+    def _create_widgets(self) -> None:
+        self._create_title()
+        self._create_add_button()
+        self._create_list_frame()
 
-    def _criar_titulo(self):
-        titulo = customtkinter.CTkLabel(
-            self, text="Seja Bem-Vindo(a)", font=customtkinter.CTkFont(size=24, weight="bold")
+    def _create_title(self) -> None:
+        title = customtkinter.CTkLabel(
+            self,
+            text="Seja Bem-Vindo(a)",
+            font=customtkinter.CTkFont(size=24, weight="bold")
         )
-        titulo.grid(row=0, column=1, padx=20, pady=(20, 0), sticky="nsew")
-
-        subtitulo = customtkinter.CTkLabel(
-            self, text="Selecione um semestre:", font=customtkinter.CTkFont(size=15, weight="bold")
+        title.grid(row=0, column=1, padx=20, pady=(20, 0), sticky="nsew")
+        subtitle = customtkinter.CTkLabel(
+            self,
+            text="Selecione um semestre:",
+            font=customtkinter.CTkFont(size=15, weight="bold")
         )
-        subtitulo.grid(row=1, column=1, padx=20, pady=(0, 30), sticky="nsew")
+        subtitle.grid(row=1, column=1, padx=20, pady=(0, 30), sticky="nsew")
 
-    def _criar_botao_adicionar(self):
-        btn_adicionar = customtkinter.CTkButton(
-            self, text="Adicionar Semestre", command=self._adicionar_semestre
+    def _create_add_button(self) -> None:
+        add_btn = customtkinter.CTkButton(
+            self,
+            text="Adicionar Semestre",
+            command=self._on_add_semestre
         )
-        btn_adicionar.grid(row=4, column=1, padx=20, pady=(0, 10), sticky="nsew")
+        add_btn.grid(row=4, column=1, padx=20, pady=(0, 10), sticky="nsew")
 
-    def _criar_lista_semestres(self):
-        self.semestres_frame = customtkinter.CTkScrollableFrame(self, width=300, height=400)
-        self.semestres_frame.grid(row=5, column=1, padx=20, pady=(0, 10), sticky="nsew")
-        self.semestres_frame.grid_rowconfigure(0, weight=1)
-        self.semestres_frame.grid_columnconfigure(0, weight=1)
+    def _create_list_frame(self) -> None:
+        self.list_container = customtkinter.CTkScrollableFrame(
+            self,
+            width=300,
+            height=400
+        )
+        self.list_container.grid(row=5, column=1, padx=20, pady=(0, 10), sticky="nsew")
+        self.list_container.grid_rowconfigure(0, weight=1)
+        self.list_container.grid_columnconfigure(0, weight=1)
+        self._populate_list()
 
-        self._popular_semestres()
-
-    def _popular_semestres(self):
+    def _populate_list(self) -> None:
+        for widget in self.list_container.winfo_children():
+            widget.destroy()
         if not self.semestres:
-            aviso = customtkinter.CTkLabel(
-                self.semestres_frame, text="Nenhum semestre cadastrado.",
+            label = customtkinter.CTkLabel(
+                self.list_container,
+                text="Nenhum semestre cadastrado.",
                 font=customtkinter.CTkFont(size=14, slant="italic")
             )
-            aviso.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
+            label.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
             return
-
-        for i, semestre in enumerate(self.semestres):
-            if not hasattr(semestre, "nome"):
-                continue  # Pula semestres malformados
-
+        for idx, semestre in enumerate(self.semestres):
+            if not hasattr(semestre, "id") or not hasattr(semestre, "nome"):
+                continue
             btn = customtkinter.CTkButton(
-                self.semestres_frame,
+                self.list_container,
                 text=semestre.nome,
-                command=lambda s=semestre: self._selecionar_semestre(s)
+                command=lambda s=semestre: self._on_select_semestre(s)
             )
-            btn.grid(row=i + 2, column=0, padx=20, pady=10, sticky="nsew")
+            btn.grid(row=idx, column=0, padx=20, pady=10, sticky="nsew")
 
-    # Ações
-    def _adicionar_semestre(self):
+    def _on_add_semestre(self) -> None:
         ModalNovoSemestre(
-            self.conexao,
+            conexao=self.conexao,
             master=self,
-            callback_atualizacao=self._recarregar_lista
+            callback=self._reload
         )
 
-    def _selecionar_semestre(self, semestre):
-        if not hasattr(semestre, "id") or not hasattr(semestre, "nome"):
+    def _on_select_semestre(self, semestre: Any) -> None:
+        key = getattr(semestre, "id", None)
+        if key is None:
             CTkMessagebox(
                 title="Erro",
-                message="Erro ao selecionar semestre. Semestre inválido.",
+                message="Semestre inválido.",
                 icon="cancel"
             )
-            print(f"[ERRO] Semestre inválido: {semestre}")
             return
-
-        key = semestre.id
         window = self.semestre_views.get(key)
-
-        if window is None or not window.winfo_exists():
+        if window and window.winfo_exists():
             try:
-                from app.windows.pagina_semestre import PaginaSemestre
-                window = PaginaSemestre(semestre, self.conexao)
-                window.protocol(
-                    "WM_DELETE_WINDOW",
-                    lambda k=key, w=window: self._fechar_semestre(k, w)
-                )
-                self.semestre_views[key] = window
-            except Exception as e:
-                CTkMessagebox(
-                    title="Erro",
-                    message="Não foi possível abrir a janela do semestre.",
-                    icon="cancel"
-                )
-                print(f"[ERRO] Falha ao criar janela do semestre {semestre.nome}: {e}")
-            return
-
-        try:
-            if window.state() == 'iconic':
                 window.deiconify()
-            window.lift()
-            window.focus_force()
-        except Exception as e:
+                window.lift()
+                window.focus_force()
+            except Exception:
+                logger.warning("Não foi possível focar a janela do semestre %s", semestre.nome)
+            return
+        try:
+            from app.windows.pagina_semestre import PaginaSemestre
+            window = PaginaSemestre(semestre, self.conexao)
+            window.protocol("WM_DELETE_WINDOW", lambda k=key: self._on_close_semestre(k))
+            self.semestre_views[key] = window
+        except Exception:
+            logger.exception("Erro ao abrir janela do semestre %s", semestre.nome)
             CTkMessagebox(
-                title="Atenção",
-                message="Não foi possível focar a janela do semestre.",
-                icon="warning"
+                title="Erro",
+                message="Não foi possível abrir a janela do semestre.",
+                icon="cancel"
             )
-            print(f"[AVISO] Falha ao focar janela do semestre {semestre.nome}: {e}")
 
-            
-    def _fechar_semestre(self, key, window):
-        try:
+    def _on_close_semestre(self, key: int) -> None:
+        window = self.semestre_views.pop(key, None)
+        if window:
             window.destroy()
-        finally:
-            self.semestre_views.pop(key, None)
 
-    def _recarregar_lista(self):
-        try:
-            for widget in self.semestres_frame.winfo_children():
-                widget.destroy()
-            self._carregar_semestres()
-            self._popular_semestres()
-        except Exception as e:
-            CTkMessagebox(title="Erro", message="Erro ao atualizar lista de semestres.", icon="cancel")
-            print(f"[ERRO] Falha ao recarregar lista: {e}")
+    def _reload(self) -> None:
+        self._load_semestres()
+        self._populate_list()
