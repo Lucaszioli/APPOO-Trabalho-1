@@ -47,10 +47,10 @@ class DisciplinaServices:
         return disciplina
     
     @staticmethod
-    def listar_disciplinas(conexao):
+    def listar_disciplinas(semestre, conexao):
         from app.models.disciplinas import Disciplina
         cursor = conexao.cursor()
-        cursor.execute("SELECT * FROM disciplina")
+        cursor.execute("SELECT * FROM disciplina WHERE semestre_id = ?", (semestre.id,))
         disciplinas = cursor.fetchall()
         return [Disciplina(id=row[0], nome=row[1], carga_horaria=row[2], semestre_id=row[3], codigo=row[4], observacao=row[5]) for row in disciplinas]
         
