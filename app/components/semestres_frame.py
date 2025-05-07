@@ -124,7 +124,7 @@ class SemestresFrame(customtkinter.CTkFrame):
                 logger.warning("Não foi possível focar a janela do semestre %s", semestre.nome)
             return
         try:
-            from app.windows.pagina_semestre import PaginaSemestre
+            from app.views.pagina_semestre import PaginaSemestre
             window = PaginaSemestre(semestre, self.conexao)
             window.protocol("WM_DELETE_WINDOW", lambda k=key: self._on_close_semestre(k))
             self.semestre_views[key] = window

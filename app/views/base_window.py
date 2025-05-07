@@ -2,7 +2,7 @@ import tkinter
 import customtkinter
 import logging
 from CTkMessagebox import CTkMessagebox
-from app.components.sidebar_toogle import SidebarToggle
+from app.components.sidebar_toggle import SidebarToggle
 
 logger = logging.getLogger(__name__)
 

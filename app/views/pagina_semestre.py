@@ -1,4 +1,4 @@
-from app.windows.base_window import BaseWindow
+from app.views.base_window import BaseWindow
 from app.components.semestres_frame import SemestresFrame
 
 class PaginaSemestre(BaseWindow):
