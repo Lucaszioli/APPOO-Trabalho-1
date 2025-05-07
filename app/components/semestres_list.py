@@ -95,7 +95,7 @@ class SemestresFrame(customtkinter.CTkFrame):
         try:
             print(f"Selecionado: {semestre.nome}")
             if self.semestre_view is None or not self.semestre_view.winfo_exists():
-                self.semestre_view = PaginaSemestre()
+                self.semestre_view = PaginaSemestre(semestre.nome)
             else:
                 try:
                     if self.semestre_view.state() == 'iconic':

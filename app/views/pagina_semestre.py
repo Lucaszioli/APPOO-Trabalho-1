@@ -7,11 +7,11 @@ customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "gre
 
 
 class PaginaSemestre(customtkinter.CTk):
-    def __init__(self):
+    def __init__(self, nome_semestre):
         super().__init__()
 
         # configure window
-        self.title("Semestre.py")
+        self.title("Semestre " + nome_semestre)
         self.geometry(f"{1100}x{580}")
 
        
