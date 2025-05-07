@@ -22,8 +22,8 @@ class DisciplinasFrame(BaseListFrame):
 
     def detail_view_class(self):
         """Classe da view de detalhe de disciplina."""
-        from app.views.pagina_semestre import PaginaSemestre
-        return PaginaSemestre
+        print("Disciplina selecionada")
+        return None
 
     def get_id(self, item: Any):
         """Extrai o identificador único da disciplina."""
