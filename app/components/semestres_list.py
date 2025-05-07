@@ -14,7 +14,7 @@ class SemestresFrame(customtkinter.CTkFrame):
 
         self.conexao = conexao
         self.semestres = []
-        self.semestre_view = None
+        self.semestre_views = {}
 
         self._configurar_layout()
         self._carregar_semestres()
@@ -94,24 +94,21 @@ class SemestresFrame(customtkinter.CTkFrame):
 
     def _selecionar_semestre(self, semestre):
         try:
-            print(f"Selecionado: {semestre.nome}")
-            window_exists = False
-            if hasattr(self, 'semestre_view') and self.semestre_view is not None:
-                try:
-                    window_exists = self.semestre_view.winfo_exists()
-                except tkinter.TclError:
-                    window_exists = False
+            key = semestre.id
+            window = self.semestre_views.get(key)
 
-            if not window_exists:
-                self.semestre_view = PaginaSemestre(semestre.nome)
+            if window is None or not window.winfo_exists():
+                window = PaginaSemestre(semestre.nome)  
+                window.protocol(
+                    "WM_DELETE_WINDOW",
+                    lambda k=key, w=window: self._fechar_semestre(k, w)
+                )
+                self.semestre_views[key] = window
             else:
-                try:
-                    if self.semestre_view.state() == 'iconic':
-                        self.semestre_view.deiconify()
-                except Exception:
-                    pass
-                self.semestre_view.lift()
-                self.semestre_view.focus_force()
+                if window.state() == 'iconic':
+                    window.deiconify()
+                window.lift()
+                window.focus_force()
 
         except AttributeError:
             print("[ERRO] Objeto semestre inválido.")
