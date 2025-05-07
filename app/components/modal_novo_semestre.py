@@ -1,88 +1,94 @@
+import logging
+from datetime import datetime
+from typing import Any, Callable, Optional
 import customtkinter
 from CTkMessagebox import CTkMessagebox
 from app.components.date_picker import CTkDatePicker
-from datetime import datetime
 from app.services.semestre_services import SemestreService
 from app.errors.nomeSemestre import NomeRepetidoError
+
+logger = logging.getLogger(__name__)
+
 class ModalNovoSemestre(customtkinter.CTkToplevel):
-    def __init__(self, conexao, master=None, callback_atualizacao=None):
+    """Modal para adicionar um novo semestre ao sistema."""
+    def __init__(
+        self,
+        conexao: Any,
+        master: Optional[customtkinter.CTk] = None,
+        callback: Optional[Callable[[], None]] = None
+    ) -> None:
         super().__init__(master)
-        
+        self.callback = callback
         if conexao is None:
-            CTkMessagebox(title="Erro", message="Erro: conexão com banco de dados não foi fornecida.", icon="cancel")
+            CTkMessagebox(title="Erro", message="Conexão não fornecida.", icon="cancel")
             self.destroy()
             return
-        
         self.conexao = conexao
-        self.callback_atualizacao = callback_atualizacao
         self.title("Adicionar Novo Semestre")
         self.geometry("400x300")
-        self._criar_widgets()
+        self._build_widgets()
 
-    def _criar_widgets(self):
-        customtkinter.CTkLabel(self, text="Nome do Semestre:").pack()
+    def _build_widgets(self) -> None:
+        customtkinter.CTkLabel(self, text="Nome do Semestre:").pack(pady=(20, 5))
         self.entry_nome = customtkinter.CTkEntry(self)
-        self.entry_nome.pack(pady=(0, 10))
+        self.entry_nome.pack(pady=(0, 10), fill="x", padx=20)
 
-        customtkinter.CTkLabel(self, text="Data de Início:").pack()
+        customtkinter.CTkLabel(self, text="Data de Início:").pack(pady=(0, 5))
         self.entry_data_inicio = CTkDatePicker(self)
         self.entry_data_inicio.set_date_format("%d/%m/%Y")
-        self.entry_data_inicio.set_allow_manual_input(True)
+        self.entry_data_inicio.set_allow_manual_input(False)
         self.entry_data_inicio.pack(pady=(0, 10))
 
-        customtkinter.CTkLabel(self, text="Data de Fim:").pack()
+        customtkinter.CTkLabel(self, text="Data de Fim:").pack(pady=(0, 5))
         self.entry_data_fim = CTkDatePicker(self)
         self.entry_data_fim.set_date_format("%d/%m/%Y")
-        self.entry_data_fim.set_allow_manual_input(True)
-        self.entry_data_fim.pack(pady=(0, 10))
+        self.entry_data_fim.set_allow_manual_input(False)
+        self.entry_data_fim.pack(pady=(0, 20))
 
-        customtkinter.CTkButton(self, text="Adicionar", command=self._adicionar_semestre).pack(pady=20)
+        customtkinter.CTkButton(
+            self,
+            text="Adicionar",
+            command=self._on_submit
+        ).pack()
 
-    def _adicionar_semestre(self):
+    def _on_submit(self) -> None:
         nome = self.entry_nome.get().strip()
-        data_inicio_str = self.entry_data_inicio.get_date()
-        data_fim_str = self.entry_data_fim.get_date()
+        inicio_str = self.entry_data_inicio.get_date()
+        fim_str = self.entry_data_fim.get_date()
 
-        # Verificações básicas
-        if not nome:
-            CTkMessagebox(title="Erro", message="Nome do semestre não pode ser vazio.", icon="cancel")
-            return
-        if not data_inicio_str or not data_fim_str:
-            CTkMessagebox(title="Erro", message="Datas de início e fim devem ser preenchidas.", icon="cancel")
+        if not nome or not inicio_str or not fim_str:
+            CTkMessagebox(title="Erro", message="Todos os campos são obrigatórios.", icon="cancel")
             return
 
-        # Conversão e validação das datas
         try:
-            data_inicio = datetime.strptime(data_inicio_str, "%d/%m/%Y")
-            data_fim = datetime.strptime(data_fim_str, "%d/%m/%Y")
+            inicio = datetime.strptime(inicio_str, "%d/%m/%Y")
+            fim = datetime.strptime(fim_str, "%d/%m/%Y")
         except ValueError:
-            CTkMessagebox(title="Erro", message="Formato de data inválido. Use dd/mm/aaaa.", icon="cancel")
+            CTkMessagebox(title="Erro", message="Formato de data inválido.", icon="cancel")
             return
 
-        if data_inicio > data_fim:
-            CTkMessagebox(title="Erro", message="Data de fim deve ser posterior à data de início.", icon="cancel")
+        if inicio > fim:
+            CTkMessagebox(title="Erro", message="Data de início deve ser antes da data de fim.", icon="cancel")
             return
 
-        # Persistência segura
         try:
             SemestreService.criar(
                 nome,
-                data_inicio.strftime("%Y-%m-%d"),
-                data_fim.strftime("%Y-%m-%d"),
+                inicio.strftime("%Y-%m-%d"),
+                fim.strftime("%Y-%m-%d"),
                 self.conexao
             )
         except NomeRepetidoError as e:
             CTkMessagebox(title="Erro", message=str(e), icon="cancel")
             return
-        except Exception as e:
-            CTkMessagebox(title="Erro", message="Erro ao salvar semestre no banco de dados.", icon="cancel")
-            print(f"[ERRO] Falha na criação do semestre: {e}")
+        except Exception:
+            logger.exception("Falha ao criar semestre")
+            CTkMessagebox(title="Erro", message="Erro ao salvar semestre.", icon="cancel")
             return
 
-        if self.callback_atualizacao:
+        if self.callback:
             try:
-                self.callback_atualizacao()
-            except Exception as e:
-                print(f"[Aviso] Callback falhou: {e}")
-
+                self.callback()
+            except Exception:
+                logger.warning("Callback de atualização falhou")
         self.destroy()
