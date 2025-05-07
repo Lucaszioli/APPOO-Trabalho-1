@@ -1,8 +1,6 @@
 import customtkinter
-import tkinter
 from app.services.semestre_services import SemestreService
 from app.components.modal_nsemestre import ModalNovoSemestre
-from app.views.pagina_semestre import PaginaSemestre
 from CTkMessagebox import CTkMessagebox
 
 class SemestresFrame(customtkinter.CTkFrame):
@@ -107,6 +105,7 @@ class SemestresFrame(customtkinter.CTkFrame):
 
         if window is None or not window.winfo_exists():
             try:
+                from app.views.pagina_semestre import PaginaSemestre
                 window = PaginaSemestre(semestre, self.conexao)
                 window.protocol(
                     "WM_DELETE_WINDOW",
