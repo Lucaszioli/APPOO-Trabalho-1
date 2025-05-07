@@ -93,25 +93,48 @@ class SemestresFrame(customtkinter.CTkFrame):
         )
 
     def _selecionar_semestre(self, semestre):
-        try:
-            key = semestre.id
-            window = self.semestre_views.get(key)
+        if not hasattr(semestre, "id") or not hasattr(semestre, "nome"):
+            CTkMessagebox(
+                title="Erro",
+                message="Erro ao selecionar semestre. Semestre inválido.",
+                icon="cancel"
+            )
+            print(f"[ERRO] Semestre inválido: {semestre}")
+            return
 
-            if window is None or not window.winfo_exists():
-                window = PaginaSemestre(semestre.nome)  
+        key = semestre.id
+        window = self.semestre_views.get(key)
+
+        if window is None or not window.winfo_exists():
+            try:
+                window = PaginaSemestre(semestre.nome, self.conexao)
                 window.protocol(
                     "WM_DELETE_WINDOW",
                     lambda k=key, w=window: self._fechar_semestre(k, w)
                 )
                 self.semestre_views[key] = window
-            else:
-                if window.state() == 'iconic':
-                    window.deiconify()
-                window.lift()
-                window.focus_force()
+            except Exception as e:
+                CTkMessagebox(
+                    title="Erro",
+                    message="Não foi possível abrir a janela do semestre.",
+                    icon="cancel"
+                )
+                print(f"[ERRO] Falha ao criar janela do semestre {semestre.nome}: {e}")
+            return
 
-        except AttributeError:
-            print("[ERRO] Objeto semestre inválido.")
+        try:
+            if window.state() == 'iconic':
+                window.deiconify()
+            window.lift()
+            window.focus_force()
+        except Exception as e:
+            CTkMessagebox(
+                title="Atenção",
+                message="Não foi possível focar a janela do semestre.",
+                icon="warning"
+            )
+            print(f"[AVISO] Falha ao focar janela do semestre {semestre.nome}: {e}")
+
             
     def _fechar_semestre(self, key, window):
         try:
