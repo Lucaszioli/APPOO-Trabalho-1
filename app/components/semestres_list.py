@@ -1,6 +1,7 @@
 import customtkinter
 from app.services.semestre_services import SemestreService
 from app.components.modal_nsemestre import ModalNovoSemestre
+from app.views.pagina_semestre import PaginaSemestre
 from CTkMessagebox import CTkMessagebox
 
 class SemestresFrame(customtkinter.CTkFrame):
@@ -92,6 +93,7 @@ class SemestresFrame(customtkinter.CTkFrame):
     def _selecionar_semestre(self, semestre):
         try:
             print(f"Selecionado: {semestre.nome}")
+            self.semestre_view = PaginaSemestre()
         except AttributeError:
             print("[ERRO] Objeto semestre inválido.")
 
