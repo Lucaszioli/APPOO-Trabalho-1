@@ -38,14 +38,8 @@ class SidebarFrame(customtkinter.CTkFrame):
         )
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
 
-        self.sidebar_button_1 = customtkinter.CTkButton(self.frame, text="Botão 1")
-        self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
-
-        self.sidebar_button_2 = customtkinter.CTkButton(self.frame, text="Botão 2")
-        self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
-
-        self.sidebar_button_3 = customtkinter.CTkButton(self.frame, text="Botão 3")
-        self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=10)
+        self.sidebar_button_close = customtkinter.CTkButton(self.frame, text="Fechar", command=self._fechar)
+        self.sidebar_button_close.grid(row=1, column=0, padx=20, pady=10)
 
         self._criar_opcoes()
 
@@ -85,3 +79,6 @@ class SidebarFrame(customtkinter.CTkFrame):
             command=self.controller.change_scaling_event,
             variable=self.controller.selected_scaling
         ).grid(row=10, column=0, padx=20, pady=(10, 20))
+        
+    def _fechar(self):
+        self.controller.sidebar_frame.grid_forget()
