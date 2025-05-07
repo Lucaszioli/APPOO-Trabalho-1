@@ -1,4 +1,5 @@
 import customtkinter
+import tkinter
 from app.services.semestre_services import SemestreService
 from app.components.modal_nsemestre import ModalNovoSemestre
 from app.views.pagina_semestre import PaginaSemestre
@@ -94,7 +95,14 @@ class SemestresFrame(customtkinter.CTkFrame):
     def _selecionar_semestre(self, semestre):
         try:
             print(f"Selecionado: {semestre.nome}")
-            if self.semestre_view is None or not self.semestre_view.winfo_exists():
+            window_exists = False
+            if hasattr(self, 'semestre_view') and self.semestre_view is not None:
+                try:
+                    window_exists = self.semestre_view.winfo_exists()
+                except tkinter.TclError:
+                    window_exists = False
+
+            if not window_exists:
                 self.semestre_view = PaginaSemestre(semestre.nome)
             else:
                 try:
@@ -104,6 +112,7 @@ class SemestresFrame(customtkinter.CTkFrame):
                     pass
                 self.semestre_view.lift()
                 self.semestre_view.focus_force()
+
         except AttributeError:
             print("[ERRO] Objeto semestre inválido.")
 
