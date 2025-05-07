@@ -49,10 +49,6 @@ class DisciplinasFrame(BaseListFrame):
         return "Adicionar Disciplina"
     
     def _on_add(self):
-        """
-        Abre o modal de nova disciplina com os argumentos corretos
-        (semestre, conexão, master e callback).
-        """
         try:
             ModalNovaDisciplina(
                 semestre=self.semestre,
