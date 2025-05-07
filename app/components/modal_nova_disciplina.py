@@ -18,7 +18,7 @@ class ModalNovaDisciplina(BaseModal):
             master=master,
             callback=callback,
             title="Adicionar Nova Disciplina",
-            size=(400, 280),
+            size=(400, 380),
         )
         self.semestre = semestre
 
