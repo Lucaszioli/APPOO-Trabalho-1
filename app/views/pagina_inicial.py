@@ -1,7 +1,9 @@
 import tkinter
 import customtkinter
+from CTkMessagebox import CTkMessagebox
 from app.components.sidebar import SidebarFrame
 from app.components.semestres_list import SemestresFrame
+from app.views.pagina_semestre import PaginaSemestre
 from app.services.semestre_services import SemestreService
 
 
@@ -39,7 +41,7 @@ class PaginaInicial(customtkinter.CTk):
 
         except Exception as e:
             print(f"Erro ao criar interface: {e}")
-            customtkinter.CTkMessagebox(
+            CTkMessagebox(
                 title="Erro",
                 message="Erro ao inicializar a interface gráfica.",
                 icon="cancel"
@@ -74,7 +76,7 @@ class PaginaInicial(customtkinter.CTk):
             self._reconstruir_interface()
         except Exception as e:
             print(f"Erro ao aplicar tema '{new_theme}': {e}")
-            customtkinter.CTkMessagebox(
+            CTkMessagebox(
                 title="Erro",
                 message=f"Erro ao aplicar o tema '{new_theme}'.",
                 icon="cancel"
@@ -89,7 +91,7 @@ class PaginaInicial(customtkinter.CTk):
             self.selected_scaling.set(new_scaling)
         except ValueError:
             print(f"[Erro] Escala inválida: {new_scaling}")
-            customtkinter.CTkMessagebox(
+            CTkMessagebox(
                 title="Erro",
                 message="Valor de escala inválido. Use entre 50% e 200%.",
                 icon="cancel"
@@ -102,7 +104,7 @@ class PaginaInicial(customtkinter.CTk):
             self._criar_interface()
         except Exception as e:
             print(f"Erro ao reconstruir interface: {e}")
-            customtkinter.CTkMessagebox(
+            CTkMessagebox(
                 title="Erro",
                 message="Erro ao reconstruir interface.",
                 icon="cancel"
