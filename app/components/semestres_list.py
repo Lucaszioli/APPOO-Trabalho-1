@@ -105,7 +105,7 @@ class SemestresFrame(customtkinter.CTkFrame):
 
         if window is None or not window.winfo_exists():
             try:
-                from app.views.pagina_semestre import PaginaSemestre
+                from app.windows.pagina_semestre import PaginaSemestre
                 window = PaginaSemestre(semestre, self.conexao)
                 window.protocol(
                     "WM_DELETE_WINDOW",
