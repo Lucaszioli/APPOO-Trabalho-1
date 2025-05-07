@@ -13,6 +13,7 @@ class SemestresFrame(customtkinter.CTkFrame):
 
         self.conexao = conexao
         self.semestres = []
+        self.semestre_view = None
 
         self._configurar_layout()
         self._carregar_semestres()
@@ -93,7 +94,16 @@ class SemestresFrame(customtkinter.CTkFrame):
     def _selecionar_semestre(self, semestre):
         try:
             print(f"Selecionado: {semestre.nome}")
-            self.semestre_view = PaginaSemestre()
+            if self.semestre_view is None or not self.semestre_view.winfo_exists():
+                self.semestre_view = PaginaSemestre()
+            else:
+                try:
+                    if self.semestre_view.state() == 'iconic':
+                        self.semestre_view.deiconify()
+                except Exception:
+                    pass
+                self.semestre_view.lift()
+                self.semestre_view.focus_force()
         except AttributeError:
             print("[ERRO] Objeto semestre inválido.")
 
