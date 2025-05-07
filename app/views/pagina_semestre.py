@@ -2,7 +2,7 @@ import tkinter
 import tkinter.messagebox
 import customtkinter
 from CTkMessagebox import CTkMessagebox
-from app.components.sidebar import SidebarFrame
+from app.components.sidebar import SidebarToggle
 from app.components.semestres_list import SemestresFrame
 
 customtkinter.set_appearance_mode("System")  
@@ -37,9 +37,10 @@ class PaginaSemestre(customtkinter.CTk):
         
     def _criar_interface(self):
         try:
-            self.sidebar_frame = SidebarFrame(self, controller=self)
-            self.sidebar_frame.grid(row=0, column=0, sticky="ns")
-
+            self.sidebar = SidebarToggle(self, controller=self)
+            self.sidebar.configure(corner_radius=0)
+            self.sidebar.grid(row=0, column=0, sticky="ns")
+            
             self.semestres_frame = SemestresFrame(self.conexao, master=self)
             self.semestres_frame.grid(row=0, column=1, sticky="nsew")
 
