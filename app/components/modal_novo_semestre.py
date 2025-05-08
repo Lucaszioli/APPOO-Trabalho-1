@@ -3,7 +3,7 @@ from typing import Any, Optional
 import customtkinter
 from app.components.base_modal import BaseModal
 from app.components.date_picker import CTkDatePicker
-from app.models.semestre import Semestre
+from app.services.semestre_services import SemestreService
 from CTkMessagebox import CTkMessagebox
 
 class ModalNovoSemestre(BaseModal):
@@ -71,9 +71,9 @@ class ModalNovoSemestre(BaseModal):
     def _save(self, data: dict) -> None:
         dt_inicio = datetime.strptime(data["inicio"], "%d/%m/%Y")
         dt_fim = datetime.strptime(data["fim"], "%d/%m/%Y")
-        semestre = Semestre(
+        semestre = SemestreService.criar(
             nome=data["nome"],
             data_inicio=dt_inicio,
-            data_fim=dt_fim
+            data_fim=dt_fim,
+            conexao = self.conexao
         )
-        semestre.adicionar_bd(self.conexao)

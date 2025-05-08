@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import logging
 import customtkinter
 from CTkMessagebox import CTkMessagebox
-
+from app.errors.nomeSemestre import NomeRepetidoError
 logger = logging.getLogger(__name__)
 
 class BaseModal(customtkinter.CTkToplevel, ABC):
@@ -37,6 +37,9 @@ class BaseModal(customtkinter.CTkToplevel, ABC):
             return
         try:
             self._save(data)
+        except NomeRepetidoError as e:
+            logger.exception("Nome de semestre repetido")
+            CTkMessagebox(title="Erro", message=str(e), icon="cancel")
         except Exception:
             logger.exception("Erro ao salvar")
             CTkMessagebox(title="Erro", message="Falha ao salvar.", icon="cancel")
