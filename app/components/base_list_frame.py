@@ -79,7 +79,7 @@ class BaseListFrame(customtkinter.CTkFrame, ABC):
             label = customtkinter.CTkLabel(
                 self.list_container,
                 text=f"Nenhum {self.item_name_plural()}.",
-                font=customtkinter.CTkFont(size=14, slant="italic")
+                font=customtkinter.CTkFont(size=14, slant="italic"),
             )
             label.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
             return
@@ -98,7 +98,15 @@ class BaseListFrame(customtkinter.CTkFrame, ABC):
                 fg_color="red",
                 width=30,
             )
-            delete_btn.grid(row=idx, column=1, pady=10, sticky="nsew")
+            delete_btn.grid(row=idx, column=1, padx=(0,2), pady=10, sticky="nsew")
+            uptate_btn = customtkinter.CTkButton(
+                self.list_container,
+                text="⚙️",
+                command=lambda it=item: self.update_item(it),
+                fg_color="blue",
+                width=30,
+            )
+            uptate_btn.grid(row=idx, column=2, pady=10, sticky="nsew")
 
     def _on_add(self):
         # abre modal genérico
