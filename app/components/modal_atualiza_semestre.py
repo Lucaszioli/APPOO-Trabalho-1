@@ -19,29 +19,35 @@ class ModalAtualizaSemestre(BaseModal):
             master=master,
             callback=callback,
             item=item,
-            title="Editar Semestre: " + item.nome,
+            title="Editando Semestre: " + item.nome,
             size=(400, 300)
         )
         
     def _build_widgets(self) -> None:
-        # Nome do semestre
-        customtkinter.CTkLabel(self, text="Nome do Semestre:").pack(pady=(20, 5))
+        # Novo nome do semestre
+        customtkinter.CTkLabel(self, text="Novo nome:").pack(pady=(20, 5))
         self.entry_nome = customtkinter.CTkEntry(self)
         self.entry_nome.pack(fill="x", padx=20, pady=(0, 10))
+        
+        # Nova data de início
+        customtkinter.CTkLabel(self, text="Nova data de início:").pack(pady=(0, 5))
+        self.entry_inicio = CTkDatePicker(self)
+        self.entry_inicio.set_date_format("%d/%m/%Y")
+        self.entry_inicio.set_allow_manual_input(False)
+        self.entry_inicio.pack(pady=(0, 10))
+        
+        # Nova data de fim
+        customtkinter.CTkLabel(self, text="Nova data de fim:").pack(pady=(0, 5))
+        self.entry_fim = CTkDatePicker(self)
+        self.entry_fim.set_date_format("%d/%m/%Y")
+        self.entry_fim.set_allow_manual_input(False)
+        self.entry_fim.pack(pady=(0, 20))
 
     def _collect_data(self) -> dict:
-        return {
-            "id": self.item.id,
-            "nome": self.entry_nome.get().strip(),
-        }
+        return None
     
     def _validate(self, data: dict) -> tuple[bool, str]:
-        if not data["nome"]:
-            return False, "Nome do semestre não pode ser vazio."
-        if len(data["nome"]) > 50:
-            return False, "Nome do semestre deve ter no máximo 50 caracteres."
         return True, ""
     
     def _save(self, data: dict) -> None:
-        semestre_service = SemestreService(self.conexao)
-        semestre_service.atualiza_semestre(data["id"], data["nome"])
+        return None
