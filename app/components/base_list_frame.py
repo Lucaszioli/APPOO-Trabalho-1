@@ -109,7 +109,7 @@ class BaseListFrame(customtkinter.CTkFrame, ABC):
             uptate_btn.grid(row=idx, column=2, pady=10, sticky="nsew")
 
     def _on_add(self):
-        # abre modal genérico
+        # abre modal de adicionar
         cls = self.modal_class()
         cls(conexao=self.conexao, master=self, callback=self._reload)
         
@@ -126,6 +126,11 @@ class BaseListFrame(customtkinter.CTkFrame, ABC):
                 message=f"Não foi possível deletar {self.item_name_singular()}.",
                 icon="cancel"
             )
+            
+    def _on_update(self, item):
+        # abre modal de atualizar
+        cls = self.modal_class_uptade()
+        cls(conexao=self.conexao, master=self, item=item, callback=self._reload)
 
     def _on_select(self, item):
         key = self.get_id(item)
@@ -162,7 +167,10 @@ class BaseListFrame(customtkinter.CTkFrame, ABC):
     def get_items(self, conexao): ...
 
     @abstractmethod
-    def modal_class(self): ...
+    def modal_class_add(self): ...
+    
+    @abstractmethod
+    def modal_class_uptade(self): ...
 
     @abstractmethod
     def detail_view_class(self): ...
