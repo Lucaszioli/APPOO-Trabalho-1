@@ -90,7 +90,15 @@ class BaseListFrame(customtkinter.CTkFrame, ABC):
                 text=name,
                 command=lambda it=item: self._on_select(it)
             )
-            btn.grid(row=idx, column=0, padx=20, pady=10, sticky="nsew")
+            btn.grid(row=idx, column=0, padx=(20,2), pady=10, sticky="nsew")
+            delete_btn = customtkinter.CTkButton(
+                self.list_container,
+                text="X",
+                command=lambda it=item: self.delete_item(it),
+                fg_color="red",
+                width=30,
+            )
+            delete_btn.grid(row=idx, column=1, pady=10, sticky="nsew")
 
     def _on_add(self):
         # abre modal genérico
