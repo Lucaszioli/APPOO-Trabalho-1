@@ -18,7 +18,8 @@ class ModalNovoSemestre(BaseModal):
             master=master,
             callback=callback,
             title="Adicionar Novo Semestre",
-            size=(400, 300)
+            size=(400, 300),
+            item=None
         )
 
     def _build_widgets(self) -> None:

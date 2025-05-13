@@ -13,7 +13,8 @@ class BaseModal(customtkinter.CTkToplevel, ABC):
         master=None,
         callback=None,
         title: str = "Modal",
-        size: tuple[int, int] = (400, 300)
+        size: tuple[int, int] = (400, 300),
+        item=None
     ):
         super().__init__(master)
         if conexao is None:
