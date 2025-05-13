@@ -157,3 +157,9 @@ class BaseListFrame(customtkinter.CTkFrame, ABC):
 
     @abstractmethod
     def add_button_text(self): ...
+    
+    @abstractmethod
+    def delete_item(self, item): ...
+    
+    @abstractmethod
+    def update_item(self, item): ...
