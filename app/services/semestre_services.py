@@ -1,6 +1,7 @@
 from sqlite3 import Connection
 from app.models.disciplinas import Disciplina
 from app.errors.nomeSemestre import NomeRepetidoError
+from app.errors.notFound import SemestreNotFoundError
 from typing import TYPE_CHECKING, Optional
 from app.utils.database import Database
 
@@ -19,6 +20,9 @@ class SemestreService(Database):
     @staticmethod
     def editar_bd(semestre:"Semestre", conexao:Connection) -> "Semestre":
         semestreExistente = SemestreService.buscar_por_id(semestre.id, conexao)
+        if not semestreExistente:
+            raise SemestreNotFoundError()
+        
         query = "UPDATE semestre SET nome = ?, data_inicio = ?, data_fim = ? WHERE id = ?"
         params = (semestre.nome, semestre.data_inicio, semestre.data_fim, semestre.id)
         Database._editar(query, params, conexao)
@@ -37,6 +41,8 @@ class SemestreService(Database):
     @staticmethod
     def deletar_semestre(semestre:"Semestre", conexao:Connection) -> int:
         semestre = SemestreService.buscar_por_id(semestre.id, conexao)
+        if not semestre:
+            raise SemestreNotFoundError()
         query = "DELETE FROM semestre WHERE id = ?"
         params = (semestre.id,)
         rows = Database._deletar(query, params, conexao)
