@@ -4,7 +4,8 @@ from app.components.modal_novo_semestre import ModalNovoSemestre
 
 class SemestresFrame(BaseListFrame):
     def get_items(self, conexao):
-        return SemestreService.listar_semestres(conexao)
+        service = SemestreService()
+        return service.listar_semestres(conexao)
 
     def modal_class(self):
         return ModalNovoSemestre
