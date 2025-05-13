@@ -1,3 +1,4 @@
+from sqlite3 import Connection
 from app.models.disciplinas import Disciplina
 from app.errors.nomeSemestre import NomeRepetidoError
 from typing import TYPE_CHECKING
@@ -8,19 +9,19 @@ class SemestreService(Database):
     def __init__(self):
         pass
 
-    def __adicionar_bd(self,semestre, conexao):
+    def __adicionar_bd(self,semestre:Semestre, conexao:Connection) -> Semestre:
         query = "INSERT INTO semestre (nome, data_inicio, data_fim) VALUES (?, ?, ?)"
         params = (semestre.nome, semestre.data_inicio, semestre.data_fim)
         semestre.id = self._adicionar(query,params,conexao)
         return semestre
 
-    def editar_bd(self, semestre, conexao):
+    def editar_bd(self, semestre:Semestre, conexao:Connection) -> Semestre:
         query = "UPDATE semestre SET nome = ?, data_inicio = ?, data_fim = ? WHERE id = ?"
         params = (semestre.nome, semestre.data_inicio, semestre.data_fim, semestre.id)
         self._editar(query, params, conexao)
         return semestre
     
-    def buscar_por_id(self, id, conexao):
+    def buscar_por_id(self, id:str, conexao:Connection) -> Semestre|None:
         from app.models.semestre import Semestre
         query = "SELECT * FROM semestre WHERE id = ?"
         params = (id,)
@@ -30,14 +31,14 @@ class SemestreService(Database):
         return None
     
     
-    def deletar_bd(self,semestre, conexao):
+    def deletar_bd(self,semestre:Semestre, conexao:Connection) -> Semestre:
         query = "DELETE FROM semestre WHERE id = ?"
         params = (semestre.id,)
         self._deletar(query, params, conexao)
         return semestre
     
     
-    def listar_semestres(self,conexao):
+    def listar_semestres(self,conexao:Connection)->list[Semestre]:
         from app.models.semestre import Semestre
         query = "SELECT * FROM semestre"
         params = ()
@@ -47,7 +48,7 @@ class SemestreService(Database):
         return [Semestre(id=row[0], nome=row[1], data_inicio=row[2], data_fim=row[3]) for row in semestres]
     
     @staticmethod
-    def buscar_ultimo_semestre(conexao):
+    def buscar_ultimo_semestre(conexao:Connection) -> Semestre|None:
         cursor = conexao.cursor()
         cursor.execute("SELECT * FROM semestre ORDER BY data_fim DESC LIMIT 1")
         semestre = cursor.fetchone()
@@ -56,7 +57,7 @@ class SemestreService(Database):
         return None
     
     
-    def carregar_disciplinas(self, semestre, conexao):
+    def carregar_disciplinas(self, semestre:Semestre, conexao:Connection) -> list[Disciplina]:
         from app.models.disciplinas import Disciplina
         query = "SELECT * FROM disciplina WHERE semestre_id = ?"
         params = (semestre.id,)
@@ -66,14 +67,17 @@ class SemestreService(Database):
             semestre.adicionar_disciplina(disciplina)
         return semestre.disciplinas
 
-    def buscar_por_nome(self,nome, conexao):
-        cursor = conexao.cursor()
-        cursor.execute("SELECT * FROM semestre WHERE nome = ?", (nome,))
-        semestre = cursor.fetchone()
-        return semestre
+    def buscar_por_nome(self,nome:str, conexao:Connection) -> Semestre|None:
+        from app.models.semestre import Semestre
+        query = "SELECT * FROM semestre WHERE nome = ?"
+        params = (nome,)
+        row = self._buscar_um(query, params, conexao)
+        if row:
+            return Semestre(id=row[0], nome=row[1], data_inicio=row[2], data_fim=row[3])
+        return None
             
     @staticmethod
-    def criar(nome, data_inicio, data_fim, conexao):
+    def criar(nome:str, data_inicio:str, data_fim:str, conexao:Connection) -> Semestre:
         from app.models.semestre import Semestre
         service = SemestreService()
         semestre = service.buscar_por_nome(nome, conexao)
