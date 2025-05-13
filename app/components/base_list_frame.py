@@ -94,7 +94,7 @@ class BaseListFrame(customtkinter.CTkFrame, ABC):
             delete_btn = customtkinter.CTkButton(
                 self.list_container,
                 text="X",
-                command=lambda it=item: self.delete_item(it),
+                command=lambda it=item: self._on_delete(it),
                 fg_color="red",
                 width=30,
             )
@@ -104,6 +104,20 @@ class BaseListFrame(customtkinter.CTkFrame, ABC):
         # abre modal genérico
         cls = self.modal_class()
         cls(conexao=self.conexao, master=self, callback=self._reload)
+        
+    def _on_delete(self, item):
+        # deleta item
+        try:
+            self.delete_item(item)
+            self._reload()
+            print(f"{self.item_name_singular()} deletado com sucesso.")
+        except Exception:
+            logger.exception("Erro ao deletar %s %s", self.item_name_singular(), self.get_id(item))
+            CTkMessagebox(
+                title="Erro",
+                message=f"Não foi possível deletar {self.item_name_singular()}.",
+                icon="cancel"
+            )
 
     def _on_select(self, item):
         key = self.get_id(item)
