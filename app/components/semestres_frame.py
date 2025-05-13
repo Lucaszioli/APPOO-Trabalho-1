@@ -33,3 +33,10 @@ class SemestresFrame(BaseListFrame):
 
     def add_button_text(self):
         return "Adicionar Semestre"
+    
+    def delete_item(self, item):
+        print("Deletado: " + item.nome)
+        return "Deletar Semestre"
+    
+    def update_item(self, item):
+        return "Atualizar Semestre"
