@@ -14,15 +14,16 @@ class ModalAtualizaSemestre(BaseModal):
         callback: Optional[callable] = None,
         item: Optional[Any] = None
     ):
+        self.item = item
         super().__init__(
             conexao=conexao,
             master=master,
             callback=callback,
             item=item,
-            title="Editando Semestre: " + item.nome,
+            title="Editando Semestre: " + self.item.nome,
             size=(400, 300)
         )
-        
+
     def _build_widgets(self) -> None:
         # Novo nome do semestre
         customtkinter.CTkLabel(self, text="Novo nome:").pack(pady=(20, 5))
@@ -42,12 +43,41 @@ class ModalAtualizaSemestre(BaseModal):
         self.entry_fim.set_date_format("%d/%m/%Y")
         self.entry_fim.set_allow_manual_input(False)
         self.entry_fim.pack(pady=(0, 20))
+        
+        # Botão salvar
+        customtkinter.CTkButton(
+            self,
+            text="Salvar",
+            command=self._on_submit
+        ).pack()
 
     def _collect_data(self) -> dict:
-        return None
+        return {
+            "nome": self.entry_nome.get().strip() if self.entry_nome.get().strip() else self.item.nome,
+            "inicio": self.entry_inicio.get_date().strip() if self.entry_inicio.get_date().strip() else self.item.data_inicio,
+            "fim": self.entry_fim.get_date().strip() if self.entry_fim.get_date().strip() else self.item.data_fim
+        }
     
     def _validate(self, data: dict) -> tuple[bool, str]:
         return True, ""
     
     def _save(self, data: dict) -> None:
-        return None
+        # helper to parse either ISO or dd/mm/YYYY
+        def _parse(raw):
+            if isinstance(raw, str):
+                try:
+                    return datetime.fromisoformat(raw)
+                except ValueError:
+                    return datetime.strptime(raw, "%d/%m/%Y")
+            return raw
+
+        dt_inicio = _parse(data["inicio"])
+        dt_fim    = _parse(data["fim"])
+
+        # Update the model instance
+        self.item.nome        = data["nome"]
+        self.item.data_inicio = dt_inicio
+        self.item.data_fim    = dt_fim
+
+        # Persist the updated model
+        SemestreService.editar_bd(self.item, self.conexao)
