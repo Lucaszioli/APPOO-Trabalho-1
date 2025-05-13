@@ -4,7 +4,6 @@ import customtkinter
 from app.components.base_modal import BaseModal
 from app.components.date_picker import CTkDatePicker
 from app.services.semestre_services import SemestreService
-from CTkMessagebox import CTkMessagebox
 
 class ModalNovoSemestre(BaseModal):
     """Modal para criação de um novo semestre."""
@@ -19,7 +18,8 @@ class ModalNovoSemestre(BaseModal):
             master=master,
             callback=callback,
             title="Adicionar Novo Semestre",
-            size=(400, 300)
+            size=(400, 300),
+            item=None
         )
 
     def _build_widgets(self) -> None:

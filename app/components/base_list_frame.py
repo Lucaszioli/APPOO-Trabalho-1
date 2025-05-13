@@ -79,7 +79,7 @@ class BaseListFrame(customtkinter.CTkFrame, ABC):
             label = customtkinter.CTkLabel(
                 self.list_container,
                 text=f"Nenhum {self.item_name_plural()}.",
-                font=customtkinter.CTkFont(size=14, slant="italic")
+                font=customtkinter.CTkFont(size=14, slant="italic"),
             )
             label.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
             return
@@ -90,12 +90,47 @@ class BaseListFrame(customtkinter.CTkFrame, ABC):
                 text=name,
                 command=lambda it=item: self._on_select(it)
             )
-            btn.grid(row=idx, column=0, padx=20, pady=10, sticky="nsew")
+            btn.grid(row=idx, column=0, padx=(20,2), pady=10, sticky="nsew")
+            delete_btn = customtkinter.CTkButton(
+                self.list_container,
+                text="X",
+                command=lambda it=item: self._on_delete(it),
+                fg_color="red",
+                width=30,
+            )
+            delete_btn.grid(row=idx, column=1, padx=(0,2), pady=10, sticky="nsew")
+            uptate_btn = customtkinter.CTkButton(
+                self.list_container,
+                text="⚙️",
+                command=lambda it=item: self._on_update(it),
+                fg_color="blue",
+                width=30,
+            )
+            uptate_btn.grid(row=idx, column=2, pady=10, sticky="nsew")
 
     def _on_add(self):
-        # abre modal genérico
-        cls = self.modal_class()
+        # abre modal de adicionar
+        cls = self.modal_class_add()
         cls(conexao=self.conexao, master=self, callback=self._reload)
+        
+    def _on_delete(self, item):
+        # deleta item
+        try:
+            self.delete_item(item)
+            self._reload()
+            print(f"{self.item_name_singular()} deletado com sucesso.")
+        except Exception:
+            logger.exception("Erro ao deletar %s %s", self.item_name_singular(), self.get_id(item))
+            CTkMessagebox(
+                title="Erro",
+                message=f"Não foi possível deletar {self.item_name_singular()}.",
+                icon="cancel"
+            )
+            
+    def _on_update(self, item):
+        # abre modal de atualizar
+        cls = self.modal_class_update()
+        cls(conexao=self.conexao, master=self, callback=self._reload, item=item)
 
     def _on_select(self, item):
         key = self.get_id(item)
@@ -132,7 +167,10 @@ class BaseListFrame(customtkinter.CTkFrame, ABC):
     def get_items(self, conexao): ...
 
     @abstractmethod
-    def modal_class(self): ...
+    def modal_class_add(self): ...
+    
+    @abstractmethod
+    def modal_class_update(self): ...
 
     @abstractmethod
     def detail_view_class(self): ...
@@ -157,3 +195,9 @@ class BaseListFrame(customtkinter.CTkFrame, ABC):
 
     @abstractmethod
     def add_button_text(self): ...
+    
+    @abstractmethod
+    def delete_item(self, item): ...
+    
+    @abstractmethod
+    def update_item(self, item): ...
