@@ -10,4 +10,5 @@ class PaginaSemestre(BaseWindow):
 
     def _create_body(self) -> None:
         sem_frame = DisciplinasFrame(self.conexao, semestre=self.semestre, master=self)
+        sem_frame.configure(corner_radius=0)
         sem_frame.grid(row=0, column=1, sticky="nsew")
