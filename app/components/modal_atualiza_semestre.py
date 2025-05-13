@@ -5,7 +5,7 @@ from app.components.base_modal import BaseModal
 from app.components.date_picker import CTkDatePicker
 from app.services.semestre_services import SemestreService
 
-class ModalNovoSemestre(BaseModal):
+class ModalAtualizaSemestre(BaseModal):
     """Modal para criação de um novo semestre."""
     def __init__(
         self,

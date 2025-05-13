@@ -102,7 +102,7 @@ class BaseListFrame(customtkinter.CTkFrame, ABC):
             uptate_btn = customtkinter.CTkButton(
                 self.list_container,
                 text="⚙️",
-                command=lambda it=item: self.update_item(it),
+                command=self._on_update,
                 fg_color="blue",
                 width=30,
             )
@@ -110,7 +110,7 @@ class BaseListFrame(customtkinter.CTkFrame, ABC):
 
     def _on_add(self):
         # abre modal de adicionar
-        cls = self.modal_class()
+        cls = self.modal_class_add()
         cls(conexao=self.conexao, master=self, callback=self._reload)
         
     def _on_delete(self, item):
@@ -127,10 +127,10 @@ class BaseListFrame(customtkinter.CTkFrame, ABC):
                 icon="cancel"
             )
             
-    def _on_update(self, item):
+    def _on_update(self):
         # abre modal de atualizar
-        cls = self.modal_class_uptade()
-        cls(conexao=self.conexao, master=self, item=item, callback=self._reload)
+        cls = self.modal_class_update()
+        cls(conexao=self.conexao, master=self, callback=self._reload)
 
     def _on_select(self, item):
         key = self.get_id(item)
@@ -170,7 +170,7 @@ class BaseListFrame(customtkinter.CTkFrame, ABC):
     def modal_class_add(self): ...
     
     @abstractmethod
-    def modal_class_uptade(self): ...
+    def modal_class_update(self): ...
 
     @abstractmethod
     def detail_view_class(self): ...

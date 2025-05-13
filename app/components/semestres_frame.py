@@ -1,13 +1,17 @@
 from app.components.base_list_frame import BaseListFrame
 from app.services.semestre_services import SemestreService
-from app.components.modal_novo_semestre import ModalNovoSemestre
 
 class SemestresFrame(BaseListFrame):
     def get_items(self, conexao):
         return SemestreService.listar_semestres(conexao)
 
-    def modal_class(self):
+    def modal_class_add(self):
+        from app.components.modal_novo_semestre import ModalNovoSemestre
         return ModalNovoSemestre
+    
+    def modal_class_update(self):
+        from app.components.modal_atualiza_semestre import ModalAtualizaSemestre
+        return ModalAtualizaSemestre
 
     def detail_view_class(self):
         from app.views.pagina_semestre import PaginaSemestre
@@ -38,4 +42,5 @@ class SemestresFrame(BaseListFrame):
         return SemestreService.deletar_bd(item, self.conexao)
     
     def update_item(self, item):
+        print("Atualizando semestre")
         return "Atualizar Semestre"
