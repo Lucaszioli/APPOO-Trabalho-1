@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from enum import Enum
-from .atividade import Atividade, Trabalho, Prova, Aula_de_Campo, Apresentacao, TipoAtividade
+from .atividade import Atividade, Trabalho, Prova, Aula_de_Campo, TipoAtividade
 from app.services.disciplinas_services import DisciplinaServices
 
 class Disciplina(ABC):

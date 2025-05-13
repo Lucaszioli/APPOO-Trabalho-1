@@ -1,4 +1,4 @@
-from app.models.atividade import TipoAtividade, Trabalho, Aula_de_Campo, Prova, Revisao, Apresentacao
+from app.models.atividade import TipoAtividade, Trabalho, Aula_de_Campo, Prova, Revisao
 
 class DisciplinaServices:
     @staticmethod
@@ -32,8 +32,6 @@ class DisciplinaServices:
                 disciplina.atividades.append(Prova(atividade[1], atividade[2], atividade[3], atividade[5], atividade[6], atividade[7]))
             elif atividade[6] == TipoAtividade.CAMPO.value:
                 disciplina.atividades.append(Aula_de_Campo(atividade[1], atividade[2], atividade[3], atividade[7]))
-            elif atividade[6] == TipoAtividade.APRESENTACAO.value:
-                disciplina.atividades.append(Apresentacao(atividade[1], atividade[2], atividade[3], atividade[5], atividade[6], atividade[7]))
             elif atividade[6] == TipoAtividade.REVISAO.value:
                 disciplina,atividade.append(Revisao(atividade[1], atividade[2], atividade[3], atividade[5], atividade[6], atividade[7]))
         return disciplina.atividades
