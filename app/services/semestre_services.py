@@ -39,7 +39,7 @@ class SemestreService(Database):
             return Semestre(id=row[0], nome=row[1], data_inicio=row[2], data_fim=row[3])
         return None
     
-    def deletar_semestre(semestre:"Semestre", self) -> int:
+    def deletar_semestre(self, semestre:"Semestre") -> int:
         semestre = self.buscar_por_id(semestre.id)
         if not semestre:
             raise SemestreNotFoundError()

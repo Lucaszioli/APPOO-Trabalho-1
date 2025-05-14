@@ -2,12 +2,12 @@ from abc import ABC, abstractmethod
 import logging
 import customtkinter
 from CTkMessagebox import CTkMessagebox
-
+from app.services.semestre_services import SemestreService
 logger = logging.getLogger(__name__)
 
 class BaseListFrame(customtkinter.CTkFrame, ABC):
     """Frame genérico para listar entidades e abrir modais ou janelas de detalhe."""
-    def __init__(self, conexao, semestre_service, semestre, master=None):
+    def __init__(self, conexao, semestre_service:"SemestreService", semestre, master=None):
         super().__init__(master)
         if conexao is None:
             raise ValueError("Conexão não pode ser nula.")
