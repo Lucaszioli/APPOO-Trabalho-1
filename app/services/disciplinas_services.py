@@ -1,54 +1,74 @@
+from app.utils.database import Database
+from app.errors.notFound import DisciplinaNotFoundError
+
 from app.models.atividade import TipoAtividade, Trabalho, Aula_de_Campo, Prova, Revisao
+from app.models.disciplinas import Disciplina
+from app.models.atividade import Atividade
+from app.models.semestre import Semestre
 
-class DisciplinaServices:
-    @staticmethod
-    def adicionar_bd(disciplina, conexao):
-        cursor = conexao.cursor()
-        cursor.execute("INSERT INTO disciplina (nome, carga_horaria, semestre_id, codigo, observacao) VALUES (?, ?, ?, ?, ?)", (disciplina.nome, disciplina.carga_horaria, disciplina.semestre_id, disciplina.codigo, disciplina.observacao))
-        conexao.commit()
-        disciplina.id = cursor.lastrowid
-    
-    @staticmethod
-    def editar_bd(disciplina, conexao):
-        cursor = conexao.cursor()
-        cursor.execute("UPDATE disciplina SET nome = ?, carga_horaria = ?, semestre_id = ?, observacao = ? WHERE id = ?", (disciplina.nome, disciplina.carga_horaria, disciplina.semestre_id, disciplina.observacao, disciplina.id))
-        conexao.commit()
-    
-    @staticmethod
-    def deletar_bd(disciplina, conexao):
-        cursor = conexao.cursor()
-        cursor.execute("DELETE FROM disciplina WHERE id = ?", (disciplina.id,))
-        conexao.commit()
+class DisciplinaServices(Database):
+    def __init__(self, db_path="db.db"):
+        super().__init__(db_path)
 
-    @staticmethod
-    def carregar_atividades(disciplina, conexao):
-        cursor = conexao.cursor()
-        cursor.execute("SELECT * FROM atividade WHERE disciplina_id = ?", (disciplina.id,))
-        atividades = cursor.fetchall()
-        for atividade in atividades:
-            if atividade[6] == TipoAtividade.TRABALHO.value:
-                disciplina.atividades.append(Trabalho(atividade[1], atividade[2], atividade[3], atividade[5], atividade[6], atividade[7]))
-            elif atividade[6] == TipoAtividade.PROVA.value:
-                disciplina.atividades.append(Prova(atividade[1], atividade[2], atividade[3], atividade[5], atividade[6], atividade[7]))
-            elif atividade[6] == TipoAtividade.CAMPO.value:
-                disciplina.atividades.append(Aula_de_Campo(atividade[1], atividade[2], atividade[3], atividade[7]))
-            elif atividade[6] == TipoAtividade.REVISAO.value:
-                disciplina,atividade.append(Revisao(atividade[1], atividade[2], atividade[3], atividade[5], atividade[6], atividade[7]))
-        return disciplina.atividades
-    
-    @staticmethod
-    def criar(nome, carga_horaria, codigo,conexao, semestre, observacao = None):
-        from app.models.disciplinas import Disciplina
-        disciplina = Disciplina(nome, carga_horaria, semestre.id, codigo, observacao)
-        DisciplinaServices.adicionar_bd(disciplina, conexao)
-        semestre.adicionar_disciplina(disciplina)
+    def __adicionar_bd(self, disciplina:"Disciplina") -> "Disciplina":
+        self.query = "INSERT INTO disciplina (nome, carga_horaria, semestre_id, codigo, observacao) VALUES (?, ?, ?, ?, ?)"
+        self.params = (disciplina.nome, disciplina.carga_horaria, disciplina.semestre_id, disciplina.codigo, disciplina.observacao)
+        disciplina.id = self._adicionar(self.query, self.params)
         return disciplina
     
-    @staticmethod
-    def listar_disciplinas(semestre, conexao):
+    def buscar_por_id(self, id:str) -> "Disciplina":
+        self.query = "SELECT * FROM disciplina WHERE id = ?"
+        self.params = (id,)
+        disciplina = self._buscar(self.query, self.params)
+        return Disciplina(id=disciplina[0], nome=disciplina[1], carga_horaria=disciplina[2], semestre_id=disciplina[3], codigo=disciplina[4], observacao=disciplina[5])
+
+    def editar_bd(self,disciplina:"Disciplina") -> "Disciplina":
+        self.disciplinaExistente = self.buscar_por_id(disciplina.id)
+        if not self.disciplinaExistente:
+            raise DisciplinaNotFoundError()
+        self.query = "UPDATE disciplina SET nome = ?, carga_horaria = ?, semestre_id = ?, codigo = ?, observacao = ? WHERE id = ?"
+        self.params = (disciplina.nome, disciplina.carga_horaria, disciplina.semestre_id, disciplina.codigo, disciplina.observacao, disciplina.id)
+        self._editar(self.query, self.params)
+        return disciplina
+    
+    def deletar_disciplina(self, disciplina:"Disciplina") -> int:
+        self.disciplinaExistente = self.buscar_por_id(disciplina.id)
+        if not self.disciplinaExistente:
+            raise DisciplinaNotFoundError()
+        self.query = "DELETE FROM disciplina WHERE id = ?"
+        self.params = (disciplina.id,)
+        self.rows = self._deletar(self.query, self.params)
+        del disciplina
+        return self.rows
+
+    def carregar_atividades(self, disciplina:"Disciplina") -> list[Atividade]:
+        self.query = "SELECT * FROM atividade WHERE disciplina_id = ?"
+        self.params = (disciplina.id,)
+        atividades = self._buscar(self.query, self.params)
+        for atividade in atividades:
+            if atividade[6] == TipoAtividade.TRABALHO.value:
+                disciplina.adicionar_atividade(Trabalho(atividade[1], atividade[2], atividade[3], atividade[5], atividade[6], atividade[7]))
+            elif atividade[6] == TipoAtividade.PROVA.value:
+                disciplina.adicionar_atividade(Prova(atividade[1], atividade[2], atividade[3], atividade[5], atividade[6], atividade[7]))
+            elif atividade[6] == TipoAtividade.CAMPO.value:
+                disciplina.adicionar_atividade(Aula_de_Campo(atividade[1], atividade[2], atividade[3], atividade[7]))
+            elif atividade[6] == TipoAtividade.REVISAO.value:
+                disciplina.adicionar_atividade(Revisao(atividade[1], atividade[2], atividade[3], atividade[5], atividade[6], atividade[7]))
+        return disciplina.atividades
+    
+    def criar(self, nome:str, carga_horaria:int, codigo:str, semestre:"Semestre", observacao:str = None):
         from app.models.disciplinas import Disciplina
-        cursor = conexao.cursor()
-        cursor.execute("SELECT * FROM disciplina WHERE semestre_id = ?", (semestre.id,))
-        disciplinas = cursor.fetchall()
+        self.disciplina = Disciplina(nome, carga_horaria, semestre.id, codigo, observacao)
+        self.__adicionar_bd(self.disciplina)
+        semestre.adicionar_disciplina(self.disciplina)
+        return self.disciplina
+    
+
+    def listar_disciplinas(self,semestre:"Semestre"):
+        self.query = "SELECT * FROM disciplina WHERE semestre_id = ?"
+        self.params = (semestre.id,)
+        self.disciplinas = self._buscar_varios(self.query, self.params)
+        if not self.disciplinas:
+            return []
         return [Disciplina(id=row[0], nome=row[1], carga_horaria=row[2], semestre_id=row[3], codigo=row[4], observacao=row[5]) for row in disciplinas]
         

@@ -46,9 +46,9 @@ class SemestreService(Database):
             raise SemestreNotFoundError()
         self.query = "DELETE FROM semestre WHERE id = ?"
         self.params = (semestre.id,)
-        rows = self._deletar(self.query, self.params)
+        self.rows = self._deletar(self.query, self.params)
         del semestre
-        return rows
+        return self.rows
 
     
     def listar_semestres(self) -> list["Semestre"]:
