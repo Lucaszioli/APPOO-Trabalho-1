@@ -11,7 +11,7 @@ class BaseModal(customtkinter.CTkToplevel, ABC):
     def __init__(
         self,
         conexao,
-        semestre_service:"SemestreService",
+        semestre_service:"SemestreService"= None,
         master=None,
         callback=None,
         title: str = "Modal",
