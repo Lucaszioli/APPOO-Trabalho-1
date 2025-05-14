@@ -20,6 +20,15 @@ class SemestreService(Database):
         semestre.id = self._adicionar(self.query,self.params)
         return semestre
 
+    def buscar_por_id(self,id:str) -> Optional["Semestre"]:
+        from app.models.semestre import Semestre
+        self.query = "SELECT * FROM semestre WHERE id = ?"
+        self.params = (id,)
+        row = self._buscar_um(self.query, self.params)
+        if row:
+            return Semestre(id=row[0], nome=row[1], data_inicio=row[2], data_fim=row[3])
+        return None
+    
     def editar_bd(self, semestre:"Semestre") -> "Semestre":
         self.semestreExistente = self.buscar_por_id(semestre.id)
         if not self.semestreExistente:
@@ -30,14 +39,6 @@ class SemestreService(Database):
         self._editar(self.query, self.params)
         return semestre
     
-    def buscar_por_id(self,id:str) -> Optional["Semestre"]:
-        from app.models.semestre import Semestre
-        self.query = "SELECT * FROM semestre WHERE id = ?"
-        self.params = (id,)
-        row = self._buscar_um(self.query, self.params)
-        if row:
-            return Semestre(id=row[0], nome=row[1], data_inicio=row[2], data_fim=row[3])
-        return None
     
     def deletar_semestre(self, semestre:"Semestre") -> int:
         semestre = self.buscar_por_id(semestre.id)
