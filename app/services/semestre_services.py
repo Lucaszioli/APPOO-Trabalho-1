@@ -10,93 +10,90 @@ if TYPE_CHECKING:
 
 class SemestreService(Database):
 
-    @staticmethod
-    def __adicionar_bd(semestre:"Semestre", conexao:Connection) -> "Semestre":
-        query = "INSERT INTO semestre (nome, data_inicio, data_fim) VALUES (?, ?, ?)"
-        params = (semestre.nome, semestre.data_inicio, semestre.data_fim)
-        semestre.id = Database._adicionar(query,params,conexao)
+    def __init__(self, db_path="db.db"):
+        super().__init__(db_path)
+
+
+    def __adicionar_bd(self, semestre:"Semestre") -> "Semestre":
+        self.query = "INSERT INTO semestre (nome, data_inicio, data_fim) VALUES (?, ?, ?)"
+        self.params = (semestre.nome, semestre.data_inicio, semestre.data_fim)
+        semestre.id = self._adicionar(self.query,self.params)
         return semestre
 
-    @staticmethod
-    def editar_bd(semestre:"Semestre", conexao:Connection) -> "Semestre":
-        semestreExistente = SemestreService.buscar_por_id(semestre.id, conexao)
-        if not semestreExistente:
+    def editar_bd(self,semestre:"Semestre") -> "Semestre":
+        self.semestreExistente = SemestreService.buscar_por_id(semestre.id)
+        if not self.semestreExistente:
             raise SemestreNotFoundError()
         
-        query = "UPDATE semestre SET nome = ?, data_inicio = ?, data_fim = ? WHERE id = ?"
-        params = (semestre.nome, semestre.data_inicio, semestre.data_fim, semestre.id)
-        Database._editar(query, params, conexao)
+        self.query = "UPDATE semestre SET nome = ?, data_inicio = ?, data_fim = ? WHERE id = ?"
+        self.params = (semestre.nome, semestre.data_inicio, semestre.data_fim, semestre.id)
+        self._editar(self.query, self.params)
         return semestre
     
-    @staticmethod
-    def buscar_por_id(id:str, conexao:Connection) -> Optional["Semestre"]:
+    def buscar_por_id(self,id:str) -> Optional["Semestre"]:
         from app.models.semestre import Semestre
-        query = "SELECT * FROM semestre WHERE id = ?"
-        params = (id,)
-        row = Database._buscar_um(query, params, conexao)
+        self.query = "SELECT * FROM semestre WHERE id = ?"
+        self.params = (id,)
+        row = self._buscar_um(self.query, self.params)
         if row:
             return Semestre(id=row[0], nome=row[1], data_inicio=row[2], data_fim=row[3])
         return None
     
-    @staticmethod
-    def deletar_semestre(semestre:"Semestre", conexao:Connection) -> int:
-        semestre = SemestreService.buscar_por_id(semestre.id, conexao)
+    def deletar_semestre(semestre:"Semestre", self) -> int:
+        semestre = SemestreService.buscar_por_id(semestre.id)
         if not semestre:
             raise SemestreNotFoundError()
-        query = "DELETE FROM semestre WHERE id = ?"
-        params = (semestre.id,)
-        rows = Database._deletar(query, params, conexao)
+        self.query = "DELETE FROM semestre WHERE id = ?"
+        self.params = (semestre.id,)
+        rows = self._deletar(self.query, self.params)
         del semestre
         return rows
 
     
-    @staticmethod
-    def listar_semestres(conexao:Connection) -> list["Semestre"]:
+    def listar_semestres(self) -> list["Semestre"]:
         from app.models.semestre import Semestre
-        query = "SELECT * FROM semestre"
-        params = ()
-        semestres = Database._buscar_varios(query, params, conexao)
+        self.query = "SELECT * FROM semestre"
+        self.params = ()
+        semestres = self._buscar_varios(self.query, self.params)
         if not semestres:
             return []
         return [Semestre(id=row[0], nome=row[1], data_inicio=row[2], data_fim=row[3]) for row in semestres]
     
-    @staticmethod
-    def buscar_ultimo_semestre(conexao:Connection) -> Optional["Semestre"]:
-        query = "SELECT * FROM semestre ORDER BY id DESC LIMIT 1"
-        params = ()
-        semestre = Database._buscar_um(query, params, conexao)
+
+    def buscar_ultimo_semestre(self) -> Optional["Semestre"]:
+        self.query = "SELECT * FROM semestre ORDER BY id DESC LIMIT 1"
+        self.params = ()
+        semestre = self._buscar_um(self.query, self.params)
         if semestre:
             return Semestre(id=semestre[0], nome=semestre[1], data_inicio=semestre[2], data_fim=semestre[3])
         return None
     
     
-    def carregar_disciplinas(self, semestre:"Semestre", conexao:Connection) -> list["Disciplina"]:
+    def carregar_disciplinas(self, semestre:"Semestre") -> list["Disciplina"]:
         from app.models.disciplinas import Disciplina
-        query = "SELECT * FROM disciplina WHERE semestre_id = ?"
-        params = (semestre.id,)
-        disciplinas = self._buscar_varios(query, params, conexao)
+        self.query = "SELECT * FROM disciplina WHERE semestre_id = ?"
+        self.params = (semestre.id,)
+        disciplinas = self._buscar_varios(self.query, self.params)
         for row in disciplinas:
             disciplina = Disciplina(id=row[0], nome=row[1], carga_horaria=row[2], semestre_id=row[3], codigo=row[4], observacao=row[5])
             semestre.adicionar_disciplina(disciplina)
         return semestre.disciplinas
 
-    @staticmethod
-    def buscar_por_nome(nome:str, conexao:Connection) -> Optional["Semestre"]:
+    def buscar_por_nome(self,nome:str) -> Optional["Semestre"]:
         from app.models.semestre import Semestre
-        query = "SELECT * FROM semestre WHERE nome = ?"
-        params = (nome,)
-        row = Database._buscar_um(query, params, conexao)
+        self.query = "SELECT * FROM semestre WHERE nome = ?"
+        self.params = (nome,)
+        row = self._buscar_um(self.query, self.params)
         if row:
             return Semestre(id=row[0], nome=row[1], data_inicio=row[2], data_fim=row[3])
         return None
             
-    @staticmethod
-    def criar(nome:str, data_inicio:str, data_fim:str, conexao:Connection) -> "Semestre":
+    def criar(self, nome:str, data_inicio:str, data_fim:str) -> "Semestre":
         from app.models.semestre import Semestre
-        semestre = SemestreService.buscar_por_nome(nome, conexao)
-        if semestre:
+        self.semestreExistente = SemestreService.buscar_por_nome(nome)
+        if self.semestreExistente:
             raise NomeRepetidoError(nome)
         semestre = Semestre(nome, data_inicio, data_fim)
-        SemestreService.__adicionar_bd(semestre, conexao)
+        SemestreService.__adicionar_bd(semestre)
         return semestre
     

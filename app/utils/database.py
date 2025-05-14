@@ -1,9 +1,11 @@
+import os
 import sqlite3
 class Database:
     def __init__(self, db_path="db.db"):
         self.db_path = db_path
         self.conexao = None
-        self.__criar(script_path="app/scripts/init.sql")
+        if not os.path.exists(self.db_path):
+            self.__criar(script_path="app/scripts/init.sql")
         self.conexao = self.__conectar()
 
     def __conectar(self):
@@ -17,41 +19,29 @@ class Database:
             script = script_file.read()
         
         with self.__conectar() as conexao:
-            cursor = conexao.cursor()
-            cursor.executescript(script)
+            self.cursor = conexao.cursor()
+            self.cursor.executescript(script)
             conexao.commit()
 
-    @staticmethod
-    def _adicionar(query, params, conexao):
-        cursor = conexao.cursor()
-        cursor.execute(query, params)
-        conexao.commit()
-        return cursor.lastrowid
+    def _adicionar(self, query, params):
+        self.cursor.execute(query, params)
+        self.conexao.commit()
+        return self.self.cursor.lastrowid
     
-    @staticmethod
-    def _editar(query, params, conexao):
-        cursor = conexao.cursor()
-        cursor.execute(query, params)
-        conexao.commit()
-        return cursor.rowcount
+    def _editar(self,query, params):
+        self.cursor.execute(query, params)
+        self.conexao.commit()
+        return self.cursor.rowcount
     
-    @staticmethod
-    def _buscar_um(query, params, conexao):
-        cursor = conexao.cursor()
-        cursor.execute(query, params)
-        row = cursor.fetchone()
-        return row
+    def _buscar_um(self, query, params):
+        self.cursor.execute(query, params)
+        return self.cursor.fetchone()
     
-    @staticmethod
-    def _buscar_varios(query, params, conexao):
-        cursor = conexao.cursor()
-        cursor.execute(query, params)
-        rows = cursor.fetchall()
-        return rows
+    def _buscar_varios(self,query, params):
+        self.cursor.execute(query, params)
+        return self.cursor.fetchall()
     
-    @staticmethod
-    def _deletar(query, params, conexao):
-        cursor = conexao.cursor()
-        cursor.execute(query, params)
-        conexao.commit()
-        return cursor.rowcount
+    def _deletar(self, query, params):
+        self.cursor.execute(query, params)
+        self.conexao.commit()
+        return self.cursor.rowcount
