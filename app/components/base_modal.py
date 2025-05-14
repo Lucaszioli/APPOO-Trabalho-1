@@ -10,6 +10,7 @@ class BaseModal(customtkinter.CTkToplevel, ABC):
     def __init__(
         self,
         conexao,
+        semestre_service,
         master=None,
         callback=None,
         title: str = "Modal",
@@ -22,6 +23,7 @@ class BaseModal(customtkinter.CTkToplevel, ABC):
             self.destroy()
             return
         self.conexao = conexao
+        self.semestre_service = semestre_service
         self.callback = callback
         self.title(title)
         self.geometry(f"{size[0]}x{size[1]}")

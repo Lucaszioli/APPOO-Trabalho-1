@@ -10,12 +10,14 @@ class ModalNovoSemestre(BaseModal):
     def __init__(
         self,
         conexao: Any,
+        semestre_service: "SemestreService",
         master: Optional[customtkinter.CTk] = None,
-        callback: Optional[callable] = None
+        callback: Optional[callable] = None,
     ):
         super().__init__(
             conexao=conexao,
             master=master,
+            semestre_service=semestre_service,
             callback=callback,
             title="Adicionar Novo Semestre",
             size=(400, 300),
@@ -71,9 +73,8 @@ class ModalNovoSemestre(BaseModal):
     def _save(self, data: dict) -> None:
         dt_inicio = datetime.strptime(data["inicio"], "%d/%m/%Y")
         dt_fim = datetime.strptime(data["fim"], "%d/%m/%Y")
-        semestre = SemestreService.criar(
+        semestre = self.semestre_service.criar_semestre(
             nome=data["nome"],
             data_inicio=dt_inicio,
             data_fim=dt_fim,
-            conexao = self.conexao
         )

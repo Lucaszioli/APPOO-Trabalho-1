@@ -23,11 +23,12 @@ class BaseWindow(customtkinter.CTk):
     SCALING_RANGE = (0.5, 2.0)
     DEFAULT_SIZE = (1000, 600)
 
-    def __init__(self, conexao, title: str):
+    def __init__(self, conexao, title: str, semestre_service):
         super().__init__()
         if conexao is None:
             raise ValueError("Conexão com o banco de dados não pode ser nula.")
         self.conexao = conexao
+        self.semestre_service = semestre_service
 
         # Estado de interface
         self.selected_appearance = tkinter.StringVar(value="Sistema")

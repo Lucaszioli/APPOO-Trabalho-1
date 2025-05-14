@@ -7,12 +7,13 @@ logger = logging.getLogger(__name__)
 
 class BaseListFrame(customtkinter.CTkFrame, ABC):
     """Frame genérico para listar entidades e abrir modais ou janelas de detalhe."""
-    def __init__(self, conexao, semestre, master=None):
+    def __init__(self, conexao, semestre_service, semestre, master=None):
         super().__init__(master)
         if conexao is None:
             raise ValueError("Conexão não pode ser nula.")
         self.conexao = conexao
         self.semestre = semestre
+        self.semestre_service = semestre_service
         self.items = []
         self.item_views = {}
         self._configure_layout()
@@ -111,7 +112,7 @@ class BaseListFrame(customtkinter.CTkFrame, ABC):
     def _on_add(self):
         # abre modal de adicionar
         cls = self.modal_class_add()
-        cls(conexao=self.conexao, master=self, callback=self._reload)
+        cls(conexao=self.conexao, semestre_service = self.semestre_service, master=self, callback=self._reload)
         
     def _on_delete(self, item):
         # deleta item
