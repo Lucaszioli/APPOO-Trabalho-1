@@ -20,7 +20,7 @@ class SemestreService(Database):
         semestre.id = self._adicionar(self.query,self.params)
         return semestre
 
-    def editar_bd(self,semestre:"Semestre") -> "Semestre":
+    def editar_bd(self, semestre:"Semestre") -> "Semestre":
         self.semestreExistente = self.buscar_por_id(semestre.id)
         if not self.semestreExistente:
             raise SemestreNotFoundError()

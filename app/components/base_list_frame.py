@@ -131,7 +131,7 @@ class BaseListFrame(customtkinter.CTkFrame, ABC):
     def _on_update(self, item):
         # abre modal de atualizar
         cls = self.modal_class_update()
-        cls(conexao=self.conexao, master=self, callback=self._reload, item=item)
+        cls(conexao=self.conexao, semestre_service=self.semestre_service, master=self, callback=self._reload, item=item)
 
     def _on_select(self, item):
         key = self.get_id(item)

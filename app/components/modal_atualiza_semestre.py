@@ -10,6 +10,7 @@ class ModalAtualizaSemestre(BaseModal):
     def __init__(
         self,
         conexao: Any,
+        semestre_service: "SemestreService",
         master: Optional[customtkinter.CTk] = None,
         callback: Optional[callable] = None,
         item: Optional[Any] = None
@@ -19,6 +20,7 @@ class ModalAtualizaSemestre(BaseModal):
             conexao=conexao,
             master=master,
             callback=callback,
+            semestre_service=semestre_service,
             item=item,
             title="Editando Semestre: " + self.item.nome,
             size=(400, 300)
@@ -80,4 +82,4 @@ class ModalAtualizaSemestre(BaseModal):
         self.item.data_fim    = dt_fim
 
         # Persist the updated model
-        SemestreService.editar_bd(self.item, self.conexao)
+        self.semestre_service.editar_bd(self.item)

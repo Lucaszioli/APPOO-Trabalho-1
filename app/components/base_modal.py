@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 import logging
 import customtkinter
 from CTkMessagebox import CTkMessagebox
+from app.services.semestre_services import SemestreService
 from app.errors.nomeSemestre import NomeRepetidoError
 logger = logging.getLogger(__name__)
 
@@ -10,7 +11,7 @@ class BaseModal(customtkinter.CTkToplevel, ABC):
     def __init__(
         self,
         conexao,
-        semestre_service,
+        semestre_service:"SemestreService",
         master=None,
         callback=None,
         title: str = "Modal",
