@@ -4,8 +4,8 @@ from app.components.semestres_frame import SemestresFrame
 class PaginaInicial(BaseWindow):
     """Janela principal que lista todos os semestres disponíveis."""
 
-    def __init__(self, conexao, semestre_service):
-        super().__init__(conexao, title="Sistema de Gerenciamento Acadêmico", semestre_service=semestre_service)
+    def __init__(self,conexao, semestre_service, disciplina_service):
+        super().__init__(conexao,title="Sistema de Gerenciamento Acadêmico", semestre_service=semestre_service, disciplina_service=disciplina_service)
 
     def _create_body(self) -> None:
         sem_frame = SemestresFrame(conexao=self.conexao, semestre_service=self.semestre_service, semestre=None, master=self)

@@ -3,11 +3,12 @@ import logging
 import customtkinter
 from CTkMessagebox import CTkMessagebox
 from app.services.semestre_services import SemestreService
+from app.services.disciplinas_services import DisciplinaService
 logger = logging.getLogger(__name__)
 
 class BaseListFrame(customtkinter.CTkFrame, ABC):
     """Frame genérico para listar entidades e abrir modais ou janelas de detalhe."""
-    def __init__(self, conexao, semestre, semestre_service:"SemestreService" = None,master=None):
+    def __init__(self, conexao, semestre, semestre_service:"SemestreService" = None, disciplina_service:"DisciplinaService" = None, master=None):
         super().__init__(master)
         if conexao is None:
             raise ValueError("Conexão não pode ser nula.")
