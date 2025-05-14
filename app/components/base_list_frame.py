@@ -15,6 +15,7 @@ class BaseListFrame(customtkinter.CTkFrame, ABC):
         self.conexao = conexao
         self.semestre = semestre
         self.semestre_service = semestre_service
+        self.disciplina_service = disciplina_service
         self.items = []
         self.item_views = {}
         self._configure_layout()
@@ -144,7 +145,7 @@ class BaseListFrame(customtkinter.CTkFrame, ABC):
                 logger.warning("Não conseguiu focar %s %s", self.item_name_singular(), key)
         else:
             try:
-                win = self.detail_view_class()(item, self.conexao, self.semestre_service)
+                win = self.detail_view_class()(item, self.conexao, self.semestre_service, self.disciplina_service)
                 win.protocol("WM_DELETE_WINDOW", lambda k=key: self._on_close(k))
                 self.item_views[key] = win
             except Exception:

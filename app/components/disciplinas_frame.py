@@ -3,7 +3,7 @@ import logging
 from typing import Any
 
 from app.components.base_list_frame import BaseListFrame
-from app.services.disciplinas_services import DisciplinaServices
+from app.services.disciplinas_services import DisciplinaService
 from app.components.modal_nova_disciplina import ModalNovaDisciplina
 
 logger = logging.getLogger(__name__)
@@ -52,6 +52,7 @@ class DisciplinasFrame(BaseListFrame):
         try:
             ModalNovaDisciplina(
                 semestre=self.semestre,
+                disciplina_service=self.disciplina_service,
                 conexao=self.conexao,
                 master=self,
                 callback=self._reload
