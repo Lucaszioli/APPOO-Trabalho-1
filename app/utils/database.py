@@ -12,6 +12,7 @@ class Database:
         if not self.conexao:
             self.conexao = sqlite3.connect(self.db_path)
             self.conexao.execute("PRAGMA foreign_keys = ON")
+            self.cursor = self.conexao.cursor()
         return self.conexao
     
     def __criar(self, script_path):
@@ -26,7 +27,7 @@ class Database:
     def _adicionar(self, query, params):
         self.cursor.execute(query, params)
         self.conexao.commit()
-        return self.self.cursor.lastrowid
+        return self.cursor.lastrowid
     
     def _editar(self,query, params):
         self.cursor.execute(query, params)

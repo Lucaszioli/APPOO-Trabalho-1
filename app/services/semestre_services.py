@@ -21,7 +21,7 @@ class SemestreService(Database):
         return semestre
 
     def editar_bd(self,semestre:"Semestre") -> "Semestre":
-        self.semestreExistente = SemestreService.buscar_por_id(semestre.id)
+        self.semestreExistente = self.buscar_por_id(semestre.id)
         if not self.semestreExistente:
             raise SemestreNotFoundError()
         
@@ -40,7 +40,7 @@ class SemestreService(Database):
         return None
     
     def deletar_semestre(semestre:"Semestre", self) -> int:
-        semestre = SemestreService.buscar_por_id(semestre.id)
+        semestre = self.buscar_por_id(semestre.id)
         if not semestre:
             raise SemestreNotFoundError()
         self.query = "DELETE FROM semestre WHERE id = ?"
@@ -88,12 +88,12 @@ class SemestreService(Database):
             return Semestre(id=row[0], nome=row[1], data_inicio=row[2], data_fim=row[3])
         return None
             
-    def criar(self, nome:str, data_inicio:str, data_fim:str) -> "Semestre":
+    def criar_semestre(self, nome:str, data_inicio:str, data_fim:str) -> "Semestre":
         from app.models.semestre import Semestre
-        self.semestreExistente = SemestreService.buscar_por_nome(nome)
+        self.semestreExistente = self.buscar_por_nome(nome)
         if self.semestreExistente:
             raise NomeRepetidoError(nome)
         semestre = Semestre(nome, data_inicio, data_fim)
-        SemestreService.__adicionar_bd(semestre)
+        self.__adicionar_bd(semestre)
         return semestre
     

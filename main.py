@@ -6,8 +6,8 @@ from app.services.disciplinas_services import DisciplinaServices
 def main():
     # Inicializar o banco de dados e criar tabelas usando o script SQL
     db = Database(db_path="db.db")
-    
-    app = PaginaInicial(db.conexao)
+    semestre_service = SemestreService(db_path="db.db")
+    app = PaginaInicial(db.conexao, semestre_service)
     app.mainloop()
     
 if __name__ == "__main__":
