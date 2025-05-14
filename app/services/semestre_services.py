@@ -72,6 +72,7 @@ class SemestreService(Database):
     
     def carregar_disciplinas(self, semestre:"Semestre") -> list["Disciplina"]:
         from app.models.disciplinas import Disciplina
+        semestre.disciplinas = []
         self.query = "SELECT * FROM disciplina WHERE semestre_id = ?"
         self.params = (semestre.id,)
         disciplinas = self._buscar_varios(self.query, self.params)

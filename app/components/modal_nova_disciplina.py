@@ -76,11 +76,10 @@ class ModalNovaDisciplina(BaseModal):
 
     def _save(self, data: dict) -> None:
         carga = int(data["carga"])
-        disciplina = Disciplina(
-            nome=data["nome"],
-            carga_horaria=carga,
-            semestre_id=self.semestre.id,
-            codigo=data["codigo"],
+        self.disciplina = self.disciplina_service.criar_disciplina(
+            nome = data["nome"], 
+            carga_horaria=carga, 
+            semestre=self.semestre, 
+            codigo=data["codigo"], 
             observacao=data.get("observacao")
         )
-        disciplina.adicionar_bd(self.conexao)

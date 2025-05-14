@@ -56,7 +56,7 @@ class DisciplinaService(Database):
                 disciplina.adicionar_atividade(Revisao(atividade[1], atividade[2], atividade[3], atividade[5], atividade[6], atividade[7]))
         return disciplina.atividades
     
-    def criar(self, nome:str, carga_horaria:int, codigo:str, semestre:"Semestre", observacao:str = None):
+    def criar_disciplina(self, nome:str, carga_horaria:int, codigo:str, semestre:"Semestre", observacao:str = None):
         from app.models.disciplinas import Disciplina
         self.disciplina = Disciplina(nome, carga_horaria, semestre.id, codigo, observacao)
         self.__adicionar_bd(self.disciplina)
