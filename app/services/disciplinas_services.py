@@ -6,7 +6,7 @@ from app.models.disciplinas import Disciplina
 from app.models.atividade import Atividade
 from app.models.semestre import Semestre
 
-class DisciplinaServices(Database):
+class DisciplinaService(Database):
     def __init__(self, db_path="db.db"):
         super().__init__(db_path)
 
@@ -70,5 +70,5 @@ class DisciplinaServices(Database):
         self.disciplinas = self._buscar_varios(self.query, self.params)
         if not self.disciplinas:
             return []
-        return [Disciplina(id=row[0], nome=row[1], carga_horaria=row[2], semestre_id=row[3], codigo=row[4], observacao=row[5]) for row in disciplinas]
+        return [Disciplina(id=row[0], nome=row[1], carga_horaria=row[2], semestre_id=row[3], codigo=row[4], observacao=row[5]) for row in self.disciplinas]
         
