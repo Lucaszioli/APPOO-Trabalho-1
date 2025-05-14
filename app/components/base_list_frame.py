@@ -143,7 +143,7 @@ class BaseListFrame(customtkinter.CTkFrame, ABC):
                 logger.warning("Não conseguiu focar %s %s", self.item_name_singular(), key)
         else:
             try:
-                win = self.detail_view_class()(item, self.conexao)
+                win = self.detail_view_class()(item, self.conexao, self.semestre_service)
                 win.protocol("WM_DELETE_WINDOW", lambda k=key: self._on_close(k))
                 self.item_views[key] = win
             except Exception:

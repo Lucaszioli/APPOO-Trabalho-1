@@ -64,3 +64,19 @@ class DisciplinasFrame(BaseListFrame):
                 message=f"Não foi possível abrir o formulário de disciplina.\n{e}",
                 icon="cancel"
             )
+
+    def delete_item(self, item):
+    # Implement the logic to delete an item
+        pass
+
+    def modal_class_add(self):
+        # Implement the logic to open a modal for adding an item
+        pass
+
+    def modal_class_update(self, item):
+        # Implement the logic to open a modal for updating an item
+        pass
+
+    def update_item(self, item):
+        # Implement the logic to update an item
+        pass
