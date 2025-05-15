@@ -3,6 +3,7 @@ import customtkinter
 from app.components.base_modal import BaseModal
 from app.models.disciplinas import Disciplina
 from CTkMessagebox import CTkMessagebox
+from app.services.disciplinas_services import DisciplinaService
 
 class ModalNovaDisciplina(BaseModal):
     """Modal para criação de uma nova disciplina."""
@@ -10,11 +11,13 @@ class ModalNovaDisciplina(BaseModal):
         self,
         semestre: Any,
         conexao: Any,
+        disciplina_service: "DisciplinaService",
         master: Optional[customtkinter.CTk] = None,
         callback: Optional[callable] = None
     ):
         super().__init__(
             conexao=conexao,
+            disciplina_service=disciplina_service,
             master=master,
             callback=callback,
             title="Adicionar Nova Disciplina",
@@ -73,11 +76,10 @@ class ModalNovaDisciplina(BaseModal):
 
     def _save(self, data: dict) -> None:
         carga = int(data["carga"])
-        disciplina = Disciplina(
-            nome=data["nome"],
-            carga_horaria=carga,
-            semestre_id=self.semestre.id,
-            codigo=data["codigo"],
+        self.disciplina = self.disciplina_service.criar_disciplina(
+            nome = data["nome"], 
+            carga_horaria=carga, 
+            semestre=self.semestre, 
+            codigo=data["codigo"], 
             observacao=data.get("observacao")
         )
-        disciplina.adicionar_bd(self.conexao)

@@ -2,8 +2,8 @@ from app.components.base_list_frame import BaseListFrame
 from app.services.semestre_services import SemestreService
 
 class SemestresFrame(BaseListFrame):
-    def get_items(self, conexao):
-        return SemestreService.listar_semestres(conexao)
+    def get_items(self,conexao):
+        return self.semestre_service.listar_semestres()
 
     def modal_class_add(self):
         from app.components.modal_novo_semestre import ModalNovoSemestre
@@ -39,7 +39,7 @@ class SemestresFrame(BaseListFrame):
         return "Adicionar Semestre"
     
     def delete_item(self, item):
-        return SemestreService.deletar_bd(item, self.conexao)
+        return self.semestre_service.deletar_semestre(item)
     
     def update_item(self, item):
         print("Atualizando semestre")

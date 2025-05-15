@@ -24,5 +24,7 @@ CREATE TABLE IF NOT EXISTS atividade(
     disciplina_id INTEGER NOT NULL,
     tipo TEXT NOT NULL,
     observacao TEXT,
+    lugar TEXT,
+    data_apresentacao TEXT,
     FOREIGN KEY (disciplina_id) REFERENCES disciplina(id) ON DELETE CASCADE
 );

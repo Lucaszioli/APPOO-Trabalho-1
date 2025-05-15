@@ -3,7 +3,7 @@ import logging
 from typing import Any
 
 from app.components.base_list_frame import BaseListFrame
-from app.services.disciplinas_services import DisciplinaServices
+from app.services.disciplinas_services import DisciplinaService
 from app.components.modal_nova_disciplina import ModalNovaDisciplina
 
 logger = logging.getLogger(__name__)
@@ -14,7 +14,7 @@ class DisciplinasFrame(BaseListFrame):
 
     def get_items(self, conexao: Any):
         """Retorna todas as disciplinas cadastradas."""
-        return DisciplinaServices.listar_disciplinas(self.semestre, conexao)
+        return self.disciplina_service.listar_disciplinas(self.semestre)
 
     def modal_class(self):
         """Classe do modal usado para criar nova disciplina."""
@@ -52,6 +52,7 @@ class DisciplinasFrame(BaseListFrame):
         try:
             ModalNovaDisciplina(
                 semestre=self.semestre,
+                disciplina_service=self.disciplina_service,
                 conexao=self.conexao,
                 master=self,
                 callback=self._reload
@@ -64,3 +65,19 @@ class DisciplinasFrame(BaseListFrame):
                 message=f"Não foi possível abrir o formulário de disciplina.\n{e}",
                 icon="cancel"
             )
+
+    def delete_item(self, item):
+    # Implement the logic to delete an item
+        pass
+
+    def modal_class_add(self):
+        # Implement the logic to open a modal for adding an item
+        pass
+
+    def modal_class_update(self, item):
+        # Implement the logic to open a modal for updating an item
+        pass
+
+    def update_item(self, item):
+        # Implement the logic to update an item
+        pass
