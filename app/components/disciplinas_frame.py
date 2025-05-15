@@ -4,7 +4,6 @@ from typing import Any
 
 from app.components.base_list_frame import BaseListFrame
 from app.services.disciplinas_services import DisciplinaService
-from app.components.modal_nova_disciplina import ModalNovaDisciplina
 
 logger = logging.getLogger(__name__)
 
@@ -16,9 +15,14 @@ class DisciplinasFrame(BaseListFrame):
         """Retorna todas as disciplinas cadastradas."""
         return self.disciplina_service.listar_disciplinas(self.semestre)
 
-    def modal_class(self):
+    def modal_class_add(self):
         """Classe do modal usado para criar nova disciplina."""
-        return ModalNovaDisciplina(self.semestre, self.conexao)
+        from app.components.modal_nova_disciplina import ModalNovaDisciplina
+        return ModalNovaDisciplina
+    
+    def modal_class_update(self, item):
+        from app.components.modal_atualiza_disciplina import ModalAtualizaDisciplina
+        return ModalAtualizaDisciplina
 
     def detail_view_class(self):
         """Classe da view de detalhe de disciplina."""
@@ -47,36 +51,10 @@ class DisciplinasFrame(BaseListFrame):
 
     def add_button_text(self):
         return "Adicionar Disciplina"
-    
-    def _on_add(self):
-        try:
-            ModalNovaDisciplina(
-                semestre=self.semestre,
-                disciplina_service=self.disciplina_service,
-                conexao=self.conexao,
-                master=self,
-                callback=self._reload
-            )
-        except Exception as e:
-            # opcional: mostrar caixa de erro
-            from CTkMessagebox import CTkMessagebox
-            CTkMessagebox(
-                title="Erro",
-                message=f"Não foi possível abrir o formulário de disciplina.\n{e}",
-                icon="cancel"
-            )
 
     def delete_item(self, item):
-    # Implement the logic to delete an item
+        """Deleta uma disciplina."""
         return self.disciplina_service.deletar_disciplina(item)
-
-    def modal_class_add(self):
-        # Implement the logic to open a modal for adding an item
-        pass
-
-    def modal_class_update(self, item):
-        # Implement the logic to open a modal for updating an item
-        pass
 
     def update_item(self, item):
         # Implement the logic to update an item
