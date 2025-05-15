@@ -1,12 +1,12 @@
-from app.utils.database import Database
 from app.errors.notFound import DisciplinaNotFoundError
 
 from app.models.atividade import TipoAtividade, Trabalho, Aula_de_Campo, Prova, Revisao
 from app.models.disciplinas import Disciplina
 from app.models.atividade import Atividade
 from app.models.semestre import Semestre
+from app.services.service_base import ServiceBase
 
-class DisciplinaService(Database):
+class DisciplinaService(ServiceBase):
     def __init__(self, db_path="db.db"):
         super().__init__(db_path)
 
@@ -64,11 +64,21 @@ class DisciplinaService(Database):
         return self.disciplina
     
 
-    def listar_disciplinas(self,semestre:"Semestre"):
+    def listar_por_semestre(self,semestre:"Semestre"):
         self.query = "SELECT * FROM disciplina WHERE semestre_id = ?"
         self.params = (semestre.id,)
         self.disciplinas = self._buscar_varios(self.query, self.params)
         if not self.disciplinas:
             return []
         return [Disciplina(id=row[0], nome=row[1], carga_horaria=row[2], semestre_id=row[3], codigo=row[4], observacao=row[5]) for row in self.disciplinas]
+    
+    def listar(self) -> list["Disciplina"]:
+        self.query = "SELECT * FROM disciplina"
+        self.params = ()
+        disciplinas = self._buscar_varios(self.query, self.params)
+        if not disciplinas:
+            return []
+        return [Disciplina(id=row[0], nome=row[1], carga_horaria=row[2], semestre_id=row[3], codigo=row[4], observacao=row[5]) for row in self.disciplinas]
+    
+
         

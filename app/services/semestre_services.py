@@ -1,14 +1,13 @@
-from sqlite3 import Connection
 from app.models.disciplinas import Disciplina
 from app.errors.nomeSemestre import NomeRepetidoError
 from app.errors.notFound import SemestreNotFoundError
 from typing import TYPE_CHECKING, Optional
-from app.utils.database import Database
+from app.services.service_base import ServiceBase
 
 if TYPE_CHECKING:
     from app.models.semestre import Semestre 
 
-class SemestreService(Database):
+class SemestreService(ServiceBase):
 
     def __init__(self, db_path="db.db"):
         super().__init__(db_path)
@@ -51,14 +50,14 @@ class SemestreService(Database):
         return self.rows
 
     
-    def listar_semestres(self) -> list["Semestre"]:
+    def listar(self) -> list["Semestre"]:
         from app.models.semestre import Semestre
         self.query = "SELECT * FROM semestre"
         self.params = ()
-        semestres = self._buscar_varios(self.query, self.params)
-        if not semestres:
+        self.semestres = self._buscar_varios(self.query, self.params)
+        if not self.semestres:
             return []
-        return [Semestre(id=row[0], nome=row[1], data_inicio=row[2], data_fim=row[3]) for row in semestres]
+        return [Semestre(id=row[0], nome=row[1], data_inicio=row[2], data_fim=row[3]) for row in self.semestres]
     
 
     def buscar_ultimo_semestre(self) -> Optional["Semestre"]:
