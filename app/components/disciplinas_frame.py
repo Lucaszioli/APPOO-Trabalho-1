@@ -68,7 +68,7 @@ class DisciplinasFrame(BaseListFrame):
 
     def delete_item(self, item):
     # Implement the logic to delete an item
-        pass
+        return self.disciplina_service.deletar_disciplina(item)
 
     def modal_class_add(self):
         # Implement the logic to open a modal for adding an item
