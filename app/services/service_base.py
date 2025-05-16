@@ -11,3 +11,19 @@ class ServiceBase(Database, ABC):
     @abstractmethod
     def listar(self):
         pass
+
+    @abstractmethod
+    def _adicionar_bd(self, obj):
+        pass
+
+    @abstractmethod
+    def editar_bd(self, obj):
+        pass
+
+    @abstractmethod
+    def deletar(self, obj):
+        pass
+
+    @abstractmethod
+    def listar(self):
+        pass

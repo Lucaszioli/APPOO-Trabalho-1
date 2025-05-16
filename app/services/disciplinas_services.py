@@ -10,7 +10,7 @@ class DisciplinaService(ServiceBase):
     def __init__(self, db_path="db.db"):
         super().__init__(db_path)
 
-    def __adicionar_bd(self, disciplina:"Disciplina") -> "Disciplina":
+    def _adicionar_bd(self, disciplina:"Disciplina") -> "Disciplina":
         self.query = "INSERT INTO disciplina (nome, carga_horaria, semestre_id, codigo, observacao) VALUES (?, ?, ?, ?, ?)"
         self.params = (disciplina.nome, disciplina.carga_horaria, disciplina.semestre_id, disciplina.codigo, disciplina.observacao)
         disciplina.id = self._adicionar(self.query, self.params)
@@ -31,7 +31,7 @@ class DisciplinaService(ServiceBase):
         self._editar(self.query, self.params)
         return disciplina
     
-    def deletar_disciplina(self, disciplina:"Disciplina") -> int:
+    def deletar(self, disciplina:"Disciplina") -> int:
         self.disciplinaExistente = self.buscar_por_id(disciplina.id)
         if not self.disciplinaExistente:
             raise DisciplinaNotFoundError()
@@ -59,7 +59,7 @@ class DisciplinaService(ServiceBase):
     def criar_disciplina(self, nome:str, carga_horaria:int, codigo:str, semestre:"Semestre", observacao:str = None):
         from app.models.disciplinas import Disciplina
         self.disciplina = Disciplina(nome, carga_horaria, semestre.id, codigo, observacao)
-        self.__adicionar_bd(self.disciplina)
+        self._adicionar_bd(self.disciplina)
         semestre.adicionar_disciplina(self.disciplina)
         return self.disciplina
     

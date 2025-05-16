@@ -13,7 +13,7 @@ class SemestreService(ServiceBase):
         super().__init__(db_path)
 
 
-    def __adicionar_bd(self, semestre:"Semestre") -> "Semestre":
+    def _adicionar_bd(self, semestre:"Semestre") -> "Semestre":
         self.query = "INSERT INTO semestre (nome, data_inicio, data_fim) VALUES (?, ?, ?)"
         self.params = (semestre.nome, semestre.data_inicio, semestre.data_fim)
         semestre.id = self._adicionar(self.query,self.params)
@@ -39,7 +39,7 @@ class SemestreService(ServiceBase):
         return semestre
     
     
-    def deletar_semestre(self, semestre:"Semestre") -> int:
+    def deletar(self, semestre:"Semestre") -> int:
         semestre = self.buscar_por_id(semestre.id)
         if not semestre:
             raise SemestreNotFoundError()
@@ -95,6 +95,6 @@ class SemestreService(ServiceBase):
         if self.semestreExistente:
             raise NomeRepetidoError(nome)
         semestre = Semestre(nome, data_inicio, data_fim)
-        self.__adicionar_bd(semestre)
+        self._adicionar_bd(semestre)
         return semestre
     

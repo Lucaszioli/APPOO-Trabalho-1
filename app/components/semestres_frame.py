@@ -39,7 +39,7 @@ class SemestresFrame(BaseListFrame):
         return "Adicionar Semestre"
     
     def delete_item(self, item):
-        return self.semestre_service.deletar_semestre(item)
+        return self.semestre_service.deletar(item)
     
     def update_item(self, item):
         print("Atualizando semestre")
