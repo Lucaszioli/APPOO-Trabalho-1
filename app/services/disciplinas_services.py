@@ -1,6 +1,6 @@
 from app.errors.notFound import DisciplinaNotFoundError
 
-from app.models.atividade import TipoAtividade, Trabalho, Aula_de_Campo, Prova, Revisao
+from app.models.atividade import TipoAtividadeEnum, Trabalho, Aula_de_Campo, Prova, Revisao
 from app.models.disciplinas import Disciplina
 from app.models.atividade import Atividade
 from app.models.semestre import Semestre
@@ -46,13 +46,13 @@ class DisciplinaService(ServiceBase):
         self.params = (disciplina.id,)
         atividades = self._buscar(self.query, self.params)
         for atividade in atividades:
-            if atividade[6] == TipoAtividade.TRABALHO.value:
+            if atividade[6] == TipoAtividadeEnum().TRABALHO.value:
                 disciplina.adicionar_atividade(Trabalho(atividade[1], atividade[2], atividade[3], atividade[5], atividade[6], atividade[7]))
-            elif atividade[6] == TipoAtividade.PROVA.value:
+            elif atividade[6] == TipoAtividadeEnum().PROVA.value:
                 disciplina.adicionar_atividade(Prova(atividade[1], atividade[2], atividade[3], atividade[5], atividade[6], atividade[7]))
-            elif atividade[6] == TipoAtividade.CAMPO.value:
+            elif atividade[6] == TipoAtividadeEnum().CAMPO.value:
                 disciplina.adicionar_atividade(Aula_de_Campo(atividade[1], atividade[2], atividade[3], atividade[7]))
-            elif atividade[6] == TipoAtividade.REVISAO.value:
+            elif atividade[6] == TipoAtividadeEnum().REVISAO.value:
                 disciplina.adicionar_atividade(Revisao(atividade[1], atividade[2], atividade[3], atividade[5], atividade[6], atividade[7]))
         return disciplina.atividades
     

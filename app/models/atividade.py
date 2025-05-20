@@ -1,11 +1,14 @@
 from abc import ABC, abstractmethod
 from enum import Enum
 
-class TipoAtividade(Enum):
-    TRABALHO = "Trabalho"
-    PROVA = "Prova"
-    CAMPO = "Aula de campo"
-    REVISAO = "Aula de revisão"
+
+class TipoAtividadeEnum:
+    def __init__(self):
+        self.TRABALHO = "Trabalho"
+        self.PROVA = "Prova"
+        self.CAMPO = "Aula de campo"
+        self.REVISAO = "Aula de revisão"
+
 
 class Atividade(ABC):
     def __init__(self, nome, data, disciplina_id, observacao = None, id=None):
@@ -24,7 +27,7 @@ class Atividade(ABC):
 class Trabalho(Atividade):
     def __init__(self, nome, data, disciplina_id, nota_total, data_apresentacao = None, nota = None, observacao = None, id=None):
         super().__init__(nome, data, disciplina_id, observacao, id)
-        self.tipo = TipoAtividade.TRABALHO
+        self.tipo = TipoAtividadeEnum().TRABALHO
         self.nota_total = nota_total
         self.nota = nota
         self.data_apresentacao = data_apresentacao
@@ -39,7 +42,7 @@ class Trabalho(Atividade):
 class Prova(Atividade):
     def __init__(self, nome, data, disciplina_id, nota_total, nota = None, observacao = None, id=None):
         super().__init__(nome, data, disciplina_id, observacao, id)
-        self.tipo = TipoAtividade.PROVA
+        self.tipo = TipoAtividadeEnum().PROVA
         self.nota_total = nota_total
         self.nota = nota
 
@@ -52,7 +55,7 @@ class Prova(Atividade):
 class Aula_de_Campo(Atividade):
     def __init__(self, nome, data, disciplina_id, lugar, observacao = None, id=None):
         super().__init__(nome, data, disciplina_id, observacao, id)
-        self.tipo = TipoAtividade.CAMPO
+        self.tipo = TipoAtividadeEnum().CAMPO
         self.lugar = lugar
 
     def adicionar_bd(self, conexao):
@@ -64,7 +67,7 @@ class Aula_de_Campo(Atividade):
 class Revisao(Atividade):
     def __init__(self, nome, data, disciplina_id, observacao = None, id=None):
         super().__init__(nome, data, disciplina_id, observacao, id)
-        self.tipo = TipoAtividade.REVISAO
+        self.tipo = TipoAtividadeEnum().REVISAO
 
     def adicionar_bd(self, conexao):
         cursor = conexao.cursor()
