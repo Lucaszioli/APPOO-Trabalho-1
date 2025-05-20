@@ -13,7 +13,7 @@ class DisciplinasFrame(BaseListFrame):
 
     def get_items(self, conexao: Any):
         """Retorna todas as disciplinas cadastradas."""
-        return self.disciplina_service.listar_disciplinas(self.semestre)
+        return self.disciplina_service.listar_por_semestre(self.semestre)
 
     def modal_class_add(self):
         """Classe do modal usado para criar nova disciplina."""
