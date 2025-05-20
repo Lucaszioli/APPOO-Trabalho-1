@@ -1,16 +1,16 @@
-from app.utils.database import Database
 from app.errors.notFound import DisciplinaNotFoundError
 
 from app.models.atividade import TipoAtividade, Trabalho, Aula_de_Campo, Prova, Revisao
 from app.models.disciplinas import Disciplina
 from app.models.atividade import Atividade
 from app.models.semestre import Semestre
+from app.services.service_base import ServiceBase
 
-class DisciplinaService(Database):
+class DisciplinaService(ServiceBase):
     def __init__(self, db_path="db.db"):
         super().__init__(db_path)
 
-    def __adicionar_bd(self, disciplina:"Disciplina") -> "Disciplina":
+    def _adicionar_bd(self, disciplina:"Disciplina") -> "Disciplina":
         self.query = "INSERT INTO disciplina (nome, carga_horaria, semestre_id, codigo, observacao) VALUES (?, ?, ?, ?, ?)"
         self.params = (disciplina.nome, disciplina.carga_horaria, disciplina.semestre_id, disciplina.codigo, disciplina.observacao)
         disciplina.id = self._adicionar(self.query, self.params)
@@ -31,7 +31,7 @@ class DisciplinaService(Database):
         self._editar(self.query, self.params)
         return disciplina
     
-    def deletar_disciplina(self, disciplina:"Disciplina") -> int:
+    def deletar(self, disciplina:"Disciplina") -> int:
         self.disciplinaExistente = self.buscar_por_id(disciplina.id)
         if not self.disciplinaExistente:
             raise DisciplinaNotFoundError()
@@ -59,16 +59,26 @@ class DisciplinaService(Database):
     def criar_disciplina(self, nome:str, carga_horaria:int, codigo:str, semestre:"Semestre", observacao:str = None):
         from app.models.disciplinas import Disciplina
         self.disciplina = Disciplina(nome, carga_horaria, semestre.id, codigo, observacao)
-        self.__adicionar_bd(self.disciplina)
+        self._adicionar_bd(self.disciplina)
         semestre.adicionar_disciplina(self.disciplina)
         return self.disciplina
     
 
-    def listar_disciplinas(self,semestre:"Semestre"):
+    def listar_por_semestre(self,semestre:"Semestre"):
         self.query = "SELECT * FROM disciplina WHERE semestre_id = ?"
         self.params = (semestre.id,)
         self.disciplinas = self._buscar_varios(self.query, self.params)
         if not self.disciplinas:
             return []
         return [Disciplina(id=row[0], nome=row[1], carga_horaria=row[2], semestre_id=row[3], codigo=row[4], observacao=row[5]) for row in self.disciplinas]
+    
+    def listar(self) -> list["Disciplina"]:
+        self.query = "SELECT * FROM disciplina"
+        self.params = ()
+        disciplinas = self._buscar_varios(self.query, self.params)
+        if not disciplinas:
+            return []
+        return [Disciplina(id=row[0], nome=row[1], carga_horaria=row[2], semestre_id=row[3], codigo=row[4], observacao=row[5]) for row in self.disciplinas]
+    
+
         
