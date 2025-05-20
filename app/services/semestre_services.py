@@ -3,9 +3,7 @@ from app.errors.nomeSemestre import NomeRepetidoError
 from app.errors.notFound import SemestreNotFoundError
 from typing import TYPE_CHECKING, Optional
 from app.services.service_base import ServiceBase
-
-if TYPE_CHECKING:
-    from app.models.semestre import Semestre 
+from app.models.semestre import Semestre 
 
 class SemestreService(ServiceBase):
 
@@ -20,7 +18,6 @@ class SemestreService(ServiceBase):
         return semestre
 
     def buscar_por_id(self,id:str) -> Optional["Semestre"]:
-        from app.models.semestre import Semestre
         self.query = "SELECT * FROM semestre WHERE id = ?"
         self.params = (id,)
         row = self._buscar_um(self.query, self.params)
@@ -51,7 +48,6 @@ class SemestreService(ServiceBase):
 
     
     def listar(self) -> list["Semestre"]:
-        from app.models.semestre import Semestre
         self.query = "SELECT * FROM semestre"
         self.params = ()
         self.semestres = self._buscar_varios(self.query, self.params)
@@ -70,7 +66,6 @@ class SemestreService(ServiceBase):
     
     
     def carregar_disciplinas(self, semestre:"Semestre") -> list["Disciplina"]:
-        from app.models.disciplinas import Disciplina
         semestre.disciplinas = []
         self.query = "SELECT * FROM disciplina WHERE semestre_id = ?"
         self.params = (semestre.id,)
@@ -81,7 +76,6 @@ class SemestreService(ServiceBase):
         return semestre.disciplinas
 
     def buscar_por_nome(self,nome:str) -> Optional["Semestre"]:
-        from app.models.semestre import Semestre
         self.query = "SELECT * FROM semestre WHERE nome = ?"
         self.params = (nome,)
         row = self._buscar_um(self.query, self.params)
@@ -90,7 +84,6 @@ class SemestreService(ServiceBase):
         return None
             
     def criar_semestre(self, nome:str, data_inicio:str, data_fim:str) -> "Semestre":
-        from app.models.semestre import Semestre
         self.semestreExistente = self.buscar_por_nome(nome)
         if self.semestreExistente:
             raise NomeRepetidoError(nome)

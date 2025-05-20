@@ -57,7 +57,6 @@ class DisciplinaService(ServiceBase):
         return disciplina.atividades
     
     def criar_disciplina(self, nome:str, carga_horaria:int, codigo:str, semestre:"Semestre", observacao:str = None):
-        from app.models.disciplinas import Disciplina
         self.disciplina = Disciplina(nome, carga_horaria, semestre.id, codigo, observacao)
         self._adicionar_bd(self.disciplina)
         semestre.adicionar_disciplina(self.disciplina)

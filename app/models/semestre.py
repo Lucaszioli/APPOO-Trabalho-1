@@ -1,5 +1,3 @@
-from app.models.disciplinas import Disciplina
-from app.services.semestre_services import SemestreService
 class Semestre:
     def __init__(self, nome, data_inicio, data_fim, id=None):
         self.id = id
