@@ -3,6 +3,7 @@ import logging
 import customtkinter
 from CTkMessagebox import CTkMessagebox
 from app.services.service_universal import ServiceUniversal
+import inspect
 logger = logging.getLogger(__name__)
 
 class BaseListFrame(customtkinter.CTkFrame, ABC):
@@ -112,8 +113,10 @@ class BaseListFrame(customtkinter.CTkFrame, ABC):
     def _on_add(self):
         # abre modal de adicionar
         cls = self.modal_class_add()
-        cls(conexao=self.conexao, service=self.service,semestre = self.semestre, master=self, callback=self._reload)
-        
+        params = dict(conexao=self.conexao, service=self.service, master=self, callback=self._reload)
+        if 'semestre' in inspect.signature(cls.__init__).parameters:
+            params['semestre'] = self.semestre
+        cls(**params)        
     def _on_delete(self, item):
         # deleta item
         try:
@@ -131,7 +134,7 @@ class BaseListFrame(customtkinter.CTkFrame, ABC):
     def _on_update(self, item):
         # abre modal de atualizar
         cls = self.modal_class_update()
-        cls(conexao=self.conexao, semestre=self.service, master=self, callback=self._reload, item=item)
+        cls(conexao=self.conexao, service=self.service, master=self, callback=self._reload, item=item)
 
     def _on_select(self, item):
         key = self.get_id(item)
