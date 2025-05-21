@@ -2,20 +2,18 @@ from abc import ABC, abstractmethod
 import logging
 import customtkinter
 from CTkMessagebox import CTkMessagebox
-from app.services.semestre_services import SemestreService
-from app.services.disciplinas_services import DisciplinaService
+from app.services.service_universal import ServiceUniversal
 logger = logging.getLogger(__name__)
 
 class BaseListFrame(customtkinter.CTkFrame, ABC):
     """Frame genérico para listar entidades e abrir modais ou janelas de detalhe."""
-    def __init__(self, conexao, semestre, semestre_service:"SemestreService" = None, disciplina_service:"DisciplinaService" = None, master=None):
+    def __init__(self, conexao, semestre, service: "ServiceUniversal", master=None):
         super().__init__(master)
         if conexao is None:
             raise ValueError("Conexão não pode ser nula.")
         self.conexao = conexao
         self.semestre = semestre
-        self.semestre_service = semestre_service
-        self.disciplina_service = disciplina_service
+        self.service = service
         self.items = []
         self.item_views = {}
         self._configure_layout()
@@ -114,7 +112,7 @@ class BaseListFrame(customtkinter.CTkFrame, ABC):
     def _on_add(self):
         # abre modal de adicionar
         cls = self.modal_class_add()
-        cls(conexao=self.conexao, semestre_service = self.semestre_service, master=self, callback=self._reload)
+        cls(conexao=self.conexao, service=self.service,semestre = self.semestre, master=self, callback=self._reload)
         
     def _on_delete(self, item):
         # deleta item
@@ -133,7 +131,7 @@ class BaseListFrame(customtkinter.CTkFrame, ABC):
     def _on_update(self, item):
         # abre modal de atualizar
         cls = self.modal_class_update()
-        cls(conexao=self.conexao, semestre_service=self.semestre_service, master=self, callback=self._reload, item=item)
+        cls(conexao=self.conexao, semestre=self.service, master=self, callback=self._reload, item=item)
 
     def _on_select(self, item):
         key = self.get_id(item)
@@ -145,7 +143,7 @@ class BaseListFrame(customtkinter.CTkFrame, ABC):
                 logger.warning("Não conseguiu focar %s %s", self.item_name_singular(), key)
         else:
             try:
-                win = self.detail_view_class()(item, self.conexao, self.semestre_service, self.disciplina_service)
+                win = self.detail_view_class()(item, self.conexao, self.service)
                 win.protocol("WM_DELETE_WINDOW", lambda k=key: self._on_close(k))
                 self.item_views[key] = win
             except Exception:

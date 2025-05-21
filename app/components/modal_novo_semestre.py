@@ -3,21 +3,22 @@ from typing import Any, Optional
 import customtkinter
 from app.components.base_modal import BaseModal
 from app.components.date_picker import CTkDatePicker
-from app.services.semestre_services import SemestreService
+from app.services.service_base import ServiceBase
+from typing import Type
 
 class ModalNovoSemestre(BaseModal):
     """Modal para criação de um novo semestre."""
     def __init__(
         self,
         conexao: Any,
-        semestre_service: "SemestreService",
+        service: Type[ServiceBase],
         master: Optional[customtkinter.CTk] = None,
         callback: Optional[callable] = None,
     ):
         super().__init__(
             conexao=conexao,
             master=master,
-            semestre_service=semestre_service,
+            service = service,
             callback=callback,
             title="Adicionar Novo Semestre",
             size=(400, 300),
