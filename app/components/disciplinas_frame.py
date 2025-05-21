@@ -20,7 +20,7 @@ class DisciplinasFrame(BaseListFrame):
         from app.components.modal_nova_disciplina import ModalNovaDisciplina
         return ModalNovaDisciplina
     
-    def modal_class_update(self, item):
+    def modal_class_update(self):
         from app.components.modal_atualiza_disciplina import ModalAtualizaDisciplina
         return ModalAtualizaDisciplina
 
@@ -54,7 +54,7 @@ class DisciplinasFrame(BaseListFrame):
 
     def delete_item(self, item):
         """Deleta uma disciplina."""
-        return self.disciplina_service.deletar_disciplina(item)
+        return self.service.disciplina_service.deletar(item)
 
     def update_item(self, item):
         # Implement the logic to update an item

@@ -3,7 +3,7 @@ from typing import Any, Optional
 import customtkinter
 from app.components.base_modal import BaseModal
 from app.components.date_picker import CTkDatePicker
-from app.services.service_base import ServiceBase
+from app.services.service_universal import ServiceUniversal
 from typing import Type
 
 class ModalNovoSemestre(BaseModal):
@@ -11,7 +11,7 @@ class ModalNovoSemestre(BaseModal):
     def __init__(
         self,
         conexao: Any,
-        service: Type[ServiceBase],
+        service: "ServiceUniversal",
         master: Optional[customtkinter.CTk] = None,
         callback: Optional[callable] = None,
     ):
@@ -74,7 +74,7 @@ class ModalNovoSemestre(BaseModal):
     def _save(self, data: dict) -> None:
         dt_inicio = datetime.strptime(data["inicio"], "%d/%m/%Y")
         dt_fim = datetime.strptime(data["fim"], "%d/%m/%Y")
-        semestre = self.semestre_service.criar_semestre(
+        semestre = self.service.semestre_service.criar_semestre(
             nome=data["nome"],
             data_inicio=dt_inicio,
             data_fim=dt_fim,

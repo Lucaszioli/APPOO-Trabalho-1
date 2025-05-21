@@ -3,14 +3,13 @@ from typing import Any, Optional
 import customtkinter
 from app.components.base_modal import BaseModal
 from app.components.date_picker import CTkDatePicker
-from app.services.semestre_services import SemestreService
-
+from app.services.service_universal import ServiceUniversal
 class ModalAtualizaSemestre(BaseModal):
     """Modal para criação de um novo semestre."""
     def __init__(
         self,
         conexao: Any,
-        semestre_service: "SemestreService",
+        service: "ServiceUniversal",
         master: Optional[customtkinter.CTk] = None,
         callback: Optional[callable] = None,
         item: Optional[Any] = None
@@ -20,7 +19,7 @@ class ModalAtualizaSemestre(BaseModal):
             conexao=conexao,
             master=master,
             callback=callback,
-            semestre_service=semestre_service,
+            service=service,
             item=item,
             title="Editando Semestre: " + self.item.nome,
             size=(400, 300)
@@ -82,4 +81,4 @@ class ModalAtualizaSemestre(BaseModal):
         self.item.data_fim    = dt_fim
 
         # Persist the updated model
-        self.semestre_service.editar_bd(self.item)
+        self.service.semestre_service.editar_bd(self.item)
