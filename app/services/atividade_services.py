@@ -60,7 +60,7 @@ class AtividadeService(ABC, Database):
         del atividade
         return self.rows
     
-    def criar_atividade(self, tipo:"TipoAtividadeEnum", nome:str, data:str, disciplina:"Disciplina", nota_total:int, nota:int = None, observacao:str = None, lugar:str = None, data_apresentacao:str = None) -> Atividade:
+    def criar_atividade(self, nome:str, data:str, disciplina:"Disciplina",tipo:"TipoAtividadeEnum", nota_total:int, nota:int = None, observacao:str = None, lugar:str = None, data_apresentacao:str = None) -> Atividade:
         if tipo == TipoAtividadeEnum().TRABALHO:
             atividade = Trabalho(nome, data, disciplina.id, nota_total, nota=nota, observacao=observacao, data_apresentacao=data_apresentacao)
         elif tipo == TipoAtividadeEnum().PROVA:
@@ -71,6 +71,9 @@ class AtividadeService(ABC, Database):
             atividade = Revisao(nome, data, disciplina.id, observacao=observacao)
         else:
             raise ValueError("Tipo de atividade inválido")
+        
+        self._adicionar_bd(atividade)
+        disciplina.adicionar_atividade(atividade)
         return atividade
 
 
