@@ -253,3 +253,20 @@ class CTkDatePicker(ctk.CTkFrame):
             self.subtract_months = value
         else:
             raise ValueError("Invalid value for add_or_sub. Must be 'add' or 'sub'")
+        
+    def insert(self, date):
+        """
+        Insert a date into the date entry.
+
+        Parameters:
+        - date (str): The date string to be inserted.
+        
+        Inserts the specified date into the date entry field.
+        """
+
+        self.date_entry.delete(0, tk.END)
+        
+        # Insere no formato %d/%m/%Y
+        date = datetime.fromisoformat(date).strftime("%d/%m/%Y")
+        self.date_entry.insert(0, date)
+        
