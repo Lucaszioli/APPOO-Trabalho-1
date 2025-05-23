@@ -26,8 +26,8 @@ class DisciplinaService(ServiceBase):
         self.disciplinaExistente = self.buscar_por_id(disciplina.id)
         if not self.disciplinaExistente:
             raise DisciplinaNotFoundError()
-        self.query = "UPDATE disciplina SET nome = ?, carga_horaria = ?, semestre_id = ?, codigo = ?, observacao = ? WHERE id = ?"
-        self.params = (disciplina.nome, disciplina.carga_horaria, disciplina.semestre_id, disciplina.codigo, disciplina.observacao, disciplina.id)
+        self.query = "UPDATE disciplina SET nome = ?, carga_horaria = ?, codigo = ?, observacao = ? WHERE id = ?"
+        self.params = (disciplina.nome, disciplina.carga_horaria, disciplina.codigo, disciplina.observacao, disciplina.id)
         self._editar(self.query, self.params)
         return disciplina
     
