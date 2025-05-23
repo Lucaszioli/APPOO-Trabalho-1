@@ -4,15 +4,15 @@ class Database:
     def __init__(self, db_path="db.db"):
         self._db_path = db_path
         self._conexao = None
-        if not os.path.exists(self.db_path):
+        if not os.path.exists(self._db_path):
             self.__criar(script_path="app/scripts/init.sql")
         self._conexao = self.__conectar()
 
     def __conectar(self):
         if not self._conexao:
-            self._conexao = sqlite3.connect(self.db_path)
+            self._conexao = sqlite3.connect(self._db_path)
             self._conexao.execute("PRAGMA foreign_keys = ON")
-            self._cursor = self.conexao.cursor()
+            self._cursor = self._conexao.cursor()
         return self._conexao
     
     def __criar(self, script_path):
@@ -21,7 +21,7 @@ class Database:
         
         with self.__conectar() as conexao:
             self._cursor = conexao.cursor()
-            self.cursor.executescript(self._script)
+            self._cursor.executescript(self._script)
             conexao.commit()
 
     def _adicionar(self, query, params):
