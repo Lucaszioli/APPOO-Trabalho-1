@@ -21,10 +21,10 @@ class Disciplina:
     def adicionar_atividade(
     self, 
     atividade: "Atividade"
-    ):
+    ) -> None:
         self.atividades.append(atividade)
 
-    def listar_atividades(self):
+    def listar_atividades(self) -> None:
         for atividade in self.atividades:
             print(f"Atividade: {atividade.nome}, Data: {atividade.data}, Nota Total: {atividade.nota_total}, Observação: {atividade.observacao}")
     
