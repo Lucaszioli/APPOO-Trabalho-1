@@ -1,81 +1,112 @@
-from datetime import datetime
 from typing import Any, Optional
-import customtkinter
-from app.components.base_modal import BaseModal
+from datetime import datetime
+from app.components.ui.improved_modal import ImprovedModal
 from app.components.date_picker import CTkDatePicker
 from app.services.service_universal import ServiceUniversal
-from typing import Type
+import customtkinter
 
-class ModalNovoSemestre(BaseModal):
-    """Modal para criação de um novo semestre."""
+class ModalNovoSemestre(ImprovedModal):
+    """Modal melhorado para criação de novo semestre."""
+    
     def __init__(
         self,
         conexao: Any,
         service: "ServiceUniversal",
-        master: Optional[customtkinter.CTk] = None,
+        master: Optional[Any] = None,
         callback: Optional[callable] = None,
     ):
         super().__init__(
             conexao=conexao,
+            service=service,
             master=master,
-            service = service,
             callback=callback,
-            title="Adicionar Novo Semestre",
-            size=(400, 300),
-            item=None
+            title="Novo Semestre",
+            size=(500, 400),
         )
 
-    def _build_widgets(self) -> None:
+    def _build_form(self) -> None:
+        """Constrói o formulário de novo semestre."""
         # Nome do semestre
-        customtkinter.CTkLabel(self, text="Nome do Semestre:").pack(pady=(20, 5))
-        self.entry_nome = customtkinter.CTkEntry(self)
-        self.entry_nome.pack(fill="x", padx=20, pady=(0, 10))
-
-        # Data de início 
-        customtkinter.CTkLabel(self, text="Data de Início:").pack(pady=(0, 5))
-        self.entry_inicio = CTkDatePicker(self)
-        self.entry_inicio.set_date_format("%d/%m/%Y")
-        self.entry_inicio.set_allow_manual_input(False)
-        self.entry_inicio.pack(pady=(0, 10))
-
+        self.add_field(
+            key="nome",
+            label="Nome do Semestre",
+            required=True,
+            placeholder="Ex: 2024.1, Outono 2024, etc."
+        )
+        
+        # Container para datas
+        dates_container = customtkinter.CTkFrame(self.form_frame, fg_color="transparent")
+        dates_container.pack(fill="x", pady=10)
+        dates_container.grid_columnconfigure((0, 1), weight=1)
+        
+        # Data de início
+        inicio_label = customtkinter.CTkLabel(
+            dates_container,
+            text="Data de Início*:",
+            font=customtkinter.CTkFont(size=14)
+        )
+        inicio_label.grid(row=0, column=0, sticky="w", padx=(0, 10))
+        
+        self.date_inicio = CTkDatePicker(dates_container)
+        self.date_inicio.set_date_format("%d/%m/%Y")
+        self.date_inicio.set_allow_manual_input(False)
+        self.date_inicio.grid(row=1, column=0, sticky="ew", padx=(0, 10))
+        
         # Data de fim
-        customtkinter.CTkLabel(self, text="Data de Fim:").pack(pady=(0, 5))
-        self.entry_fim = CTkDatePicker(self)
-        self.entry_fim.set_date_format("%d/%m/%Y")
-        self.entry_fim.set_allow_manual_input(False)
-        self.entry_fim.pack(pady=(0, 20))
-
-        # Botão salvar
-        customtkinter.CTkButton(
-            self,
-            text="Salvar",
-            command=self._on_submit
-        ).pack()
-
+        fim_label = customtkinter.CTkLabel(
+            dates_container,
+            text="Data de Fim*:",
+            font=customtkinter.CTkFont(size=14)
+        )
+        fim_label.grid(row=0, column=1, sticky="w")
+        
+        self.date_fim = CTkDatePicker(dates_container)
+        self.date_fim.set_date_format("%d/%m/%Y")
+        self.date_fim.set_allow_manual_input(False)
+        self.date_fim.grid(row=1, column=1, sticky="ew")
+        
     def _collect_data(self) -> dict:
-        return {
-            "nome": self.entry_nome.get().strip(),
-            "inicio": self.entry_inicio.get_date().strip(),
-            "fim": self.entry_fim.get_date().strip()
-        }
-
-    def _validate(self, data: dict) -> tuple[bool, str]:
+        """Coleta dados do formulário incluindo datas."""
+        data = super()._collect_data()
+        data["data_inicio"] = self.date_inicio.get_date()
+        data["data_fim"] = self.date_fim.get_date()
+        return data
+        
+    def _validate_custom(self, data: dict) -> tuple[bool, str]:
+        """Validação customizada para semestre."""
         if not data["nome"]:
-            return False, "Nome do semestre não pode ser vazio."
+            return False, "Nome do semestre é obrigatório."
+            
+        if not data.get("data_inicio"):
+            return False, "Data de início é obrigatória."
+            
+        if not data.get("data_fim"):
+            return False, "Data de fim é obrigatória."
+            
+        # Validar se data de fim é posterior à data de início
         try:
-            dt_inicio = datetime.strptime(data["inicio"], "%d/%m/%Y")
-            dt_fim = datetime.strptime(data["fim"], "%d/%m/%Y")
+            if isinstance(data["data_inicio"], str):
+                inicio = datetime.strptime(data["data_inicio"], "%d/%m/%Y")
+            else:
+                inicio = data["data_inicio"]
+                
+            if isinstance(data["data_fim"], str):
+                fim = datetime.strptime(data["data_fim"], "%d/%m/%Y")
+            else:
+                fim = data["data_fim"]
+                
+            if fim <= inicio:
+                return False, "Data de fim deve ser posterior à data de início."
+                
         except ValueError:
-            return False, "Formato de data inválido. Use dd/mm/aaaa."
-        if dt_inicio > dt_fim:
-            return False, "Data de início deve ser anterior à data de fim."
+            return False, "Formato de data inválido."
+            
         return True, ""
 
     def _save(self, data: dict) -> None:
-        dt_inicio = datetime.strptime(data["inicio"], "%d/%m/%Y")
-        dt_fim = datetime.strptime(data["fim"], "%d/%m/%Y")
-        semestre = self.service.semestre_service.criar_semestre(
+        """Salva o novo semestre."""
+        self.service.semestre_service.criar_semestre(
             nome=data["nome"],
-            data_inicio=dt_inicio,
-            data_fim=dt_fim,
+            data_inicio=data["data_inicio"],
+            data_fim=data["data_fim"]
         )
