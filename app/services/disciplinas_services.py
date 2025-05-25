@@ -19,8 +19,8 @@ class DisciplinaService(ServiceBase):
     def buscar_por_id(self, id:str) -> "Disciplina":
         self.query = "SELECT * FROM disciplina WHERE id = ?"
         self.params = (id,)
-        disciplina = self._buscar(self.query, self.params)
-        return Disciplina(id=disciplina[0], nome=disciplina[1], carga_horaria=disciplina[2], semestre_id=disciplina[3], codigo=disciplina[4], observacao=disciplina[5])
+        self.disciplina = self._buscar(self.query, self.params)
+        return Disciplina(id=self.disciplina[0], nome=self.disciplina[1], carga_horaria=self.disciplina[2], semestre_id=self.disciplina[3], codigo=self.disciplina[4], observacao=self.disciplina[5])
 
     def editar_bd(self,disciplina:"Disciplina") -> "Disciplina":
         self.disciplinaExistente = self.buscar_por_id(disciplina.id)
@@ -44,8 +44,8 @@ class DisciplinaService(ServiceBase):
     def carregar_atividades(self, disciplina:"Disciplina") -> list[Atividade]:
         self.query = "SELECT * FROM atividade WHERE disciplina_id = ?"
         self.params = (disciplina.id,)
-        atividades = self._buscar(self.query, self.params)
-        for atividade in atividades:
+        self.atividades = self._buscar(self.query, self.params)
+        for atividade in self.atividades:
             if atividade[6] == TipoAtividadeEnum().TRABALHO.value:
                 disciplina.adicionar_atividade(Trabalho(atividade[1], atividade[2], atividade[3], atividade[5], atividade[6], atividade[7]))
             elif atividade[6] == TipoAtividadeEnum().PROVA.value:

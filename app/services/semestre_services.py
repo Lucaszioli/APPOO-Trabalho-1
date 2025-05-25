@@ -59,9 +59,9 @@ class SemestreService(ServiceBase):
     def buscar_ultimo_semestre(self) -> Optional["Semestre"]:
         self.query = "SELECT * FROM semestre ORDER BY id DESC LIMIT 1"
         self.params = ()
-        semestre = self._buscar_um(self.query, self.params)
-        if semestre:
-            return Semestre(id=semestre[0], nome=semestre[1], data_inicio=semestre[2], data_fim=semestre[3])
+        self.semestre = self._buscar_um(self.query, self.params)
+        if self.semestre:
+            return Semestre(id=self.semestre[0], nome=self.semestre[1], data_inicio=self.semestre[2], data_fim=self.semestre[3])
         return None
     
     
@@ -69,8 +69,8 @@ class SemestreService(ServiceBase):
         semestre.disciplinas = []
         self.query = "SELECT * FROM disciplina WHERE semestre_id = ?"
         self.params = (semestre.id,)
-        disciplinas = self._buscar_varios(self.query, self.params)
-        for row in disciplinas:
+        self.disciplinas = self._buscar_varios(self.query, self.params)
+        for row in self.disciplinas:
             disciplina = Disciplina(id=row[0], nome=row[1], carga_horaria=row[2], semestre_id=row[3], codigo=row[4], observacao=row[5])
             semestre.adicionar_disciplina(disciplina)
         return semestre.disciplinas
