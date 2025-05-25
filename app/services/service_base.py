@@ -23,7 +23,3 @@ class ServiceBase(Database, ABC):
     @abstractmethod
     def deletar(self, obj):
         pass
-
-    @abstractmethod
-    def listar(self):
-        pass
