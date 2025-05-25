@@ -1,80 +1,109 @@
 from datetime import datetime
 from typing import Any, Optional
-import customtkinter
-from app.components.base_modal import BaseModal
-from app.components.date_picker import CTkDatePicker
+from app.components.ui.improved_modal import ImprovedModal
 from app.services.service_universal import ServiceUniversal
-class ModalAtualizaDisciplina(BaseModal):
-    """Modal para atualização de uma disciplina."""
+
+class ModalAtualizaDisciplina(ImprovedModal):
+    """Modal melhorado para atualização de disciplina."""
+    
     def __init__(
         self,
         conexao: Any,
         service: "ServiceUniversal",
-        master: Optional[customtkinter.CTk] = None,
+        master: Optional[Any] = None,
         callback: Optional[callable] = None,
         item: Optional[Any] = None
     ):
         self.item = item
         super().__init__(
             conexao=conexao,
+            service=service,
             master=master,
             callback=callback,
-            service=service,
-            item=item,
-            title="Editando Disciplina: " + self.item.nome,
-            size=(400, 380)
+            title=f"Editando: {item.nome if item else 'Disciplina'}",
+            size=(500, 450),
+            item=item
         )
 
-    def _build_widgets(self) -> None:
-        # Novo nome da disciplina
-        customtkinter.CTkLabel(self, text="Nome da Disciplina:").pack(pady=(20, 5))
-        self.entry_nome = customtkinter.CTkEntry(self)
-        self.entry_nome.insert(0, self.item.nome)
-        self.entry_nome.pack(fill="x", padx=20, pady=(0, 10))
-
-        # Nova carga horária
-        customtkinter.CTkLabel(self, text="Carga Horária (h):").pack(pady=(0, 5))
-        self.entry_carga = customtkinter.CTkEntry(self)
-        self.entry_carga.insert(0, self.item.carga_horaria)
-        self.entry_carga.pack(fill="x", padx=20, pady=(0, 10))
-
-        # Novo código da disciplina
-        customtkinter.CTkLabel(self, text="Código:").pack(pady=(0, 5))
-        self.entry_codigo = customtkinter.CTkEntry(self)
-        self.entry_codigo.insert(0, self.item.codigo)
-        self.entry_codigo.pack(fill="x", padx=20, pady=(0, 10))
-
-        # Nova observação (opcional)
-        customtkinter.CTkLabel(self, text="Observação (opcional):").pack(pady=(0, 5))
-        self.entry_observacao = customtkinter.CTkEntry(self)
-        self.entry_observacao.insert(0, self.item.observacao)
-        self.entry_observacao.pack(fill="x", padx=20, pady=(0, 20))
-
-        # Botão salvar
-        customtkinter.CTkButton(
-            self,
-            text="Salvar",
-            command=self._on_submit
-        ).pack()
-      
-    def _collect_data(self) -> dict:
-        return {
-            "nome": self.entry_nome.get().strip() if self.entry_nome.get().strip() else self.item.nome,
-            "carga": self.entry_carga.get().strip() if self.entry_carga.get().strip() else self.item.carga_horaria,
-            "codigo": self.entry_codigo.get().strip() if self.entry_codigo.get().strip() else self.item.codigo,
-            "observacao": self.entry_observacao.get().strip() if self.entry_observacao.get().strip() else self.item.observacao,
-            "id": self.item.id
-        }
-    
-    def _validate(self, data: dict) -> tuple[bool, str]:
+    def _build_form(self) -> None:
+        """Constrói o formulário de edição da disciplina."""
+        # Nome da disciplina
+        nome_field = self.add_field(
+            key="nome",
+            label="Nome da Disciplina",
+            required=True,
+            placeholder="Ex: Programação Orientada a Objetos"
+        )
+        if self.item:
+            nome_field.insert(0, self.item.nome)
+        
+        # Código da disciplina
+        codigo_field = self.add_field(
+            key="codigo",
+            label="Código",
+            required=True,
+            placeholder="Ex: INF001",
+            validator=self._validate_codigo
+        )
+        if self.item:
+            codigo_field.insert(0, self.item.codigo)
+        
+        # Carga horária
+        carga_field = self.add_field(
+            key="carga",
+            label="Carga Horária (horas)",
+            required=True,
+            placeholder="Ex: 60",
+            validator=self._validate_carga_horaria
+        )
+        if self.item:
+            carga_field.insert(0, str(self.item.carga_horaria))
+        
+        # Observação
+        obs_field = self.add_field(
+            key="observacao",
+            label="Observações",
+            field_type="textbox",
+            required=False,
+            placeholder="Observações adicionais..."
+        )
+        if self.item and self.item.observacao:
+            obs_field.insert("1.0", self.item.observacao)
+        
+    def _validate_codigo(self, value: str) -> bool:
+        """Valida o código da disciplina."""
+        return len(value) >= 3 and value.replace(" ", "").isalnum()
+        
+    def _validate_carga_horaria(self, value: str) -> bool:
+        """Valida a carga horária."""
+        try:
+            carga = int(value)
+            return 1 <= carga <= 500
+        except ValueError:
+            return False
+            
+    def _validate_custom(self, data: dict) -> tuple[bool, str]:
+        """Validação customizada."""
+        if not data["nome"]:
+            return False, "Nome da disciplina é obrigatório."
+            
+        try:
+            carga = int(data["carga"])
+            if carga <= 0:
+                return False, "Carga horária deve ser um número positivo."
+        except ValueError:
+            return False, "Carga horária deve ser um número válido."
+            
+        if not data["codigo"]:
+            return False, "Código da disciplina é obrigatório."
+            
         return True, ""
-    
+
     def _save(self, data: dict) -> None:
+        """Salva as alterações na disciplina."""
         self.item.nome = data["nome"]
-        self.item.carga_horaria = data["carga"]
+        self.item.carga_horaria = int(data["carga"])
         self.item.codigo = data["codigo"]
-        self.item.observacao = data["observacao"]
+        self.item.observacao = data.get("observacao") or None
         
         self.service.disciplina_service.editar_bd(self.item)
-        
-        print(f"Disciplina atualizada: {self.item.semestre_id}")
