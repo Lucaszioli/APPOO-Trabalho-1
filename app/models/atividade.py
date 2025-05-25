@@ -80,10 +80,10 @@ class Trabalho(Atividade):
         id: Optional[int] = None
         ):
         super().__init__(nome, data, disciplina_id, observacao, id)
-        self.tipo = TipoAtividadeEnum().TRABALHO
-        self.data_apresentacao = data_apresentacao
-        self.nota_total = nota_total
-        self.nota = nota
+        self._tipo = TipoAtividadeEnum().TRABALHO
+        self._data_apresentacao = data_apresentacao
+        self._nota_total = nota_total
+        self._nota = nota
 
     @property
     def data_apresentacao(self) -> Optional[str]:
@@ -123,9 +123,9 @@ class Prova(Atividade):
         id: Optional[int]=None
         ):
         super().__init__(nome, data, disciplina_id, observacao, id)
-        self.tipo = TipoAtividadeEnum().PROVA
-        self.nota_total = nota_total
-        self.nota = nota
+        self._tipo = TipoAtividadeEnum().PROVA
+        self._nota_total = nota_total
+        self._nota = nota
 
     @property
     def nota_total(self) -> Optional[float]:
@@ -180,7 +180,7 @@ class Revisao(Atividade):
         id: Optional[str]=None
         ):
         super().__init__(nome, data, disciplina_id, observacao, id)
-        self.tipo = TipoAtividadeEnum().REVISAO
+        self._tipo = TipoAtividadeEnum().REVISAO
         self._materia = materia
 
     @property
