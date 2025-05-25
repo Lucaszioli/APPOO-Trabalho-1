@@ -45,9 +45,18 @@ class Semestre:
     @data_fim.setter
     def data_fim(self, data_fim: str):
         self._data_fim = data_fim
+
+    @property
+    def disciplinas(self):
+        return self._disciplinas
+    
+    @disciplinas.setter
+    def disciplinas(self, disciplinas: list[Disciplina]):
+        self._disciplinas = disciplinas
     
     def adicionar_disciplina(self, disciplina: "Disciplina"):
         self._disciplinas.append(disciplina)
+
    
     def listar_disciplinas(self):
         for disciplina in self._disciplinas:
