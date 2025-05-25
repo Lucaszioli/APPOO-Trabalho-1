@@ -174,19 +174,19 @@ class Revisao(Atividade):
         self, 
         nome: str, 
         data: str, 
-        disciplina_id: str, 
+        disciplina_id: str,
+        materia: Optional[str] = None,
         observacao: Optional[str] = None, 
         id: Optional[str]=None
         ):
         super().__init__(nome, data, disciplina_id, observacao, id)
         self.tipo = TipoAtividadeEnum().REVISAO
+        self._materia = materia
 
     @property
-    def observacao(self) -> Optional[str]:
-        return self._observacao
+    def materia(self) -> Optional[str]:
+        return self._materia
     
-    @observacao.setter
-    def observacao(self, observacao: str) -> None:
-        self._observacao = observacao
-    
-        
+    @materia.setter
+    def materia(self, materia: str) -> None:
+        self._materia = materia
