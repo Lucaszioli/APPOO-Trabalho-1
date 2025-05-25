@@ -1,87 +1,121 @@
-from datetime import datetime
 from typing import Any, Optional
-import customtkinter
-from app.components.base_modal import BaseModal
+from datetime import datetime
+from app.components.ui.improved_modal import ImprovedModal
 from app.components.date_picker import CTkDatePicker
 from app.services.service_universal import ServiceUniversal
-class ModalAtualizaSemestre(BaseModal):
-    """Modal para atualização de um semestre."""
+import customtkinter
+
+class ModalAtualizaSemestre(ImprovedModal):
+    """Modal melhorado para atualização de semestre."""
+    
     def __init__(
         self,
         conexao: Any,
         service: "ServiceUniversal",
-        master: Optional[customtkinter.CTk] = None,
+        master: Optional[Any] = None,
         callback: Optional[callable] = None,
         item: Optional[Any] = None
     ):
         self.item = item
         super().__init__(
             conexao=conexao,
+            service=service,
             master=master,
             callback=callback,
-            service=service,
-            item=item,
-            title="Editando Semestre: " + self.item.nome,
-            size=(400, 300)
+            title=f"Editando: {item.nome if item else 'Semestre'}",
+            size=(500, 400),
+            item=item
         )
 
-    def _build_widgets(self) -> None:
-        # Novo nome do semestre
-        customtkinter.CTkLabel(self, text="Novo nome:").pack(pady=(20, 5))
-        self.entry_nome = customtkinter.CTkEntry(self)
-        self.entry_nome.insert(0, self.item.nome)
-        self.entry_nome.pack(fill="x", padx=20, pady=(0, 10))
+    def _build_form(self) -> None:
+        """Constrói o formulário de edição do semestre."""
+        # Nome do semestre
+        nome_field = self.add_field(
+            key="nome",
+            label="Nome do Semestre",
+            required=True,
+            placeholder="Ex: 2024.1, Outono 2024, etc."
+        )
+        if self.item:
+            nome_field.insert(0, self.item.nome)
         
-        # Nova data de início
-        customtkinter.CTkLabel(self, text="Nova data de início:").pack(pady=(0, 5))
-        self.entry_inicio = CTkDatePicker(self)
-        self.entry_inicio.insert(self.item.data_inicio)
-        self.entry_inicio.set_date_format("%d/%m/%Y")
-        self.entry_inicio.set_allow_manual_input(False)
-        self.entry_inicio.pack(pady=(0, 10))
+        # Container para datas
+        dates_container = customtkinter.CTkFrame(self.form_frame, fg_color="transparent")
+        dates_container.pack(fill="x", pady=10)
+        dates_container.grid_columnconfigure((0, 1), weight=1)
         
-        # Nova data de fim
-        customtkinter.CTkLabel(self, text="Nova data de fim:").pack(pady=(0, 5))
-        self.entry_fim = CTkDatePicker(self)
-        self.entry_fim.insert(self.item.data_fim)
-        self.entry_fim.set_date_format("%d/%m/%Y")
-        self.entry_fim.set_allow_manual_input(False)
-        self.entry_fim.pack(pady=(0, 20))
+        # Data de início
+        inicio_label = customtkinter.CTkLabel(
+            dates_container,
+            text="Data de Início*:",
+            font=customtkinter.CTkFont(size=14)
+        )
+        inicio_label.grid(row=0, column=0, sticky="w", padx=(0, 10))
         
-        # Botão salvar
-        customtkinter.CTkButton(
-            self,
-            text="Salvar",
-            command=self._on_submit
-        ).pack()
-
+        self.date_inicio = CTkDatePicker(dates_container)
+        self.date_inicio.set_date_format("%d/%m/%Y")
+        self.date_inicio.set_allow_manual_input(False)
+        if self.item:
+            self.date_inicio.insert(self.item.data_inicio)
+        self.date_inicio.grid(row=1, column=0, sticky="ew", padx=(0, 10))
+        
+        # Data de fim
+        fim_label = customtkinter.CTkLabel(
+            dates_container,
+            text="Data de Fim*:",
+            font=customtkinter.CTkFont(size=14)
+        )
+        fim_label.grid(row=0, column=1, sticky="w")
+        
+        self.date_fim = CTkDatePicker(dates_container)
+        self.date_fim.set_date_format("%d/%m/%Y")
+        self.date_fim.set_allow_manual_input(False)
+        if self.item:
+            self.date_fim.insert(self.item.data_fim)
+        self.date_fim.grid(row=1, column=1, sticky="ew")
+        
     def _collect_data(self) -> dict:
-        return {
-            "nome": self.entry_nome.get().strip() if self.entry_nome.get().strip() else self.item.nome,
-            "inicio": self.entry_inicio.get_date().strip() if self.entry_inicio.get_date().strip() else self.item.data_inicio,
-            "fim": self.entry_fim.get_date().strip() if self.entry_fim.get_date().strip() else self.item.data_fim
-        }
-    
-    def _validate(self, data: dict) -> tuple[bool, str]:
+        """Coleta dados do formulário incluindo datas."""
+        data = super()._collect_data()
+        data["data_inicio"] = self.date_inicio.get_date()
+        data["data_fim"] = self.date_fim.get_date()
+        return data
+        
+    def _validate_custom(self, data: dict) -> tuple[bool, str]:
+        """Validação customizada para semestre."""
+        if not data["nome"]:
+            return False, "Nome do semestre é obrigatório."
+            
+        if not data.get("data_inicio"):
+            return False, "Data de início é obrigatória."
+            
+        if not data.get("data_fim"):
+            return False, "Data de fim é obrigatória."
+            
+        # Validar se data de fim é posterior à data de início
+        try:
+            if isinstance(data["data_inicio"], str):
+                inicio = datetime.strptime(data["data_inicio"], "%d/%m/%Y")
+            else:
+                inicio = data["data_inicio"]
+                
+            if isinstance(data["data_fim"], str):
+                fim = datetime.strptime(data["data_fim"], "%d/%m/%Y")
+            else:
+                fim = data["data_fim"]
+                
+            if fim <= inicio:
+                return False, "Data de fim deve ser posterior à data de início."
+                
+        except ValueError:
+            return False, "Formato de data inválido."
+            
         return True, ""
-    
+
     def _save(self, data: dict) -> None:
-        # helper to parse either ISO or dd/mm/YYYY
-        def _parse(raw):
-            if isinstance(raw, str):
-                try:
-                    return datetime.fromisoformat(raw)
-                except ValueError:
-                    return datetime.strptime(raw, "%d/%m/%Y")
-            return raw
-
-        dt_inicio = _parse(data["inicio"])
-        dt_fim    = _parse(data["fim"])
-
-        # Update the model instance
-        self.item.nome        = data["nome"]
-        self.item.data_inicio = dt_inicio
-        self.item.data_fim    = dt_fim
-
-        # Persist the updated model
+        """Salva as alterações no semestre."""
+        self.item.nome = data["nome"]
+        self.item.data_inicio = data["data_inicio"]
+        self.item.data_fim = data["data_fim"]
+        
         self.service.semestre_service.editar_bd(self.item)
