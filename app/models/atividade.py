@@ -16,23 +16,55 @@ class Atividade(ABC):
         data: str,
         disciplina_id: int, 
         observacao: Optional[str] = None, 
-        id: Optional[int]=None, 
-        lugar: Optional[str] = None, 
-        data_apresentacao: Optional[str] = None, 
-        nota_total: Optional[float] = None, 
-        nota: Optional[float] = None, 
+        id: Optional[int]=None,
         tipo: Optional[TipoAtividadeEnum] = None
         ):
-        self.id = id
-        self.nome = nome
-        self.data = data
-        self.disciplina_id = disciplina_id
-        self.observacao = observacao
-        self.lugar = lugar
-        self.data_apresentacao = data_apresentacao
-        self.nota_total = nota_total
-        self.nota = nota
-        self.tipo = tipo
+        self._id = id
+        self._nome = nome
+        self._data = data
+        self._disciplina_id = disciplina_id
+        self._observacao = observacao
+        self._tipo = tipo
+
+    @property
+    def id(self) -> Optional[int]:
+        return self._id
+    
+    @id.setter
+    def id(self, id: int) -> None:
+        self._id = id
+
+    @property
+    def nome(self) -> str:
+        return self._nome
+    
+    @nome.setter
+    def nome(self, nome: str) -> None:
+        self._nome = nome
+
+    @property
+    def data(self) -> str:
+        return self._data
+    
+    @data.setter
+    def data(self, data: str) -> None:
+        self._data = data
+
+    @property
+    def disciplina_id(self) -> int:
+        return self._disciplina_id
+    
+    @disciplina_id.setter
+    def disciplina_id(self, disciplina_id: int) -> None:
+        self._disciplina_id = disciplina_id
+
+    @property
+    def observacao(self) -> Optional[str]:
+        return self._observacao
+    
+    @observacao.setter
+    def observacao(self, observacao: str) -> None:
+        self._observacao = observacao
 
 
 class Trabalho(Atividade):
@@ -47,8 +79,36 @@ class Trabalho(Atividade):
         observacao: Optional[str] = None, 
         id: Optional[int] = None
         ):
-        super().__init__(nome, data, disciplina_id, observacao, id, data_apresentacao=data_apresentacao, nota_total=nota_total, nota=nota)
+        super().__init__(nome, data, disciplina_id, observacao, id)
         self.tipo = TipoAtividadeEnum().TRABALHO
+        self.data_apresentacao = data_apresentacao
+        self.nota_total = nota_total
+        self.nota = nota
+
+    @property
+    def data_apresentacao(self) -> Optional[str]:
+        return self._data_apresentacao
+    
+    @data_apresentacao.setter
+    def data_apresentacao(self, data_apresentacao: str) -> None:
+        self._data_apresentacao = data_apresentacao
+    
+    @property
+    def nota_total(self) -> Optional[float]:
+        return self._nota_total
+    
+    @nota_total.setter
+    def nota_total(self, nota_total: float) -> None:
+        self._nota_total = nota_total
+
+    @property
+    def nota(self) -> Optional[float]:
+        return self._nota
+    
+    @nota.setter
+    def nota(self, nota: float) -> None:
+        self._nota = nota
+    
         
 
 class Prova(Atividade):
@@ -62,8 +122,20 @@ class Prova(Atividade):
         observacao: Optional[float] = None, 
         id: Optional[int]=None
         ):
-        super().__init__(nome, data, disciplina_id, observacao, id, nota_total=nota_total, nota=nota)
+        super().__init__(nome, data, disciplina_id, observacao, id)
         self.tipo = TipoAtividadeEnum().PROVA
+        self.nota_total = nota_total
+        self.nota = nota
+
+    @property
+    def nota_total(self) -> Optional[float]:
+        return self._nota_total
+    
+    @nota_total.setter
+    def nota_total(self, nota_total: float) -> None:
+        self._nota_total = nota_total
+
+    
 
 class Aula_de_Campo(Atividade):
     def __init__(
@@ -77,6 +149,15 @@ class Aula_de_Campo(Atividade):
         ):
         super().__init__(nome, data, disciplina_id, observacao, id, lugar=lugar)
         self.tipo = TipoAtividadeEnum().CAMPO
+        self.lugar = lugar
+
+    @property
+    def lugar(self) -> str:
+        return self._lugar
+    
+    @lugar.setter
+    def lugar(self, lugar: str) -> None:
+        self._lugar = lugar
 
 
 class Revisao(Atividade):
@@ -90,4 +171,13 @@ class Revisao(Atividade):
         ):
         super().__init__(nome, data, disciplina_id, observacao, id)
         self.tipo = TipoAtividadeEnum().REVISAO
+
+    @property
+    def observacao(self) -> Optional[str]:
+        return self._observacao
+    
+    @observacao.setter
+    def observacao(self, observacao: str) -> None:
+        self._observacao = observacao
+    
         
