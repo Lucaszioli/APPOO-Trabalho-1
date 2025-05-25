@@ -65,7 +65,14 @@ class Disciplina:
     def observacao(self, observacao: str) -> None:
         self._observacao = observacao
     
-
+    @property
+    def atividades(self) -> list[Atividade]:
+        return self._atividades
+    
+    @atividades.setter
+    def atividades(self, atividades: list[Atividade]) -> None:
+        self._atividades = atividades
+    
     def adicionar_atividade(
     self, 
     atividade: "Atividade"
