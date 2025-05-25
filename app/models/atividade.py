@@ -135,6 +135,15 @@ class Prova(Atividade):
     def nota_total(self, nota_total: float) -> None:
         self._nota_total = nota_total
 
+    @property
+    def nota(self) -> Optional[float]:
+        return self._nota
+    
+    @nota.setter
+    def nota(self, nota: float) -> None:
+        self._nota = nota
+
+
     
 
 class Aula_de_Campo(Atividade):
