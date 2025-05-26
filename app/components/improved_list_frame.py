@@ -110,17 +110,18 @@ class ImprovedListFrame(BaseComponent, ABC):
         
     def _create_header(self):
         """Cria o cabeçalho da página."""
-        header_card = Card(self, corner_radius=10)
-        header_card.pack(fill="x", padx=20, pady=(20, 10))
-        
+        header_card = Card(self)
+        header_card.pack(fill="x", padx=20, pady=(0, 10))
+        header_card.configure(border_width=1, border_color=("gray80", "gray20"))
+
         # Título
         title_label = StyledLabel(
             header_card.content_frame,
             text=self.title_text(),
             style='title',
-            text_color=("gray10", "white")
+            text_color=("gray10", "white"),
         )
-        title_label.pack(anchor="w")
+        title_label.pack(anchor="w", pady=5)
         
         # Subtítulo
         subtitle_label = StyledLabel(
@@ -140,8 +141,8 @@ class ImprovedListFrame(BaseComponent, ABC):
             height=40,
             font=customtkinter.CTkFont(size=14, weight="bold")
         )
-        add_button.pack(pady=(15, 0), fill="x")
-        
+        add_button.pack(pady=(10, 0), fill="x")
+     
     def _create_search_bar(self):
         """Cria a barra de busca."""
         search_card = Card(self, title="Buscar")
@@ -173,12 +174,13 @@ class ImprovedListFrame(BaseComponent, ABC):
     def _create_footer(self):
         """Cria o rodapé com estatísticas."""
         footer_card = Card(self)
-        footer_card.pack(fill="x", padx=20, pady=(0, 20))
-        
+        footer_card.pack(fill="x", padx=20, pady=(10, 0))
+        footer_card.configure(border_width=1, border_color=("gray80", "gray20"))
+
         self.stats_label = StyledLabel(
             footer_card.content_frame,
             text=self._get_stats_text(),
-            style='small',
+            style='small', 
             text_color=("gray50", "gray60")
         )
         self.stats_label.pack()
