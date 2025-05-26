@@ -70,14 +70,14 @@ class SemestreCard(ItemCard):
         """Retorna informações de status do semestre."""
         try:
             hoje = datetime.now().date()
-            
             if isinstance(self.item.data_inicio, str):
-                inicio = datetime.strptime(self.item.data_inicio, "%Y-%m-%d").date()
+                inicio = datetime.strptime(self.item.data_inicio, "%d/%m/%Y").date()
             else:
                 inicio = self.item.data_inicio
+                print(inicio)
                 
             if isinstance(self.item.data_fim, str):
-                fim = datetime.strptime(self.item.data_fim, "%Y-%m-%d").date()
+                fim = datetime.strptime(self.item.data_fim, "%d/%m/%Y").date()
             else:
                 fim = self.item.data_fim
             

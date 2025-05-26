@@ -10,7 +10,6 @@ from app.services.disciplinas_services import DisciplinaService
 
 logger = logging.getLogger(__name__)
 
-
 class DisciplinaCard(ItemCard):
     """Card específico para disciplinas."""
     
