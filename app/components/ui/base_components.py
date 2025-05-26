@@ -104,7 +104,7 @@ class Card(BaseComponent):
         self.configure(
             corner_radius=12,
             border_width=1,
-            border_color=("gray80", "gray25")
+            border_color=("gray80", "gray20")  # Corrigido para combinar com ImprovedListFrame
         )
         
         if self.title:
@@ -115,15 +115,11 @@ class Card(BaseComponent):
                 text_color=("gray10", "gray90")
             )
             title_label.pack(pady=(15, 10), padx=15, anchor="w")
-            
+        
         # Container para conteúdo
         self.content_frame = customtkinter.CTkFrame(
             self,
             fg_color="transparent"
         )
-        self.content_frame.pack(fill="both", expand=True, padx=15, pady=(0, 15))
-        
-    def add_content(self, widget):
-        """Adiciona widget ao card."""
-        widget.pack(in_=self.content_frame, pady=5, fill="x")
-        return widget
+        # Corrige: padding vertical para dentro do card, sem colar nas bordas
+        self.content_frame.pack(fill="both", expand=True, padx=15, pady=(10, 10))
