@@ -1,5 +1,5 @@
 from app.views.base_window import BaseWindow
-from app.components.semestres_frame import SemestresFrame
+from app.components.listframe_semestres import SemestresFrame
 
 class PaginaInicial(BaseWindow):
     """Janela principal melhorada que lista todos os semestres disponíveis."""
