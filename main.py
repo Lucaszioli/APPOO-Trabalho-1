@@ -1,6 +1,6 @@
 from app.utils.database import Database
 from app.models.atividade import Atividade, Trabalho, TipoAtividadeEnum
-from app.views.pagina_inicial import PaginaInicial
+from app.ui.views.pagina_inicial import PaginaInicial
 from app.services.semestre_services import SemestreService
 from app.services.disciplinas_services import DisciplinaService
 from app.services.atividade_services import AtividadeService

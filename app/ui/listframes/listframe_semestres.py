@@ -113,7 +113,7 @@ class SemestresFrame(ListFrameBase):
 
     def detail_view_class(self):
         """Classe da view de detalhe de semestre."""
-        from app.views.pagina_semestre import PaginaSemestre
+        from app.ui.views.pagina_semestre import PaginaSemestre
         return PaginaSemestre
 
     def get_id(self, item: Any):

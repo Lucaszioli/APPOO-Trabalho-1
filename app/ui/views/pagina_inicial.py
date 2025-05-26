@@ -1,4 +1,4 @@
-from app.views.base_window import BaseWindow
+from app.ui.views.base_window import BaseWindow
 from app.ui.listframes.listframe_semestres import SemestresFrame
 
 class PaginaInicial(BaseWindow):
