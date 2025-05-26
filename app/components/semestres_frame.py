@@ -95,8 +95,11 @@ class SemestresFrame(ImprovedListFrame):
     """Frame para listar e gerenciar semestres com design melhorado."""
 
     def get_items(self, conexao: Any):
-        """Retorna todos os semestres cadastrados."""
-        return self.service.semestre_service.listar()
+        """Retorna todos os semestres cadastrados e carrega suas disciplinas."""
+        semestres = self.service.semestre_service.listar()
+        for semestre in semestres:
+            self.service.semestre_service.carregar_disciplinas(semestre)
+        return semestres
 
     def modal_class_add(self):
         """Classe do modal usado para criar novo semestre."""
