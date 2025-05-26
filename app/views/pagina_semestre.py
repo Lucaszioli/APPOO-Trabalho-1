@@ -1,5 +1,5 @@
 from app.views.base_window import BaseWindow
-from app.components.disciplinas_frame import DisciplinasFrame
+from app.components.listframe_disciplinas import DisciplinasFrame
 
 class PaginaSemestre(BaseWindow):
     """Janela melhorada de detalhes de um semestre específico."""
