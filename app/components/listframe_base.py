@@ -73,7 +73,7 @@ class ItemCard(Card):
         """Adiciona informações específicas do item. Pode ser sobrescrito."""
         pass
 
-class ImprovedListFrame(BaseComponent, ABC):
+class ListFrameBase(BaseComponent, ABC):
     """Frame de lista melhorado com design moderno."""
     
     def __init__(self, conexao, semestre, service: "ServiceUniversal", master=None):
