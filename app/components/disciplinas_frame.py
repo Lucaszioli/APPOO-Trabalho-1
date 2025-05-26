@@ -1,12 +1,11 @@
 # app/components/disciplinas_frame.py
 import logging
 from typing import Any
-from app.components.improved_list_frame import ImprovedListFrame, ItemCard
+from app.components.listframe_base import ImprovedListFrame, ItemCard
 from app.components.base_components import StyledLabel
+from app.services.disciplinas_services import DisciplinaService
 import customtkinter
 
-from app.components.base_list_frame import BaseListFrame
-from app.services.disciplinas_services import DisciplinaService
 
 logger = logging.getLogger(__name__)
 
