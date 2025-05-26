@@ -1,5 +1,5 @@
 from typing import Any, Optional
-from app.components.ui.improved_modal import ImprovedModal
+from app.components.improved_modal import ImprovedModal
 from app.models.disciplinas import Disciplina
 from app.services.service_universal import ServiceUniversal
 

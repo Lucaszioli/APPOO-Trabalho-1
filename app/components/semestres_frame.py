@@ -1,7 +1,7 @@
 from typing import Any
 from datetime import datetime
 from app.components.improved_list_frame import ImprovedListFrame, ItemCard
-from app.components.ui.base_components import StyledLabel
+from app.components.base_components import StyledLabel
 import customtkinter
 
 class SemestreCard(ItemCard):
