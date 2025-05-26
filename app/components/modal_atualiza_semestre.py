@@ -56,7 +56,7 @@ class ModalAtualizaSemestre(ImprovedModal):
         self.date_inicio.set_date_format("%d/%m/%Y")
         self.date_inicio.set_allow_manual_input(False)
         if self.item:
-            self.date_inicio.insert(self.item.data_inicio)
+            self.date_inicio.insert(self._to_iso(self.item.data_inicio))
         self.date_inicio.grid(row=1, column=0, sticky="ew", padx=(0, 10))
         
         # Data de fim
@@ -71,7 +71,7 @@ class ModalAtualizaSemestre(ImprovedModal):
         self.date_fim.set_date_format("%d/%m/%Y")
         self.date_fim.set_allow_manual_input(False)
         if self.item:
-            self.date_fim.insert(self.item.data_fim)
+            self.date_fim.insert(self._to_iso(self.item.data_fim))
         self.date_fim.grid(row=1, column=1, sticky="ew")
         
     def _collect_data(self) -> dict:
@@ -119,3 +119,16 @@ class ModalAtualizaSemestre(ImprovedModal):
         self.item.data_fim = data["data_fim"]
         
         self.service.semestre_service.editar_bd(self.item)
+
+    def _to_iso(self, date_str):
+        from datetime import datetime
+        try:
+            # Se já está no formato ISO
+            datetime.fromisoformat(date_str)
+            return date_str
+        except ValueError:
+            try:
+                # Tenta converter do formato brasileiro
+                return datetime.strptime(date_str, "%d/%m/%Y").date().isoformat()
+            except Exception:
+                return date_str
