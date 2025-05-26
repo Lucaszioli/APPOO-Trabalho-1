@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Any, Optional
-from app.components.improved_modal import ImprovedModal
+from app.components.modal_base import ImprovedModal
 from app.services.service_universal import ServiceUniversal
 
 class ModalAtualizaDisciplina(ImprovedModal):
