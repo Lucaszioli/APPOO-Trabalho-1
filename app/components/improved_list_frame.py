@@ -89,6 +89,7 @@ class ImprovedListFrame(BaseComponent, ABC):
         
         super().__init__(master)
         self._load_items()
+        self._populate_list()  # Garante que a lista aparece ao abrir
         
     def _setup_style(self):
         super()._setup_style()
