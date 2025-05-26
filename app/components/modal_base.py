@@ -9,7 +9,7 @@ from typing import Type, Optional, Callable, Dict, Any
 
 logger = logging.getLogger(__name__)
 
-class ImprovedModal(customtkinter.CTkToplevel, ABC):
+class ModalBase(customtkinter.CTkToplevel, ABC):
     """Modal melhorado com design responsivo e validação avançada."""
     
     def __init__(
