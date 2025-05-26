@@ -1,74 +1,199 @@
-from abc import ABC, abstractmethod
-from enum import Enum
+from abc import ABC
+from typing import Optional
 
-class TipoAtividade(Enum):
-    TRABALHO = "Trabalho"
-    PROVA = "Prova"
-    CAMPO = "Aula de campo"
-    REVISAO = "Aula de revisão"
+class TipoAtividadeEnum:
+    def __init__(self):
+        self.TRABALHO = "Trabalho"
+        self.PROVA = "Prova"
+        self.CAMPO = "Aula de campo"
+        self.REVISAO = "Aula de revisão"
+
 
 class Atividade(ABC):
-    def __init__(self, nome, data, disciplina_id, observacao = None, id=None):
-        self.id = id
-        self.nome = nome
-        self.data = data
-        self.disciplina_id = disciplina_id
-        self.observacao = observacao
+    def __init__(
+        self, 
+        nome: str,
+        data: str,
+        disciplina_id: int, 
+        observacao: Optional[str] = None, 
+        id: Optional[int]=None,
+        tipo: Optional[TipoAtividadeEnum] = None
+        ):
+        self._id = id
+        self._nome = nome
+        self._data = data
+        self._disciplina_id = disciplina_id
+        self._observacao = observacao
+        self._tipo = tipo
 
+    @property
+    def id(self) -> Optional[int]:
+        return self._id
+    
+    @id.setter
+    def id(self, id: int) -> None:
+        self._id = id
 
-    @abstractmethod
-    def adicionar_bd(self, conexao):
-        pass
+    @property
+    def nome(self) -> str:
+        return self._nome
+    
+    @nome.setter
+    def nome(self, nome: str) -> None:
+        self._nome = nome
 
+    @property
+    def data(self) -> str:
+        return self._data
+    
+    @data.setter
+    def data(self, data: str) -> None:
+        self._data = data
+
+    @property
+    def disciplina_id(self) -> int:
+        return self._disciplina_id
+    
+    @disciplina_id.setter
+    def disciplina_id(self, disciplina_id: int) -> None:
+        self._disciplina_id = disciplina_id
+
+    @property
+    def observacao(self) -> Optional[str]:
+        return self._observacao
+    
+    @observacao.setter
+    def observacao(self, observacao: str) -> None:
+        self._observacao = observacao
+
+    @property
+    def tipo(self) -> Optional[TipoAtividadeEnum]:
+        return self._tipo
+    
+    @tipo.setter
+    def tipo(self, tipo: TipoAtividadeEnum) -> None:
+        self._tipo = tipo
 
 class Trabalho(Atividade):
-    def __init__(self, nome, data, disciplina_id, nota_total, data_apresentacao = None, nota = None, observacao = None, id=None):
+    def __init__(
+        self, 
+        nome: str, 
+        data: str, 
+        disciplina_id: int, 
+        nota_total: float, 
+        data_apresentacao: Optional[str] = None, 
+        nota: Optional[float] = None, 
+        observacao: Optional[str] = None, 
+        id: Optional[int] = None
+        ):
         super().__init__(nome, data, disciplina_id, observacao, id)
-        self.tipo = TipoAtividade.TRABALHO
-        self.nota_total = nota_total
-        self.nota = nota
-        self.data_apresentacao = data_apresentacao
+        self._tipo = TipoAtividadeEnum().TRABALHO
+        self._data_apresentacao = data_apresentacao
+        self._nota_total = nota_total
+        self._nota = nota
 
-    def adicionar_bd(self, conexao):
-        cursor = conexao.cursor()
-        cursor.execute("INSERT INTO atividade (nome, data, disciplina_id, tipo, nota_total, nota, observacao, data_apresentacao) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (self.nome, self.data, self.disciplina_id, self.tipo.value, self.nota_total, self.nota, self.observacao, self.data_apresentacao))
-        conexao.commit()
-        self.id = cursor.lastrowid
+    @property
+    def data_apresentacao(self) -> Optional[str]:
+        return self._data_apresentacao
+    
+    @data_apresentacao.setter
+    def data_apresentacao(self, data_apresentacao: str) -> None:
+        self._data_apresentacao = data_apresentacao
+    
+    @property
+    def nota_total(self) -> Optional[float]:
+        return self._nota_total
+    
+    @nota_total.setter
+    def nota_total(self, nota_total: float) -> None:
+        self._nota_total = nota_total
+
+    @property
+    def nota(self) -> Optional[float]:
+        return self._nota
+    
+    @nota.setter
+    def nota(self, nota: float) -> None:
+        self._nota = nota
+    
         
 
 class Prova(Atividade):
-    def __init__(self, nome, data, disciplina_id, nota_total, nota = None, observacao = None, id=None):
+    def __init__(
+        self, 
+        nome: str, 
+        data: str, 
+        disciplina_id: int, 
+        nota_total: float, 
+        nota: Optional[float] = None, 
+        observacao: Optional[float] = None, 
+        id: Optional[int]=None
+        ):
         super().__init__(nome, data, disciplina_id, observacao, id)
-        self.tipo = TipoAtividade.PROVA
-        self.nota_total = nota_total
-        self.nota = nota
+        self._tipo = TipoAtividadeEnum().PROVA
+        self._nota_total = nota_total
+        self._nota = nota
 
-    def adicionar_bd(self, conexao):
-        cursor = conexao.cursor()
-        cursor.execute("INSERT INTO atividade (nome, data, disciplina_id, tipo, nota_total, nota, observacao) VALUES (?, ?, ?, ?, ?, ?, ?)", (self.nome, self.data, self.disciplina_id, self.tipo.value, self.nota_total, self.nota, self.observacao))
-        conexao.commit()
-        self.id = cursor.lastrowid
+    @property
+    def nota_total(self) -> Optional[float]:
+        return self._nota_total
+    
+    @nota_total.setter
+    def nota_total(self, nota_total: float) -> None:
+        self._nota_total = nota_total
+
+    @property
+    def nota(self) -> Optional[float]:
+        return self._nota
+    
+    @nota.setter
+    def nota(self, nota: float) -> None:
+        self._nota = nota
+
+
+    
 
 class Aula_de_Campo(Atividade):
-    def __init__(self, nome, data, disciplina_id, lugar, observacao = None, id=None):
+    def __init__(
+        self, 
+        nome: str, 
+        data: str, 
+        disciplina_id: int, 
+        lugar: str, 
+        observacao: Optional[str] = None, 
+        id: Optional[int]=None
+        ):
         super().__init__(nome, data, disciplina_id, observacao, id)
-        self.tipo = TipoAtividade.CAMPO
+        self.tipo = TipoAtividadeEnum().CAMPO
         self.lugar = lugar
 
-    def adicionar_bd(self, conexao):
-        cursor = conexao.cursor()
-        cursor.execute("INSERT INTO atividade (nome, data, disciplina_id, tipo, observacao, lugar) VALUES (?, ?, ?, ?, ?,?)", (self.nome, self.data, self.disciplina_id, self.tipo.value, self.observacao, self.lugar))
-        conexao.commit()
-        self.id = cursor.lastrowid
+    @property
+    def lugar(self) -> str:
+        return self._lugar
+    
+    @lugar.setter
+    def lugar(self, lugar: str) -> None:
+        self._lugar = lugar
+
 
 class Revisao(Atividade):
-    def __init__(self, nome, data, disciplina_id, observacao = None, id=None):
+    def __init__(
+        self, 
+        nome: str, 
+        data: str, 
+        disciplina_id: str,
+        materia: Optional[str] = None,
+        observacao: Optional[str] = None, 
+        id: Optional[str]=None
+        ):
         super().__init__(nome, data, disciplina_id, observacao, id)
-        self.tipo = TipoAtividade.REVISAO
+        self._tipo = TipoAtividadeEnum().REVISAO
+        self._materia = materia
 
-    def adicionar_bd(self, conexao):
-        cursor = conexao.cursor()
-        cursor.execute("INSERT INTO atividade (nome, data, disciplina_id, tipo, nota, observacao) VALUES (?, ?, ?, ?, ?, ?)", (self.nome, self.data, self.disciplina_id, self.tipo.value, self.nota, self.observacao))
-        conexao.commit()
-        self.id = cursor.lastrowid
-        
+    @property
+    def materia(self) -> Optional[str]:
+        return self._materia
+    
+    @materia.setter
+    def materia(self, materia: str) -> None:
+        self._materia = materia
