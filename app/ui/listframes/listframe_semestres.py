@@ -163,12 +163,12 @@ class SemestresFrame(ListFrameBase):
             hoje = datetime.now().date()
             
             if isinstance(semestre.data_inicio, str):
-                inicio = datetime.strptime(semestre.data_inicio, "%Y-%m-%d").date()
+                inicio = datetime.strptime(semestre.data_inicio, "%d/%m/%Y").date()
             else:
                 inicio = semestre.data_inicio
                 
             if isinstance(semestre.data_fim, str):
-                fim = datetime.strptime(semestre.data_fim, "%Y-%m-%d").date()
+                fim = datetime.strptime(semestre.data_fim, "%d/%m/%Y").date()
             else:
                 fim = semestre.data_fim
             
