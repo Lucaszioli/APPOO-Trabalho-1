@@ -64,8 +64,7 @@ class ModalAtualizaDisciplina(ImprovedModal):
             key="observacao",
             label="Observações",
             field_type="textbox",
-            required=False,
-            placeholder="Observações adicionais..."
+            required=False
         )
         if self.item and self.item.observacao:
             obs_field.insert("1.0", self.item.observacao)
