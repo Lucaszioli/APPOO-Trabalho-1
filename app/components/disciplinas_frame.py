@@ -105,5 +105,5 @@ class DisciplinasFrame(ImprovedListFrame):
     def _get_stats_text(self):
         """Retorna estatísticas específicas das disciplinas."""
         total = len(self.items)
-        total_horas = sum(getattr(item, 'carga_horaria', 0) for item in self.items)
+        total_horas = sum(int(getattr(item, 'carga_horaria', 0) or 0) for item in self.items)
         return f"Total: {total} disciplinas • {total_horas} horas"
