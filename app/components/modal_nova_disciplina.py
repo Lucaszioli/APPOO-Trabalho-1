@@ -57,8 +57,8 @@ class ModalNovaDisciplina(ImprovedModal):
             key="observacao",
             label="Observações",
             field_type="textbox",
-            required=False,
-            placeholder="Observações adicionais sobre a disciplina..."
+            required=False
+            # placeholder removido pois CTkTextbox não suporta
         )
         
     def _validate_codigo(self, value: str) -> bool:
