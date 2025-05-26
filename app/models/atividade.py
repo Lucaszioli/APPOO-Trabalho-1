@@ -66,6 +66,13 @@ class Atividade(ABC):
     def observacao(self, observacao: str) -> None:
         self._observacao = observacao
 
+    @property
+    def tipo(self) -> Optional[TipoAtividadeEnum]:
+        return self._tipo
+    
+    @tipo.setter
+    def tipo(self, tipo: TipoAtividadeEnum) -> None:
+        self._tipo = tipo
 
 class Trabalho(Atividade):
     def __init__(
@@ -156,7 +163,8 @@ class Aula_de_Campo(Atividade):
         observacao: Optional[str] = None, 
         id: Optional[int]=None
         ):
-        super().__init__(nome, data, disciplina_id, observacao, id, lugar=lugar)
+        print(observacao)
+        super().__init__(nome, data, disciplina_id, observacao, id)
         self.tipo = TipoAtividadeEnum().CAMPO
         self.lugar = lugar
 
