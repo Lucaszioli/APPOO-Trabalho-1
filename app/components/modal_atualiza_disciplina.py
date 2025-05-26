@@ -21,7 +21,7 @@ class ModalAtualizaDisciplina(ImprovedModal):
             master=master,
             callback=callback,
             title=f"Editando: {item.nome if item else 'Disciplina'}",
-            size=(500, 450),
+            size=(600, 600),
             item=item
         )
 
