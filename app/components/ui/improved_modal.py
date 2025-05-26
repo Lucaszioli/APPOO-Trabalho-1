@@ -153,6 +153,7 @@ class ImprovedModal(customtkinter.CTkToplevel, ABC):
         # Valida
         is_valid, error_msg = self._validate_all(data)
         if not is_valid:
+            self.grab_release()
             CTkMessagebox(title="Erro de Validação", message=error_msg, icon="cancel")
             return
             
@@ -161,10 +162,12 @@ class ImprovedModal(customtkinter.CTkToplevel, ABC):
             self._save(data)
         except NomeRepetidoError as e:
             logger.exception("Nome repetido")
+            self.grab_release()
             CTkMessagebox(title="Erro", message=str(e), icon="cancel")
             return
         except Exception as e:
             logger.exception("Erro ao salvar")
+            self.grab_release()
             CTkMessagebox(title="Erro", message=f"Falha ao salvar: {str(e)}", icon="cancel")
             return
             
