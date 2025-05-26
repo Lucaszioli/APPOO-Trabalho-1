@@ -17,9 +17,9 @@ class BaseWindow(customtkinter.CTk):
         "Azul": "blue",
         "Verde": "green",
         "Azul Escuro": "dark-blue",
-        "Rosa": "app/themes/rose.json",
-        "Violeta": "app/themes/violet.json",
-        "Vaporwave": "app/themes/vaporwave.json",
+        "Rosa": "app/ui/themes/rose.json",
+        "Violeta": "app/ui/themes/violet.json",
+        "Vaporwave": "app/ui/themes/vaporwave.json",
     }
     SCALING_RANGE = (0.5, 2.0)
     DEFAULT_SIZE = (1200, 700)  # Tamanho maior para melhor experiência

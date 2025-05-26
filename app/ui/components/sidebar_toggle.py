@@ -198,7 +198,7 @@ class SidebarToggle(customtkinter.CTkFrame):
         """Adiciona seção de informações."""
         info_text = """Sistema de Gerenciamento Acadêmico
 
-Versão: 2.0
+Versão: 1.0
 Desenvolvido com CustomTkinter
 
 Funcionalidades:
