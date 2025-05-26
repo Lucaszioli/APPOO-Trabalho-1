@@ -53,11 +53,11 @@ class DisciplinasFrame(ListFrameBase):
 
     def modal_class_add(self):
         """Classe do modal usado para criar nova disciplina."""
-        from app.ui.modal_nova_disciplina import ModalNovaDisciplina
+        from app.ui.modals.modal_nova_disciplina import ModalNovaDisciplina
         return ModalNovaDisciplina
     
     def modal_class_update(self):
-        from app.ui.modal_atualiza_disciplina import ModalAtualizaDisciplina
+        from app.ui.modals.modal_atualiza_disciplina import ModalAtualizaDisciplina
         return ModalAtualizaDisciplina
 
     def detail_view_class(self):

@@ -1,12 +1,12 @@
 from typing import Any, Optional
 from datetime import datetime
-from app.ui.modal_base import ModalBase
+from app.ui.modals.modal_base import ModalBase
 from app.ui.components.date_picker import CTkDatePicker
 from app.services.service_universal import ServiceUniversal
 import customtkinter
 
-class ModalAtualizaSemestre(ModalBase):
-    """Modal melhorado para atualização de semestre."""
+class ModalNovoSemestre(ModalBase):
+    """Modal melhorado para criação de novo semestre."""
     
     def __init__(
         self,
@@ -14,30 +14,25 @@ class ModalAtualizaSemestre(ModalBase):
         service: "ServiceUniversal",
         master: Optional[Any] = None,
         callback: Optional[callable] = None,
-        item: Optional[Any] = None
     ):
-        self.item = item
         super().__init__(
             conexao=conexao,
             service=service,
             master=master,
             callback=callback,
-            title=f"Editando: {item.nome if item else 'Semestre'}",
+            title="Novo Semestre",
             size=(500, 400),
-            item=item
         )
 
     def _build_form(self) -> None:
-        """Constrói o formulário de edição do semestre."""
+        """Constrói o formulário de novo semestre."""
         # Nome do semestre
-        nome_field = self.add_field(
+        self.add_field(
             key="nome",
             label="Nome do Semestre",
             required=True,
             placeholder="Ex: 2024.1, Outono 2024, etc."
         )
-        if self.item:
-            nome_field.insert(0, self.item.nome)
         
         # Container para datas
         dates_container = customtkinter.CTkFrame(self.form_frame, fg_color="transparent")
@@ -55,8 +50,6 @@ class ModalAtualizaSemestre(ModalBase):
         self.date_inicio = CTkDatePicker(dates_container)
         self.date_inicio.set_date_format("%d/%m/%Y")
         self.date_inicio.set_allow_manual_input(False)
-        if self.item:
-            self.date_inicio.insert(self._to_iso(self.item.data_inicio))
         self.date_inicio.grid(row=1, column=0, sticky="ew", padx=(0, 10))
         
         # Data de fim
@@ -70,8 +63,6 @@ class ModalAtualizaSemestre(ModalBase):
         self.date_fim = CTkDatePicker(dates_container)
         self.date_fim.set_date_format("%d/%m/%Y")
         self.date_fim.set_allow_manual_input(False)
-        if self.item:
-            self.date_fim.insert(self._to_iso(self.item.data_fim))
         self.date_fim.grid(row=1, column=1, sticky="ew")
         
     def _collect_data(self) -> dict:
@@ -113,22 +104,9 @@ class ModalAtualizaSemestre(ModalBase):
         return True, ""
 
     def _save(self, data: dict) -> None:
-        """Salva as alterações no semestre."""
-        self.item.nome = data["nome"]
-        self.item.data_inicio = data["data_inicio"]
-        self.item.data_fim = data["data_fim"]
-        
-        self.service.semestre_service.editar_bd(self.item)
-
-    def _to_iso(self, date_str):
-        from datetime import datetime
-        try:
-            # Se já está no formato ISO
-            datetime.fromisoformat(date_str)
-            return date_str
-        except ValueError:
-            try:
-                # Tenta converter do formato brasileiro
-                return datetime.strptime(date_str, "%d/%m/%Y").date().isoformat()
-            except Exception:
-                return date_str
+        """Salva o novo semestre."""
+        self.service.semestre_service.criar_semestre(
+            nome=data["nome"],
+            data_inicio=data["data_inicio"],
+            data_fim=data["data_fim"]
+        )

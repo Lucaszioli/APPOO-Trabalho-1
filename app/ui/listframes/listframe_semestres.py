@@ -103,12 +103,12 @@ class SemestresFrame(ListFrameBase):
 
     def modal_class_add(self):
         """Classe do modal usado para criar novo semestre."""
-        from app.ui.modal_novo_semestre import ModalNovoSemestre
+        from app.ui.modals.modal_novo_semestre import ModalNovoSemestre
         return ModalNovoSemestre
     
     def modal_class_update(self):
         """Classe do modal usado para atualizar semestre."""
-        from app.ui.modal_atualiza_semestre import ModalAtualizaSemestre
+        from app.ui.modals.modal_atualiza_semestre import ModalAtualizaSemestre
         return ModalAtualizaSemestre
 
     def detail_view_class(self):
