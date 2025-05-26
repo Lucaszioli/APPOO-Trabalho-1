@@ -19,7 +19,7 @@ class ImprovedModal(customtkinter.CTkToplevel, ABC):
         master=None,
         callback=None,
         title: str = "Modal",
-        size: tuple[int, int] = (450, 400),
+        size: tuple[int, int] = (500, 500),
         item=None
     ):
         super().__init__(master)
