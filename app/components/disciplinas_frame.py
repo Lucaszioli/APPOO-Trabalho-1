@@ -2,7 +2,7 @@
 import logging
 from typing import Any
 from app.components.listframe_base import ListFrameBase, ItemCard
-from app.components.base_components import StyledLabel
+from app.components.components_base import StyledLabel
 from app.services.disciplinas_services import DisciplinaService
 import customtkinter
 
