@@ -102,7 +102,7 @@ class ModalAtualizaDisciplina(ImprovedModal):
         """Salva as alterações na disciplina."""
         self.item.nome = data["nome"]
         self.item.carga_horaria = int(data["carga"])
-        self.item.codigo = data["codigo"]
+        self.item.codigo = str(data["codigo"]).strip()  # Garante string limpa
         self.item.observacao = data.get("observacao") or None
         
         self.service.disciplina_service.editar_bd(self.item)

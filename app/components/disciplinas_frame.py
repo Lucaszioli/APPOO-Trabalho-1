@@ -95,8 +95,10 @@ class DisciplinasFrame(ImprovedListFrame):
         return self.service.disciplina_service.deletar(item)
 
     def update_item(self, item):
-        """Atualiza uma disciplina."""
-        pass
+        """Atualiza uma disciplina e recarrega a lista."""
+        self.service.disciplina_service.editar_bd(item)
+        self._load_items()
+        self._populate_list()
         
     def _create_item_card(self, item):
         """Cria card customizado para disciplina."""
