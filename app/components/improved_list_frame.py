@@ -3,7 +3,7 @@ import logging
 import customtkinter
 from CTkMessagebox import CTkMessagebox
 from app.services.service_universal import ServiceUniversal
-from app.components.ui.base_components import BaseComponent, StyledButton, StyledLabel, Card
+from app.components.base_components import BaseComponent, StyledButton, StyledLabel, Card
 import inspect
 
 logger = logging.getLogger(__name__)
