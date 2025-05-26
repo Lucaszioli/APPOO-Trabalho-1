@@ -1,7 +1,7 @@
 # app/components/disciplinas_frame.py
 import logging
 from typing import Any
-from app.components.listframe_base import ImprovedListFrame, ItemCard
+from app.components.listframe_base import ListFrameBase, ItemCard
 from app.components.base_components import StyledLabel
 from app.services.disciplinas_services import DisciplinaService
 import customtkinter
@@ -44,7 +44,7 @@ class DisciplinaCard(ItemCard):
             )
             obs_label.pack(anchor="w", pady=(5, 0))
 
-class DisciplinasFrame(ImprovedListFrame):
+class DisciplinasFrame(ListFrameBase):
     """Frame para listar e gerenciar disciplinas com design melhorado."""
 
     def get_items(self, conexao: Any):

@@ -1,6 +1,6 @@
 from typing import Any
 from datetime import datetime
-from app.components.listframe_base import ImprovedListFrame, ItemCard
+from app.components.listframe_base import ListFrameBase, ItemCard
 from app.components.base_components import StyledLabel
 import customtkinter
 
@@ -91,7 +91,7 @@ class SemestreCard(ItemCard):
         except Exception:
             return "Indefinido", ("gray40", "gray50")
 
-class SemestresFrame(ImprovedListFrame):
+class SemestresFrame(ListFrameBase):
     """Frame para listar e gerenciar semestres com design melhorado."""
 
     def get_items(self, conexao: Any):
