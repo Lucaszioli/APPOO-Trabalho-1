@@ -2,9 +2,9 @@ from abc import ABC, abstractmethod
 import logging
 import customtkinter
 from CTkMessagebox import CTkMessagebox
-from app.services.semestre_services import SemestreService
 from app.errors.nomeSemestre import NomeRepetidoError
-from app.services.disciplinas_services import DisciplinaService
+from app.services.service_base import ServiceBase
+from typing import Type
 logger = logging.getLogger(__name__)
 
 class BaseModal(customtkinter.CTkToplevel, ABC):
@@ -12,8 +12,7 @@ class BaseModal(customtkinter.CTkToplevel, ABC):
     def __init__(
         self,
         conexao,
-        semestre_service:"SemestreService"= None,
-        disciplina_service:"DisciplinaService"=None,
+        service: Type[ServiceBase],
         master=None,
         callback=None,
         title: str = "Modal",
@@ -26,8 +25,7 @@ class BaseModal(customtkinter.CTkToplevel, ABC):
             self.destroy()
             return
         self.conexao = conexao
-        self.semestre_service = semestre_service
-        self.disciplina_service = disciplina_service
+        self.service = service
         self.callback = callback
         self.title(title)
         self.geometry(f"{size[0]}x{size[1]}")

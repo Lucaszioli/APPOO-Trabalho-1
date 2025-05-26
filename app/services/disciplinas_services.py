@@ -26,8 +26,8 @@ class DisciplinaService(ServiceBase):
         self.disciplinaExistente = self.buscar_por_id(disciplina.id)
         if not self.disciplinaExistente:
             raise DisciplinaNotFoundError()
-        self.query = "UPDATE disciplina SET nome = ?, carga_horaria = ?, semestre_id = ?, codigo = ?, observacao = ? WHERE id = ?"
-        self.params = (disciplina.nome, disciplina.carga_horaria, disciplina.semestre_id, disciplina.codigo, disciplina.observacao, disciplina.id)
+        self.query = "UPDATE disciplina SET nome = ?, carga_horaria = ?, codigo = ?, observacao = ? WHERE id = ?"
+        self.params = (disciplina.nome, disciplina.carga_horaria, disciplina.codigo, disciplina.observacao, disciplina.id)
         self._editar(self.query, self.params)
         return disciplina
     
@@ -69,7 +69,7 @@ class DisciplinaService(ServiceBase):
         self.disciplinas = self._buscar_varios(self.query, self.params)
         if not self.disciplinas:
             return []
-        return [Disciplina(id=row[0], nome=row[1], carga_horaria=row[2], semestre_id=row[3], codigo=row[4], observacao=row[5]) for row in self.disciplinas]
+        return [Disciplina(id=row[0], nome=row[1], carga_horaria=row[3], semestre_id=row[4], codigo=row[2], observacao=row[5]) for row in self.disciplinas]
     
     def listar(self) -> list["Disciplina"]:
         self.query = "SELECT * FROM disciplina"
@@ -77,7 +77,7 @@ class DisciplinaService(ServiceBase):
         disciplinas = self._buscar_varios(self.query, self.params)
         if not disciplinas:
             return []
-        return [Disciplina(id=row[0], nome=row[1], carga_horaria=row[2], semestre_id=row[3], codigo=row[4], observacao=row[5]) for row in self.disciplinas]
+        return [Disciplina(id=row[0], nome=row[1], carga_horaria=row[3], semestre_id=row[4], codigo=row[2], observacao=row[5]) for row in self.disciplinas]
     
 
         
