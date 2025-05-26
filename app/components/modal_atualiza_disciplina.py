@@ -1,9 +1,9 @@
 from datetime import datetime
 from typing import Any, Optional
-from app.components.modal_base import ImprovedModal
+from app.components.modal_base import ModalBase
 from app.services.service_universal import ServiceUniversal
 
-class ModalAtualizaDisciplina(ImprovedModal):
+class ModalAtualizaDisciplina(ModalBase):
     """Modal melhorado para atualização de disciplina."""
     
     def __init__(

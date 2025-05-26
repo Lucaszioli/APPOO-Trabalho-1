@@ -1,11 +1,11 @@
 from typing import Any, Optional
 from datetime import datetime
-from app.components.modal_base import ImprovedModal
+from app.components.modal_base import ModalBase
 from app.components.date_picker import CTkDatePicker
 from app.services.service_universal import ServiceUniversal
 import customtkinter
 
-class ModalNovoSemestre(ImprovedModal):
+class ModalNovoSemestre(ModalBase):
     """Modal melhorado para criação de novo semestre."""
     
     def __init__(

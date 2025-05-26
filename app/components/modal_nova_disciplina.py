@@ -1,9 +1,9 @@
 from typing import Any, Optional
-from app.components.modal_base import ImprovedModal
+from app.components.modal_base import ModalBase
 from app.models.disciplinas import Disciplina
 from app.services.service_universal import ServiceUniversal
 
-class ModalNovaDisciplina(ImprovedModal):
+class ModalNovaDisciplina(ModalBase):
     """Modal melhorado para criação de uma nova disciplina."""
     
     def __init__(
