@@ -1,7 +1,7 @@
 from typing import Any, Optional
 from datetime import datetime
 from app.ui.modal_base import ModalBase
-from app.ui.date_picker import CTkDatePicker
+from app.ui.components.date_picker import CTkDatePicker
 from app.services.service_universal import ServiceUniversal
 import customtkinter
 

@@ -2,7 +2,7 @@ import logging
 import customtkinter
 from CTkMessagebox import CTkMessagebox
 from typing import Any
-from app.ui.components_base import StyledButton, StyledLabel, Card
+from app.ui.components.components_base import StyledButton, StyledLabel, Card
 
 logger = logging.getLogger(__name__)
 
