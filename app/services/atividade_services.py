@@ -32,7 +32,20 @@ class AtividadeService(ABC, Database):
         atividades = self._buscar_varios(self.query, self.params)
         if not atividades:
             return []
-        return [Atividade(id=row[0], nome=row[1], data=row[2], nota=row[3], nota_total=row[4], disciplina_id=row[5], tipo=row[6], observacao=row[7], lugar=row[8], data_apresentacao=row[9]) for row in atividades]
+        result = []
+        for atividade in atividades:
+            if atividade[6] == TipoAtividadeEnum().TRABALHO:
+                result.append(Trabalho(id=atividade[0], nome=atividade[1], data=atividade[2], nota=atividade[3], nota_total=atividade[4], disciplina_id=atividade[5], observacao=atividade[7], data_apresentacao=atividade[9]))
+            elif atividade[6] == TipoAtividadeEnum().PROVA:
+                result.append(Prova(id=atividade[0], nome=atividade[1], data=atividade[2], nota=atividade[3], nota_total=atividade[4], disciplina_id=atividade[5], observacao=atividade[7]))
+            elif atividade[6] == TipoAtividadeEnum().CAMPO:
+                result.append(Aula_de_Campo(id=atividade[0], nome=atividade[1], data=atividade[2], disciplina_id=atividade[5], observacao=atividade[7], lugar=atividade[8]))
+            elif atividade[6] == TipoAtividadeEnum().REVISAO:
+                result.append(Revisao(id=atividade[0], nome=atividade[1], data=atividade[2], disciplina_id=atividade[5], observacao=atividade[7], materia=atividade[10]))
+            else:   
+                raise ValueError("Tipo de atividade inválido")
+            
+        return result
     
     def listar_por_disciplina(self, disciplina:"Disciplina") -> list[Atividade]:
         self.query = "SELECT * FROM atividade WHERE disciplina_id = ?"
@@ -41,7 +54,20 @@ class AtividadeService(ABC, Database):
         if not atividades:
             return []
         
-        return [Atividade(id=row[0], nome=row[1], data=row[2], nota=row[3], nota_total=row[4], disciplina_id=row[5], tipo=row[6], observacao=row[7], lugar=row[8], data_apresentacao=row[9]) for row in atividades] 
+        result = []
+        for atividade in atividades:
+            if atividade[6] == TipoAtividadeEnum().TRABALHO:
+                result.append(Trabalho(id=atividade[0], nome=atividade[1], data=atividade[2], nota=atividade[3], nota_total=atividade[4], disciplina_id=atividade[5], observacao=atividade[7], data_apresentacao=atividade[9]))
+            elif atividade[6] == TipoAtividadeEnum().PROVA:
+                result.append(Prova(id=atividade[0], nome=atividade[1], data=atividade[2], nota=atividade[3], nota_total=atividade[4], disciplina_id=atividade[5], observacao=atividade[7]))
+            elif atividade[6] == TipoAtividadeEnum().CAMPO:
+                result.append(Aula_de_Campo(id=atividade[0], nome=atividade[1], data=atividade[2], disciplina_id=atividade[5], observacao=atividade[7], lugar=atividade[8]))
+            elif atividade[6] == TipoAtividadeEnum().REVISAO:
+                result.append(Revisao(id=atividade[0], nome=atividade[1], data=atividade[2], disciplina_id=atividade[5], observacao=atividade[7], materia=atividade[10]))
+            else:   
+                raise ValueError("Tipo de atividade inválido")
+            
+        return result
 
     
     def buscar_por_id(self, id:str) -> Optional[Atividade]:
@@ -81,7 +107,7 @@ class AtividadeService(ABC, Database):
         del atividade
         return self.rows
     
-    def criar_atividade(self, nome:str, data:str, disciplina:"Disciplina",tipo:"TipoAtividadeEnum", nota_total:int, nota:int = None, observacao:str = None, lugar:str = None, data_apresentacao:str = None, materia=None) -> Atividade:
+    def criar_atividade(self, nome:str, data:str, disciplina:"Disciplina",tipo:"TipoAtividadeEnum", nota_total:int=None, nota:int = None, observacao:str = None, lugar:str = None, data_apresentacao:str = None, materia=None) -> Atividade:
         if tipo == TipoAtividadeEnum().TRABALHO:
             atividade = Trabalho(nome, data, disciplina.id, nota_total, nota=nota, observacao=observacao, data_apresentacao=data_apresentacao)
         elif tipo == TipoAtividadeEnum().PROVA:

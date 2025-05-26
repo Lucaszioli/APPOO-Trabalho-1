@@ -163,7 +163,6 @@ class Aula_de_Campo(Atividade):
         observacao: Optional[str] = None, 
         id: Optional[int]=None
         ):
-        print(observacao)
         super().__init__(nome, data, disciplina_id, observacao, id)
         self.tipo = TipoAtividadeEnum().CAMPO
         self.lugar = lugar
