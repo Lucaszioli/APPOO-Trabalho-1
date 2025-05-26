@@ -1,8 +1,8 @@
 # app/components/disciplinas_frame.py
 import logging
 from typing import Any
-from app.components.listframe_base import ListFrameBase, ItemCard
-from app.components.components_base import StyledLabel
+from app.ui.listframe_base import ListFrameBase, ItemCard
+from app.ui.components_base import StyledLabel
 from app.services.disciplinas_services import DisciplinaService
 import customtkinter
 
@@ -53,11 +53,11 @@ class DisciplinasFrame(ListFrameBase):
 
     def modal_class_add(self):
         """Classe do modal usado para criar nova disciplina."""
-        from app.components.modal_nova_disciplina import ModalNovaDisciplina
+        from app.ui.modal_nova_disciplina import ModalNovaDisciplina
         return ModalNovaDisciplina
     
     def modal_class_update(self):
-        from app.components.modal_atualiza_disciplina import ModalAtualizaDisciplina
+        from app.ui.modal_atualiza_disciplina import ModalAtualizaDisciplina
         return ModalAtualizaDisciplina
 
     def detail_view_class(self):

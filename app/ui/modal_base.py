@@ -4,7 +4,7 @@ import customtkinter
 from CTkMessagebox import CTkMessagebox
 from app.errors.nomeSemestre import NomeRepetidoError
 from app.services.service_base import ServiceBase
-from app.components.components_base import StyledLabel, StyledEntry, StyledButton, Card
+from app.ui.components_base import StyledLabel, StyledEntry, StyledButton, Card
 from typing import Type, Optional, Callable, Dict, Any
 
 logger = logging.getLogger(__name__)

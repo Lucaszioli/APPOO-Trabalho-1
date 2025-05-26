@@ -1,7 +1,7 @@
 from typing import Any
 from datetime import datetime
-from app.components.listframe_base import ListFrameBase, ItemCard
-from app.components.components_base import StyledLabel
+from app.ui.listframe_base import ListFrameBase, ItemCard
+from app.ui.components_base import StyledLabel
 import customtkinter
 
 class SemestreCard(ItemCard):
@@ -103,12 +103,12 @@ class SemestresFrame(ListFrameBase):
 
     def modal_class_add(self):
         """Classe do modal usado para criar novo semestre."""
-        from app.components.modal_novo_semestre import ModalNovoSemestre
+        from app.ui.modal_novo_semestre import ModalNovoSemestre
         return ModalNovoSemestre
     
     def modal_class_update(self):
         """Classe do modal usado para atualizar semestre."""
-        from app.components.modal_atualiza_semestre import ModalAtualizaSemestre
+        from app.ui.modal_atualiza_semestre import ModalAtualizaSemestre
         return ModalAtualizaSemestre
 
     def detail_view_class(self):

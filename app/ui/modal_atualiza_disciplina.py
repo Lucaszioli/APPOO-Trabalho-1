@@ -1,65 +1,73 @@
+from datetime import datetime
 from typing import Any, Optional
-from app.components.modal_base import ModalBase
-from app.models.disciplinas import Disciplina
+from app.ui.modal_base import ModalBase
 from app.services.service_universal import ServiceUniversal
 
-class ModalNovaDisciplina(ModalBase):
-    """Modal melhorado para criação de uma nova disciplina."""
+class ModalAtualizaDisciplina(ModalBase):
+    """Modal melhorado para atualização de disciplina."""
     
     def __init__(
         self,
-        semestre: Any,
         conexao: Any,
         service: "ServiceUniversal",
         master: Optional[Any] = None,
-        callback: Optional[callable] = None
+        callback: Optional[callable] = None,
+        item: Optional[Any] = None
     ):
-        self.semestre = semestre
+        self.item = item
         super().__init__(
             conexao=conexao,
             service=service,
             master=master,
             callback=callback,
-            title="Nova Disciplina",
-            size=(500, 450),
+            title=f"Editando: {item.nome if item else 'Disciplina'}",
+            size=(600, 600),
+            item=item
         )
 
     def _build_form(self) -> None:
-        """Constrói o formulário de nova disciplina."""
+        """Constrói o formulário de edição da disciplina."""
         # Nome da disciplina
-        self.add_field(
+        nome_field = self.add_field(
             key="nome",
             label="Nome da Disciplina",
             required=True,
             placeholder="Ex: Programação Orientada a Objetos"
         )
+        if self.item:
+            nome_field.insert(0, self.item.nome)
         
         # Código da disciplina
-        self.add_field(
+        codigo_field = self.add_field(
             key="codigo",
             label="Código",
             required=True,
             placeholder="Ex: INF001",
             validator=self._validate_codigo
         )
+        if self.item:
+            codigo_field.insert(0, self.item.codigo)
         
         # Carga horária
-        self.add_field(
+        carga_field = self.add_field(
             key="carga",
             label="Carga Horária (horas)",
             required=True,
             placeholder="Ex: 60",
             validator=self._validate_carga_horaria
         )
+        if self.item:
+            carga_field.insert(0, str(self.item.carga_horaria))
         
         # Observação
-        self.add_field(
+        obs_field = self.add_field(
             key="observacao",
             label="Observações",
             field_type="textbox",
             required=False
-            # placeholder removido pois CTkTextbox não suporta
         )
+        if self.item and self.item.observacao:
+            obs_field.insert("1.0", self.item.observacao)
         
     def _validate_codigo(self, value: str) -> bool:
         """Valida o código da disciplina."""
@@ -91,12 +99,10 @@ class ModalNovaDisciplina(ModalBase):
         return True, ""
 
     def _save(self, data: dict) -> None:
-        """Salva a nova disciplina."""
-        carga = int(data["carga"])
-        self.disciplina = self.service.disciplina_service.criar_disciplina(
-            nome=data["nome"], 
-            carga_horaria=carga, 
-            semestre=self.semestre, 
-            codigo=data["codigo"], 
-            observacao=data.get("observacao") or None
-        )
+        """Salva as alterações na disciplina."""
+        self.item.nome = data["nome"]
+        self.item.carga_horaria = int(data["carga"])
+        self.item.codigo = str(data["codigo"]).strip()  # Garante string limpa
+        self.item.observacao = data.get("observacao") or None
+        
+        self.service.disciplina_service.editar_bd(self.item)
