@@ -24,6 +24,14 @@ class AtividadeCard(ItemCard):
         )
         data_label.grid(row=0, column=1, sticky="e")
         
+        if hasattr(self.item, 'tipo') and (self.item.tipo == "Trabalho" or self.item.tipo == "Prova"):
+            pontuacao_label = StyledLabel(
+                info_container,
+                text=f"Pontuação: {self.item.nota_total} pontos",
+                style='small'
+            )
+            pontuacao_label.grid(row=1, column=0, sticky="w", padx=(0, 10))
+            
         if hasattr(self.item, 'observacao') and self.item.observacao:
             obs_label = StyledLabel(
                 parent,
