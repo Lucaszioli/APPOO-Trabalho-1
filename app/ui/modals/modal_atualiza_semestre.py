@@ -52,11 +52,12 @@ class ModalAtualizaSemestre(ModalBase):
         )
         inicio_label.grid(row=0, column=0, sticky="w", padx=(0, 10))
         
-        self.date_inicio = CTkDatePicker(dates_container)
+        inicio_placeholder = self._to_br_format(self.item.data_inicio) if self.item else "Ex: 01/01/2024"
+        self.date_inicio = CTkDatePicker(dates_container, placeholder=inicio_placeholder)
         self.date_inicio.set_date_format("%d/%m/%Y")
         self.date_inicio.set_allow_manual_input(False)
         if self.item:
-            self.date_inicio.insert(self._to_iso(self.item.data_inicio))
+            self.date_inicio.insert(self._to_br_format(self.item.data_inicio))
         self.date_inicio.grid(row=1, column=0, sticky="ew", padx=(0, 10))
         
         # Data de fim
@@ -67,11 +68,12 @@ class ModalAtualizaSemestre(ModalBase):
         )
         fim_label.grid(row=0, column=1, sticky="w")
         
-        self.date_fim = CTkDatePicker(dates_container)
+        fim_placeholder = self._to_br_format(self.item.data_fim) if self.item else "Ex: 30/06/2024"
+        self.date_fim = CTkDatePicker(dates_container, placeholder=fim_placeholder)
         self.date_fim.set_date_format("%d/%m/%Y")
         self.date_fim.set_allow_manual_input(False)
         if self.item:
-            self.date_fim.insert(self._to_iso(self.item.data_fim))
+            self.date_fim.insert(self._to_br_format(self.item.data_fim))
         self.date_fim.grid(row=1, column=1, sticky="ew")
         
     def _collect_data(self) -> dict:
@@ -130,5 +132,18 @@ class ModalAtualizaSemestre(ModalBase):
             try:
                 # Tenta converter do formato brasileiro
                 return datetime.strptime(date_str, "%d/%m/%Y").date().isoformat()
+            except Exception:
+                return date_str
+
+    def _to_br_format(self, date_str):
+        from datetime import datetime
+        try:
+            # Se já está no formato brasileiro
+            datetime.strptime(date_str, "%d/%m/%Y")
+            return date_str
+        except ValueError:
+            try:
+                # Se está no formato ISO
+                return datetime.strptime(date_str, "%Y-%m-%d").strftime("%d/%m/%Y")
             except Exception:
                 return date_str
