@@ -78,7 +78,7 @@ class ModalAtualizaAtividade(ModalBase):
             required=True,
             placeholder="Ex: 10",
             validator=lambda value: value.isdigit() and int(value) > 0
-        ).insert(0, str(getattr(atividade, "pontuacao", "")))
+        ).insert(0, str(getattr(atividade, "pontuacao", getattr(atividade, "nota_total", ""))))
         self.add_field(
             key="observacao",
             label="Observações",
@@ -112,10 +112,11 @@ class ModalAtualizaAtividade(ModalBase):
             atividade.nome = data["nome"]
             atividade.data = data["data"]
             atividade.tipo = data["tipo"]
+            atividade.nota_total = int(data["pontuação"])
             atividade.pontuacao = int(data["pontuação"])
             atividade.observacao = data.get("observacao", "")
             # Garante atributos esperados pelo editar_bd
-            for attr in ["disciplina_id", "nota_total", "nota", "lugar", "data_apresentacao"]:
+            for attr in ["disciplina_id", "nota", "lugar", "data_apresentacao"]:
                 if not hasattr(atividade, attr):
                     setattr(atividade, attr, None)
             self.service.atividade_service.editar_bd(atividade)
@@ -123,7 +124,6 @@ class ModalAtualizaAtividade(ModalBase):
                 self.callback()
             self.destroy()
         except Exception as e:
-            # Fecha o modal antes de abrir a messagebox para evitar erro de grab
             self.destroy()
             CTkMessagebox(title="Erro", message=f"Não foi possível atualizar a atividade: {str(e)}", icon="cancel")
 
