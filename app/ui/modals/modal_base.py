@@ -130,6 +130,16 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
                 corner_radius=6,
                 **kwargs
             )
+        elif field_type == "combobox":
+            # Suporte ao combobox
+            values = kwargs.get("values", [])
+            field = customtkinter.CTkComboBox(
+                self.form_frame,
+                values=values,
+                state="readonly"
+            )
+            if values:
+                field.set(values[0])  # valor padrão
         else:
             raise ValueError(f"Tipo de campo não suportado: {field_type}")
             
@@ -191,6 +201,8 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
                 data[key] = widget.get().strip()
             elif field_type == "textbox":
                 data[key] = widget.get("1.0", "end-1c").strip()
+            elif field_type == "combobox":
+                data[key] = widget.get().strip()
                 
         return data
         
