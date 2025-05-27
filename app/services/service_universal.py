@@ -6,4 +6,3 @@ class ServiceUniversal :
         self.semestre_service = SemestreService(db_path=db_path)
         self.disciplina_service = DisciplinaService(db_path=db_path)
         self.atividade_service = AtividadeService(db_path=db_path)
-        # self.atividade_service = atividade_service
