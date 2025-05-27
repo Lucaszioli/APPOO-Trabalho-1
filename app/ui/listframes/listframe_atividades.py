@@ -89,10 +89,9 @@ class AtividadesFrame(ListFrameBase):
         
     def _create_item_card(self, item):
         return AtividadeCard(
-            item=item,
-            service=self.service,
-            conexao=self.conexao,
-            master=self.master
+            self.list_container,  # master
+            item,
+            self  # list_frame
         )
         
     def _get_stats_text(self):
@@ -103,3 +102,9 @@ class AtividadesFrame(ListFrameBase):
             int(getattr(item, 'pontuacao', 0) or 0) for item in self.items
         )
         return f"Total de atividades: {total_atividades} • Pontuação total distribuida: {total_pontuacao}"
+    
+    def _on_add(self):
+        cls = self.modal_class_add()
+        params = dict(conexao=self.conexao, service=self.service, master=self, callback=self._reload)
+        params['disciplina'] = self.disciplina  # Corrige para passar a disciplina
+        cls(**params)
