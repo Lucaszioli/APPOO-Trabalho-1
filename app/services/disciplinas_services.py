@@ -19,10 +19,10 @@ class DisciplinaService(ServiceBase):
     def buscar_por_id(self, id:str) -> "Disciplina":
         self.query = "SELECT * FROM disciplina WHERE id = ?"
         self.params = (id,)
-        row = self._buscar_um(self.query, self.params)
-        if not row:
-            return None
-        return Disciplina(id=row[0], nome=row[1], carga_horaria=row[2], semestre_id=row[3], codigo=row[4], observacao=row[5])
+        self.disciplina = self._buscar_um(self.query, self.params)
+        return Disciplina(id=self.disciplina[0], nome=self.disciplina[1], carga_horaria=self.disciplina[3], semestre_id=self.disciplina[4], codigo=self.disciplina[2], observacao=self.disciplina[5])
+
+
 
     def editar_bd(self,disciplina:"Disciplina") -> "Disciplina":
         self.disciplinaExistente = self.buscar_por_id(disciplina.id)
