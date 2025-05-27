@@ -4,12 +4,13 @@ from datetime import datetime
 import calendar
 
 class CTkDatePicker(ctk.CTkFrame):
-    def __init__(self, master=None, **kwargs):
+    def __init__(self, master=None, placeholder=None, **kwargs):
         """
         Initialize the CTkDatePicker instance.
         
         Parameters:
         - master: The parent widget.
+        - placeholder: Placeholder text for the date entry.
         - **kwargs: Additional keyword arguments passed to the CTkFrame constructor.
         
         Initializes the date entry, calendar button, popup, and other related components.
@@ -17,7 +18,7 @@ class CTkDatePicker(ctk.CTkFrame):
 
         super().__init__(master, **kwargs)
 
-        self.date_entry = ctk.CTkEntry(self)
+        self.date_entry = ctk.CTkEntry(self, placeholder_text=placeholder)
         self.date_entry.grid(row=0, column=0, sticky="ew", padx=5, pady=5)
 
         self.calendar_button = ctk.CTkButton(self, text="▼", width=20, command=self.open_calendar)
@@ -267,6 +268,4 @@ class CTkDatePicker(ctk.CTkFrame):
         self.date_entry.delete(0, tk.END)
         
         # Insere no formato %d/%m/%Y
-        date = datetime.fromisoformat(date).strftime("%d/%m/%Y")
         self.date_entry.insert(0, date)
-        
