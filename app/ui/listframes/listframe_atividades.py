@@ -51,8 +51,8 @@ class AtividadesFrame(ListFrameBase):
     
     def modal_class_update(self) -> type:
         """Classe do modal usado para atualizar atividade."""
-        # from app.ui.modals.modal_atualiza_atividade import ModalAtualizaAtividade
-        return True
+        from app.ui.modals.modal_atualiza_atividade import ModalAtualizaAtividade
+        return ModalAtualizaAtividade
     
     def detail_view_class(self):
         return True
