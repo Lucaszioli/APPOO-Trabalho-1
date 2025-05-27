@@ -10,15 +10,12 @@ import customtkinter
 logger = logging.getLogger(__name__)
 
 class DisciplinaCard(ItemCard):
-    """Card específico para disciplinas."""
-    
-    def _add_item_info(self, parent):
-        """Adiciona informações específicas da disciplina."""
+    """Card para exibir informações de uma disciplina."""
+    def _add_item_info(self, parent: Any) -> None:
         info_container = customtkinter.CTkFrame(parent, fg_color="transparent")
         info_container.pack(fill="x")
         info_container.grid_columnconfigure((0, 1), weight=1)
         
-        # Código
         codigo_label = StyledLabel(
             info_container,
             text=f"Código: {self.item.codigo}",
@@ -26,7 +23,6 @@ class DisciplinaCard(ItemCard):
         )
         codigo_label.grid(row=0, column=0, sticky="w", padx=(0, 10))
         
-        # Carga horária
         carga_label = StyledLabel(
             info_container,
             text=f"{self.item.carga_horaria}h",
@@ -34,7 +30,6 @@ class DisciplinaCard(ItemCard):
         )
         carga_label.grid(row=0, column=1, sticky="e")
         
-        # Observação (se houver)
         if hasattr(self.item, 'observacao') and self.item.observacao:
             obs_label = StyledLabel(
                 parent,
@@ -45,18 +40,18 @@ class DisciplinaCard(ItemCard):
             obs_label.pack(anchor="w", pady=(5, 0))
 
 class DisciplinasFrame(ListFrameBase):
-    """Frame para listar e gerenciar disciplinas com design melhorado."""
+    """Frame para listar e gerenciar disciplinas."""
 
-    def get_items(self, conexao: Any):
+    def get_items(self, conexao: Any) -> list:
         """Retorna todas as disciplinas cadastradas."""
         return self.service.disciplina_service.listar_por_semestre(self.semestre)
 
-    def modal_class_add(self):
+    def modal_class_add(self) -> type:
         """Classe do modal usado para criar nova disciplina."""
         from app.ui.modals.modal_nova_disciplina import ModalNovaDisciplina
         return ModalNovaDisciplina
     
-    def modal_class_update(self):
+    def modal_class_update(self) -> type:
         from app.ui.modals.modal_atualiza_disciplina import ModalAtualizaDisciplina
         return ModalAtualizaDisciplina
 
