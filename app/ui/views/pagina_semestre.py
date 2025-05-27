@@ -7,7 +7,7 @@ class PaginaSemestre(BaseWindow):
     def __init__(self, semestre: Any, conexao: Any, service: Any) -> None:
         self.semestre = semestre
         periodo = self._format_periodo(semestre)
-        title = f"{semestre.nome} {periodo}"
+        title = f"Semestre: {semestre.nome} {periodo}"
         super().__init__(
             conexao=conexao,
             title=title,
