@@ -31,6 +31,17 @@ class ModalAtualizaAtividade(ModalBase):
             item=item
         )
 
+    def _to_br_format(self, date_str):
+        from datetime import datetime
+        try:
+            datetime.strptime(date_str, "%d/%m/%Y")
+            return date_str
+        except Exception:
+            try:
+                return datetime.strptime(date_str, "%Y-%m-%d").strftime("%d/%m/%Y")
+            except Exception:
+                return date_str
+
     def _build_form(self) -> None:
         # Preenche os campos com os dados da atividade
         atividade = self.item
@@ -56,21 +67,13 @@ class ModalAtualizaAtividade(ModalBase):
             font=customtkinter.CTkFont(size=14)
         )
         data_label.grid(row=0, column=0, sticky="w", padx=(0, 10))
-        self.date_picker = CTkDatePicker(dates_container)
+        data_val = getattr(atividade, "data", "")
+        data_placeholder = self._to_br_format(data_val) if data_val else "Ex: 27/05/2025"
+        self.date_picker = CTkDatePicker(dates_container, placeholder=data_placeholder)
         self.date_picker.set_date_format("%d/%m/%Y")
         self.date_picker.set_allow_manual_input(False)
-        # Preenche a data
-        data_val = getattr(atividade, "data", "")
         if data_val:
-            try:
-                if "/" in data_val:
-                    day, month, year = map(int, data_val.split("/"))
-                    data_iso = f"{year:04d}-{month:02d}-{day:02d}"
-                else:
-                    data_iso = data_val
-                self.date_picker.insert(data_iso)
-            except Exception:
-                self.date_picker.insert(data_val)
+            self.date_picker.insert(self._to_br_format(data_val))
         self.date_picker.grid(row=1, column=0, sticky="ew", padx=(0, 10))
         self.add_field(
             key="pontuação",
