@@ -1,7 +1,7 @@
 from typing import Any
 from datetime import datetime
-from app.components.improved_list_frame import ImprovedListFrame, ItemCard
-from app.components.ui.base_components import StyledLabel
+from app.ui.listframes.listframe_base import ListFrameBase, ItemCard
+from app.ui.components.components_base import StyledLabel
 import customtkinter
 
 class SemestreCard(ItemCard):
@@ -91,7 +91,7 @@ class SemestreCard(ItemCard):
         except Exception:
             return "Indefinido", ("gray40", "gray50")
 
-class SemestresFrame(ImprovedListFrame):
+class SemestresFrame(ListFrameBase):
     """Frame para listar e gerenciar semestres com design melhorado."""
 
     def get_items(self, conexao: Any):
@@ -103,17 +103,17 @@ class SemestresFrame(ImprovedListFrame):
 
     def modal_class_add(self):
         """Classe do modal usado para criar novo semestre."""
-        from app.components.modal_novo_semestre import ModalNovoSemestre
+        from app.ui.modals.modal_novo_semestre import ModalNovoSemestre
         return ModalNovoSemestre
     
     def modal_class_update(self):
         """Classe do modal usado para atualizar semestre."""
-        from app.components.modal_atualiza_semestre import ModalAtualizaSemestre
+        from app.ui.modals.modal_atualiza_semestre import ModalAtualizaSemestre
         return ModalAtualizaSemestre
 
     def detail_view_class(self):
         """Classe da view de detalhe de semestre."""
-        from app.views.pagina_semestre import PaginaSemestre
+        from app.ui.views.pagina_semestre import PaginaSemestre
         return PaginaSemestre
 
     def get_id(self, item: Any):
@@ -163,12 +163,12 @@ class SemestresFrame(ImprovedListFrame):
             hoje = datetime.now().date()
             
             if isinstance(semestre.data_inicio, str):
-                inicio = datetime.strptime(semestre.data_inicio, "%Y-%m-%d").date()
+                inicio = datetime.strptime(semestre.data_inicio, "%d/%m/%Y").date()
             else:
                 inicio = semestre.data_inicio
                 
             if isinstance(semestre.data_fim, str):
-                fim = datetime.strptime(semestre.data_fim, "%Y-%m-%d").date()
+                fim = datetime.strptime(semestre.data_fim, "%d/%m/%Y").date()
             else:
                 fim = semestre.data_fim
             

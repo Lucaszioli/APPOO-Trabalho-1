@@ -1,29 +1,25 @@
-from app.views.base_window import BaseWindow
-from app.components.semestres_frame import SemestresFrame
+from app.ui.views.base_window import BaseWindow
+from app.ui.listframes.listframe_semestres import SemestresFrame
+from typing import Any
 
 class PaginaInicial(BaseWindow):
-    """Janela principal melhorada que lista todos os semestres disponíveis."""
-
-    def __init__(self, conexao, service):
+    """Janela principal que lista todos os semestres disponíveis."""
+    def __init__(self, conexao: Any, service: Any) -> None:
         super().__init__(
             conexao=conexao,
             title="Sistema de Gerenciamento Acadêmico - Página Inicial",
             service=service
         )
-
     def _create_body(self) -> None:
-        """Cria o corpo principal com frame de semestres."""
         try:
-            # Frame principal de semestres
             self.sem_frame = SemestresFrame(
-                conexao=self.conexao, 
-                service=self.service, 
-                semestre=None, 
+                conexao=self.conexao,
+                service=self.service,
+                semestre=None,
                 master=self
             )
             self.sem_frame.configure(corner_radius=0)
             self.sem_frame.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
-            
         except Exception as e:
             self.show_error_message(
                 "Erro de Inicialização",

@@ -2,7 +2,7 @@ import logging
 import customtkinter
 from CTkMessagebox import CTkMessagebox
 from typing import Any
-from app.components.ui.base_components import StyledButton, StyledLabel, Card
+from app.ui.components.components_base import StyledButton, StyledLabel, Card
 
 logger = logging.getLogger(__name__)
 
@@ -198,7 +198,7 @@ class SidebarToggle(customtkinter.CTkFrame):
         """Adiciona seção de informações."""
         info_text = """Sistema de Gerenciamento Acadêmico
 
-Versão: 2.0
+Versão: 1.0
 Desenvolvido com CustomTkinter
 
 Funcionalidades:

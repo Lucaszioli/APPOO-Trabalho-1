@@ -3,28 +3,23 @@ import logging
 import customtkinter
 from CTkMessagebox import CTkMessagebox
 from app.services.service_universal import ServiceUniversal
-from app.components.ui.base_components import BaseComponent, StyledButton, StyledLabel, Card
+from app.ui.components.components_base import BaseComponent, StyledButton, StyledLabel, Card
+from typing import Any
 import inspect
 
 logger = logging.getLogger(__name__)
 
 class ItemCard(Card):
     """Card para exibir um item da lista."""
-    
-    def __init__(self, master, item, list_frame, **kwargs):
+    def __init__(self, master: Any, item: Any, list_frame: Any, **kwargs) -> None:
         self.item = item
         self.list_frame = list_frame
         super().__init__(master, **kwargs)
-        
-    def _build_ui(self):
+    def _build_ui(self) -> None:
         super()._build_ui()
-        
-        # Container principal com grid
         main_container = customtkinter.CTkFrame(self.content_frame, fg_color="transparent")
         main_container.pack(fill="x", pady=5)
         main_container.grid_columnconfigure(0, weight=1)
-        
-        # Nome do item (clicável)
         name_button = StyledButton(
             main_container,
             text=self.list_frame.item_name(self.item),
@@ -35,19 +30,12 @@ class ItemCard(Card):
             font=customtkinter.CTkFont(size=14, weight="bold")
         )
         name_button.grid(row=0, column=0, columnspan=3, sticky="ew", pady=(0, 10))
-        
-        # Informações adicionais
         info_frame = customtkinter.CTkFrame(main_container, fg_color="transparent")
         info_frame.grid(row=1, column=0, columnspan=3, sticky="ew", pady=(0, 10))
-        
         self._add_item_info(info_frame)
-        
-        # Botões de ação
         actions_frame = customtkinter.CTkFrame(main_container, fg_color="transparent")
         actions_frame.grid(row=2, column=0, columnspan=3, sticky="ew")
         actions_frame.grid_columnconfigure(0, weight=1)
-        
-        # Botão editar
         edit_btn = StyledButton(
             actions_frame,
             text="Editar",
@@ -58,7 +46,6 @@ class ItemCard(Card):
         )
         edit_btn.grid(row=0, column=0, padx=(0, 5), sticky="e")
         
-        # Botão excluir
         delete_btn = StyledButton(
             actions_frame,
             text="Excluir",
@@ -73,7 +60,7 @@ class ItemCard(Card):
         """Adiciona informações específicas do item. Pode ser sobrescrito."""
         pass
 
-class ImprovedListFrame(BaseComponent, ABC):
+class ListFrameBase(BaseComponent, ABC):
     """Frame de lista melhorado com design moderno."""
     
     def __init__(self, conexao, semestre, service: "ServiceUniversal", master=None):
