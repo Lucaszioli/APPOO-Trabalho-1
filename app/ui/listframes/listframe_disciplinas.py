@@ -4,6 +4,7 @@ from typing import Any
 from app.ui.listframes.listframe_base import ListFrameBase, ItemCard
 from app.ui.components.components_base import StyledLabel
 from app.services.disciplinas_services import DisciplinaService
+
 import customtkinter
 
 
@@ -57,8 +58,8 @@ class DisciplinasFrame(ListFrameBase):
 
     def detail_view_class(self):
         """Classe da view de detalhe de disciplina."""
-        print("Disciplina selecionada")
-        return None
+        from app.ui.views.pagina_disciplina import PaginaDisciplina
+        return PaginaDisciplina
 
     def get_id(self, item: Any):
         """Extrai o identificador único da disciplina."""
