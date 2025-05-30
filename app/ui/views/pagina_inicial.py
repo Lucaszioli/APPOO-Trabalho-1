@@ -3,6 +3,7 @@ from app.ui.listframes.listframe_semestres import SemestresFrame
 from app.ui.views.pagina_semestre import PaginaSemestre
 from typing import Any
 from app.ui.listframes.listframe_atividades import AtividadesFrame
+from app.services.semestre_services import SemestreService
 
 class PaginaInicial(BaseWindow):
     """Janela principal que lista todos os semestres disponíveis."""
@@ -54,11 +55,9 @@ class PaginaInicial(BaseWindow):
 
     def _go_back(self):
         if hasattr(self.current_frame, 'semestre') and getattr(self.current_frame, 'semestre', None):
-            self.show_frame(self.current_frame.semestre)
-        elif hasattr(self.current_frame, 'disciplina') and getattr(self.current_frame, 'disciplina', None):
-            if hasattr(self.current_frame.disciplina, 'semestre'):
-                self.show_frame(self.current_frame.disciplina.semestre)
-            else:
-                self.show_frame(None)
-        else:
             self.show_frame(None)
+        elif hasattr(self.current_frame, 'disciplina') and getattr(self.current_frame, 'disciplina', None):
+            semestre = self.service.semestre_service.buscar_por_id(self.current_frame.disciplina.semestre_id)
+            self.show_frame(semestre)
+        else:
+            return True
