@@ -21,7 +21,7 @@ class ModalNovaDisciplina(ModalBase):
             master=master,
             callback=callback,
             title="Nova Disciplina",
-            size=(500, 450),
+            size=(600, 600),
         )
 
     def _build_form(self) -> None:
