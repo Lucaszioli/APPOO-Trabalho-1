@@ -79,7 +79,7 @@ class AtividadesFrame(ListFrameBase):
         return "atividades"
     
     def title_text(self):
-        return f"Atividades de {self.disciplina.nome}"
+        return f"Disciplina: {self.disciplina.nome}"
     
     def subtitle_text(self):
         return "Gerencie as atividades desta disciplina"
