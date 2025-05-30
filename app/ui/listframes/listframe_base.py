@@ -271,27 +271,32 @@ class ListFrameBase(BaseComponent, ABC):
         cls(conexao=self.conexao, service=self.service, master=self, callback=self._reload, item=item)
         
     def _on_select(self, item):
-        key = self.get_id(item)
-        if key in self.item_views and self.item_views[key].winfo_exists():
-            win = self.item_views[key]
-            try:
-                win.deiconify()
-                win.lift()
-                win.focus_force()
-            except Exception:
-                logger.warning("Não conseguiu focar %s %s", self.item_name_singular(), key)
+        # Novo comportamento: trocar o conteúdo da janela principal
+        if hasattr(self.master, 'show_frame'):
+            self.master.show_frame(item)
         else:
-            try:
-                win = self.detail_view_class()(item, self.conexao, self.service)
-                win.protocol("WM_DELETE_WINDOW", lambda k=key: self._on_close(k))
-                self.item_views[key] = win
-            except Exception:
-                logger.exception("Erro ao abrir detalhe de %s %s", self.item_name_singular(), key)
-                CTkMessagebox(
-                    title="Erro",
-                    message=f"Não foi possível abrir {self.item_name_singular()}.",
-                    icon="cancel"
-                )
+            # Comportamento antigo (fallback)
+            key = self.get_id(item)
+            if key in self.item_views and self.item_views[key].winfo_exists():
+                win = self.item_views[key]
+                try:
+                    win.deiconify()
+                    win.lift()
+                    win.focus_force()
+                except Exception:
+                    logger.warning("Não conseguiu focar %s %s", self.item_name_singular(), key)
+            else:
+                try:
+                    win = self.detail_view_class()(item, self.conexao, self.service)
+                    win.protocol("WM_DELETE_WINDOW", lambda k=key: self._on_close(k))
+                    self.item_views[key] = win
+                except Exception:
+                    logger.exception("Erro ao abrir detalhe de %s %s", self.item_name_singular(), key)
+                    CTkMessagebox(
+                        title="Erro",
+                        message=f"Não foi possível abrir {self.item_name_singular()}.",
+                        icon="cancel"
+                    )
                 
     def _on_close(self, key):
         win = self.item_views.pop(key, None)
