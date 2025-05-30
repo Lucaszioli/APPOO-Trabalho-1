@@ -28,3 +28,17 @@ class PaginaDisciplina(BaseWindow):
                 "Erro de Inicialização",
                 f"Não foi possível carregar os detalhes da disciplina: {str(e)}"
             )
+
+    def show_frame(self, atividade):
+        # Remove o frame atual, se existir
+        if hasattr(self, 'atividades_frame') and self.atividades_frame:
+            self.atividades_frame.destroy()
+        # Cria e exibe novamente o AtividadesFrame (pode ser adaptado para detalhe de atividade futuramente)
+        self.atividades_frame = ListFrameAtividades.AtividadesFrame(
+            conexao=self.conexao,
+            disciplina=self.disciplina,
+            service=self.service,
+            master=self
+        )
+        self.atividades_frame.configure(corner_radius=0)
+        self.atividades_frame.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
