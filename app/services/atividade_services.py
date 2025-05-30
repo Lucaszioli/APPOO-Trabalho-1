@@ -192,7 +192,6 @@ class AtividadeService(ABC, Database):
             if domingo <= data_atividade <= sabado:
                 result.append(atividade)
         
-        # result.sort(key=lambda atv: datetime.strptime(atv.data, "%Y-%m-%d"))
         return result
 
 
