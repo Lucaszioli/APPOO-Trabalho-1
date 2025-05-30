@@ -76,7 +76,7 @@ class DisciplinasFrame(ListFrameBase):
         return "disciplinas"
 
     def title_text(self):
-        return f"Disciplinas - {self.semestre.nome if self.semestre else 'Todas'}"
+        return f"Semestre: {self.semestre.nome if self.semestre else 'Todas'}"
 
     def subtitle_text(self):
         return "Gerencie suas disciplinas de forma organizada"
