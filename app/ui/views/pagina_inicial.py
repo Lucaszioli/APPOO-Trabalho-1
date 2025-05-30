@@ -1,9 +1,7 @@
 from app.ui.views.base_window import BaseWindow
 from app.ui.listframes.listframe_semestres import SemestresFrame
-from app.ui.views.pagina_semestre import PaginaSemestre
 from typing import Any
 from app.ui.listframes.listframe_atividades import AtividadesFrame
-from app.services.semestre_services import SemestreService
 
 class PaginaInicial(BaseWindow):
     """Janela principal que lista todos os semestres disponíveis."""
@@ -30,12 +28,10 @@ class PaginaInicial(BaseWindow):
                 f"Não foi possível carregar a lista de semestres: {str(e)}"
             )
 
-    def show_frame(self, item):
+    def show_frame(self, item: Any) -> None: 
         # Remove o frame atual, se existir
         if hasattr(self, 'current_frame') and self.current_frame:
             self.current_frame.destroy()
-        from app.models.semestre import Semestre
-        from app.models.disciplinas import Disciplina
         frame_kwargs = dict(conexao=self.conexao, service=self.service, master=self)
         show_back = True
         if hasattr(item, 'data_inicio') and hasattr(item, 'data_fim'):
