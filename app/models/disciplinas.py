@@ -105,18 +105,12 @@ class Disciplina:
             raise ValueError("Atividades deve ser uma lista.")
         self._atividades = atividades
     
-    def adicionar_atividade(
-    self, 
-    atividade: "Atividade"
-    ) -> None:
+    def adicionar_atividade(self, atividade: "Atividade") -> None:
         if not isinstance(atividade, Atividade):
             raise ValueError("Atividade deve ser uma instância da classe Atividade.")
         self._atividades.append(atividade)
 
-    def remover_atividade(
-            self, 
-            atividade: "Atividade"
-        ) -> None:
+    def remover_atividade(self, atividade: "Atividade") -> None:
         if atividade not in self._atividades:
             raise ValueError("Atividade não encontrada na disciplina.")
         if not isinstance(atividade, Atividade):
