@@ -62,13 +62,44 @@ class AtividadeService(ABC, Database):
         result = []
         for atividade in atividades:
             if atividade[6] == TipoAtividadeEnum().TRABALHO:
-                result.append(Trabalho(id=atividade[0], nome=atividade[1], data=atividade[2], nota=atividade[3], nota_total=atividade[4], disciplina_id=atividade[5], observacao=atividade[7], data_apresentacao=atividade[9]))
+                result.append(Trabalho(
+                    id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    nota=atividade[3], 
+                    nota_total=atividade[4], 
+                    disciplina_id=atividade[5], 
+                    observacao=atividade[7], 
+                    data_apresentacao=atividade[9]
+                ))
             elif atividade[6] == TipoAtividadeEnum().PROVA:
-                result.append(Prova(id=atividade[0], nome=atividade[1], data=atividade[2], nota=atividade[3], nota_total=atividade[4], disciplina_id=atividade[5], observacao=atividade[7]))
+                result.append(Prova(
+                    id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    nota=atividade[3], 
+                    nota_total=atividade[4], 
+                    disciplina_id=atividade[5], 
+                    observacao=atividade[7]
+                ))
             elif atividade[6] == TipoAtividadeEnum().CAMPO:
-                result.append(Aula_de_Campo(id=atividade[0], nome=atividade[1], data=atividade[2], disciplina_id=atividade[5], observacao=atividade[7], lugar=atividade[8]))
+                result.append(Aula_de_Campo(
+                    id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    disciplina_id=atividade[5], 
+                    observacao=atividade[7], 
+                    lugar=atividade[8]
+                ))
             elif atividade[6] == TipoAtividadeEnum().REVISAO:
-                result.append(Revisao(id=atividade[0], nome=atividade[1], data=atividade[2], disciplina_id=atividade[5], observacao=atividade[7], materia=atividade[10]))
+                result.append(Revisao(
+                    id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    disciplina_id=atividade[5], 
+                    observacao=atividade[7], 
+                    materia=atividade[10]
+                ))
             else:   
                 raise ValueError("Tipo de atividade inválido")
             
