@@ -3,7 +3,7 @@ import logging
 import customtkinter
 from CTkMessagebox import CTkMessagebox
 from app.errors.nomeSemestre import NomeRepetidoError
-from app.services.service_base import ServiceBase
+from app.services.service_universal import ServiceUniversal
 from app.ui.components.components_base import StyledLabel, StyledEntry, StyledButton, Card
 from typing import Type, Optional, Callable, Dict, Any
 
@@ -15,7 +15,7 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
     def __init__(
         self,
         conexao,
-        service: Type[ServiceBase],
+        service: Type[ServiceUniversal],
         master=None,
         callback=None,
         title: str = "Modal",
