@@ -140,6 +140,8 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
             )
             if values:
                 field.set(values[0])  # valor padrão
+            if "command" in kwargs:
+                field.configure(command=kwargs["command"])
         else:
             raise ValueError(f"Tipo de campo não suportado: {field_type}")
             
