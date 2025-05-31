@@ -81,13 +81,43 @@ class AtividadeService(ABC, Database):
         atividade = self._buscar_um(self.query, self.params)
         if atividade:
             if atividade[6] == TipoAtividadeEnum().TRABALHO:
-                return Trabalho(id=atividade[0], nome=atividade[1], data=atividade[2], disciplina_id=atividade[5], nota_total=atividade[4], nota=atividade[3], observacao=atividade[7], data_apresentacao=atividade[9])
+                return Trabalho(
+                    id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    nota=atividade[3],
+                    nota_total=atividade[4], 
+                    disciplina_id=atividade[5], 
+                    observacao=atividade[7], 
+                    data_apresentacao=atividade[9]
+                )
             elif atividade[6] == TipoAtividadeEnum().PROVA:
-                return Prova(id=atividade[0], nome=atividade[1], data=atividade[2], disciplina_id=atividade[5], nota_total=atividade[4], nota=atividade[3], observacao=atividade[7])
+                return Prova(
+                    id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    nota=atividade[3], 
+                    nota_total=atividade[4],
+                    disciplina_id=atividade[5], 
+                    observacao=atividade[7]
+                )
             elif atividade[6] == TipoAtividadeEnum().CAMPO:
-                return Aula_de_Campo(id=atividade[0], nome=atividade[1], data=atividade[2], disciplina_id=atividade[5],observacao=atividade[7], lugar=atividade[8])
+                return Aula_de_Campo(
+                    id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    disciplina_id=atividade[5],
+                    observacao=atividade[7], 
+                    lugar=atividade[8]
+                )
             elif atividade[6] == TipoAtividadeEnum().REVISAO:
-                return Revisao(id=atividade[0], nome=atividade[1], data=atividade[2], disciplina_id=atividade[5], observacao=atividade[7], materia=atividade[10])
+                return Revisao(id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    disciplina_id=atividade[5], 
+                    observacao=atividade[7], 
+                    materia=atividade[10]
+                )
             else:   
                 raise ValueError("Tipo de atividade inválido")
         return None
@@ -111,17 +141,28 @@ class AtividadeService(ABC, Database):
         del atividade
         return self.rows
     
-    def criar_atividade(self, nome:str, data:str, disciplina:"Disciplina",tipo:"TipoAtividadeEnum", nota_total:int=None, nota:int = None, observacao:str = None, lugar:str = None, data_apresentacao:str = None, materia=None) -> Atividade:
+    def criar_atividade(self,
+        nome:str, 
+        data:str, 
+        disciplina:"Disciplina",
+        tipo:"TipoAtividadeEnum", 
+        nota_total:int=None, 
+        nota:int = None, 
+        observacao:str = None, 
+        lugar:str = None, 
+        data_apresentacao:str = None, 
+        materia=None
+        ) -> Atividade:
         self.semestreExistente = SemestreService(self._db_path).buscar_por_id(disciplina.semestre_id)
-        inicio_s = datetime.strptime(self.semestreExistente.data_inicio, "%d/%m/%Y")
-        fim_s = datetime.strptime(self.semestreExistente.data_fim, "%d/%m/%Y")
-        data_t = datetime.strptime(data, "%d/%m/%Y")
         if not self.semestreExistente:
             raise SemestreNotFoundError()
-        
         self.disciplinaExistente = DisciplinaService(self._db_path).buscar_por_id(disciplina.id)
         if not self.disciplinaExistente:
             raise DisciplinaNotFoundError()
+        
+        inicio_s = datetime.strptime(self.semestreExistente.data_inicio, "%d/%m/%Y")
+        fim_s = datetime.strptime(self.semestreExistente.data_fim, "%d/%m/%Y")
+        data_t = datetime.strptime(data, "%d/%m/%Y")
         if data_t < inicio_s or data_t > fim_s:
             raise incorrectDate(data_t, "Data da atividade fora do período do semestre")
 
@@ -166,15 +207,54 @@ class AtividadeService(ABC, Database):
         result = []
         for atividade in atividades:
             if atividade[6] == TipoAtividadeEnum().TRABALHO:
-                result.append(Trabalho(id=atividade[0], nome=atividade[1], data=atividade[2], nota=atividade[3], nota_total=atividade[4], disciplina_id=atividade[5], observacao=atividade[7], data_apresentacao=atividade[9]))
+                result.append(Trabalho(
+                    id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    nota=atividade[3], 
+                    nota_total=atividade[4], 
+                    disciplina_id=atividade[5], 
+                    observacao=atividade[7], 
+                    data_apresentacao=atividade[9]
+                ))
                 if atividade[9] :
-                    result.append(Trabalho(id=atividade[0], nome=atividade[1]+" (apresentação)", data=atividade[9], nota=None, nota_total=None, disciplina_id=atividade[5], observacao="Apresentação do trabalho"))
+                    result.append(Trabalho(
+                        id=atividade[0], 
+                        nome=atividade[1]+" (apresentação)", 
+                        nota=None, 
+                        nota_total=None,
+                        disciplina_id=atividade[5], 
+                        observacao="Apresentação do trabalho",
+                        data=atividade[9], 
+                    ))
             elif atividade[6] == TipoAtividadeEnum().PROVA:
-                result.append(Prova(id=atividade[0], nome=atividade[1], data=atividade[2], nota=atividade[3], nota_total=atividade[4], disciplina_id=atividade[5], observacao=atividade[7]))
+                result.append(Prova(
+                    id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    nota=atividade[3], 
+                    nota_total=atividade[4], 
+                    disciplina_id=atividade[5], 
+                    observacao=atividade[7]
+                ))
             elif atividade[6] == TipoAtividadeEnum().CAMPO:
-                result.append(Aula_de_Campo(id=atividade[0], nome=atividade[1], data=atividade[2], disciplina_id=atividade[5], observacao=atividade[7], lugar=atividade[8]))
+                result.append(Aula_de_Campo(
+                    id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    disciplina_id=atividade[5], 
+                    observacao=atividade[7], 
+                    lugar=atividade[8]
+                ))
             elif atividade[6] == TipoAtividadeEnum().REVISAO:
-                result.append(Revisao(id=atividade[0], nome=atividade[1], data=atividade[2], disciplina_id=atividade[5], observacao=atividade[7], materia=atividade[10]))
+                result.append(Revisao(
+                    id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    disciplina_id=atividade[5], 
+                    observacao=atividade[7], 
+                    materia=atividade[10]
+                ))
             else:   
                 raise ValueError("Tipo de atividade inválido")
             result.sort(key=lambda atv: datetime.strptime(atv.data, "%Y-%m-%d"))

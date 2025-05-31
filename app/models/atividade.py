@@ -34,6 +34,12 @@ class Atividade(ABC):
             raise ValueError("ID da atividade deve ser um número inteiro positivo.")
         if tipo is not None and not isinstance(tipo, TipoAtividadeEnum):
             raise ValueError("Tipo de atividade deve ser uma instância de TipoAtividadeEnum.")
+        
+        try:
+            datetime.strptime(data, "%d/%m/%Y")
+        except ValueError:
+            raise ValueError("Data da atividade deve estar no formato 'dd/mm/yyyy'.")
+        
         self._id = id
         self._nome = nome
         self._data = data
@@ -120,7 +126,7 @@ class Trabalho(Atividade):
         nome: str, 
         data: str, 
         disciplina_id: int, 
-        nota_total: float, 
+        nota_total: Optional[float], 
         data_apresentacao: Optional[str] = None, 
         nota: Optional[float] = None, 
         observacao: Optional[str] = None, 
@@ -169,12 +175,12 @@ class Trabalho(Atividade):
         self._data_apresentacao = data_apresentacao
     
     @property
-    def nota_total(self) -> float:
+    def nota_total(self) -> Optional[float]:
         return self._nota_total
     
     @nota_total.setter
     def nota_total(self, nota_total: float) -> None:
-        if nota_total <= 0:
+        if nota_total is not None and nota_total <= 0:
             raise ValueError("Nota total deve ser um número positivo.")
         if self._nota is not None and (self._nota < 0 or self._nota > nota_total):
             raise ValueError("Nota deve ser um número entre 0 e a nota total.")
@@ -216,6 +222,8 @@ class Prova(Atividade):
             raise ValueError("Nota deve ser um número.")
         if nota_total is not None and not isinstance(nota_total, float):
             raise ValueError("Nota total deve ser um número.")
+        if not nota_total:
+            raise ValueError("Nota total não pode ser vazia.")
         self._tipo = TipoAtividadeEnum().PROVA
         self._nota_total = nota_total
         self._nota = nota
@@ -232,6 +240,8 @@ class Prova(Atividade):
             raise ValueError("Nota deve ser um número entre 0 e a nota total.")
         if nota_total is not None and not isinstance(nota_total, float):
             raise ValueError("Nota total deve ser um número.")
+        if not nota_total:
+            raise ValueError("Nota total não pode ser vazia.")
         self._nota_total = nota_total
 
     @property
