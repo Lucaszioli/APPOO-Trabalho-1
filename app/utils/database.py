@@ -25,24 +25,54 @@ class Database:
             conexao.commit()
 
     def _adicionar(self, query, params):
+        if not query or not params:
+            raise ValueError("Query e parâmetros não podem ser vazios.")
+        if not isinstance(query, str):
+            raise ValueError("Query deve ser uma string.")
+        if not isinstance(params, (tuple, list)):
+            raise ValueError("Parâmetros devem ser uma tupla ou lista.")
         self._cursor.execute(query, params)
         self._conexao.commit()
         return self._cursor.lastrowid
     
     def _editar(self,query, params):
+        if not query or not params:
+            raise ValueError("Query e parâmetros não podem ser vazios.")
+        if not isinstance(query, str):
+            raise ValueError("Query deve ser uma string.")
+        if not isinstance(params, (tuple, list)):
+            raise ValueError("Parâmetros devem ser uma tupla ou lista.")
         self._cursor.execute(query, params)
         self._conexao.commit()
         return self._cursor.rowcount
     
     def _buscar_um(self, query, params):
+        if not query or not params:
+            raise ValueError("Query e parâmetros não podem ser vazios.")
+        if not isinstance(query, str):
+            raise ValueError("Query deve ser uma string.")
+        if not isinstance(params, (tuple, list)):
+            raise ValueError("Parâmetros devem ser uma tupla ou lista.")
         self._cursor.execute(query, params)
         return self._cursor.fetchone()
     
     def _buscar_varios(self,query, params):
+        if not query or not params:
+            raise ValueError("Query e parâmetros não podem ser vazios.")
+        if not isinstance(query, str):
+            raise ValueError("Query deve ser uma string.")
+        if not isinstance(params, (tuple, list)):
+            raise ValueError("Parâmetros devem ser uma tupla ou lista.")
         self._cursor.execute(query, params)
         return self._cursor.fetchall()
     
     def _deletar(self, query, params):
+        if not query or not params:
+            raise ValueError("Query e parâmetros não podem ser vazios.")
+        if not isinstance(query, str):
+            raise ValueError("Query deve ser uma string.")
+        if not isinstance(params, (tuple, list)):
+            raise ValueError("Parâmetros devem ser uma tupla ou lista.")
         self._cursor.execute(query, params)
         self._conexao.commit()
         return self._cursor.rowcount
