@@ -59,14 +59,17 @@ class ModalNovaAtividade(ModalBase):
         self.date_picker.set_date_format("%d/%m/%Y")
         self.date_picker.set_allow_manual_input(False)
         self.date_picker.grid(row=1, column=0, sticky="ew", padx=(0, 10))
+
         self.dynamic_container = customtkinter.CTkFrame(self.form_frame, fg_color="transparent")
         self._update_dynamic_fields(self.type.get())
+
         self.add_field(
             key="observacao",
             label="Observações",
             field_type="textbox",
             required=False
         )
+
     def _on_type_change(self, value):
         self._update_dynamic_fields(value)
     
@@ -167,8 +170,17 @@ class ModalNovaAtividade(ModalBase):
             return False, "A data da atividade é obrigatória."
         if not data["tipo"]:
             return False, "O tipo da atividade é obrigatório."
-        if not data["pontuação"].isdigit() or int(data["pontuação"]) <= 0:
-            return False, "A pontuação deve ser um número positivo."
+        try:
+            if data["tipo"] == "Trabalho" and isinstance(data["data_apresentacao"], str):
+                apresentação = datetime.strptime(data["data_apresentacao"], "%d/%m/%Y")
+                entrega = datetime.strptime(data["data"], "%d/%m/%Y")
+                if apresentação < entrega:
+                    return False, "A data de apresentação não pode ser anterior à data da atividade."
+        except ValueError:
+            return False, "Formato de data inválido para a apresentação."
+        return True, ""
+
+            
         return True, ""
     
     def _save(self, data: dict) -> None:

@@ -68,9 +68,9 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
         content_card.pack(fill="both", expand=True)
         
         # Área do formulário
-        self.form_frame = customtkinter.CTkFrame(
+        self.form_frame = customtkinter.CTkScrollableFrame(
             content_card.content_frame,
-            fg_color="transparent"
+            fg_color="transparent",
         )
         self.form_frame.pack(fill="both", expand=True, pady=(0, 20))
         
