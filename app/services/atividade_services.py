@@ -85,7 +85,6 @@ class AtividadeService(ABC, Database):
             elif atividade[6] == TipoAtividadeEnum().PROVA:
                 return Prova(id=atividade[0], nome=atividade[1], data=atividade[2], disciplina_id=atividade[5], nota_total=atividade[4], nota=atividade[3], observacao=atividade[7])
             elif atividade[6] == TipoAtividadeEnum().CAMPO:
-                print(atividade)
                 return Aula_de_Campo(id=atividade[0], nome=atividade[1], data=atividade[2], disciplina_id=atividade[5],observacao=atividade[7], lugar=atividade[8])
             elif atividade[6] == TipoAtividadeEnum().REVISAO:
                 return Revisao(id=atividade[0], nome=atividade[1], data=atividade[2], disciplina_id=atividade[5], observacao=atividade[7], materia=atividade[10])
@@ -114,21 +113,27 @@ class AtividadeService(ABC, Database):
     
     def criar_atividade(self, nome:str, data:str, disciplina:"Disciplina",tipo:"TipoAtividadeEnum", nota_total:int=None, nota:int = None, observacao:str = None, lugar:str = None, data_apresentacao:str = None, materia=None) -> Atividade:
         self.semestreExistente = SemestreService(self._db_path).buscar_por_id(disciplina.semestre_id)
+        inicio_s = datetime.strptime(self.semestreExistente.data_inicio, "%d/%m/%Y")
+        fim_s = datetime.strptime(self.semestreExistente.data_fim, "%d/%m/%Y")
+        data_t = datetime.strptime(data, "%d/%m/%Y")
         if not self.semestreExistente:
             raise SemestreNotFoundError()
         
         self.disciplinaExistente = DisciplinaService(self._db_path).buscar_por_id(disciplina.id)
         if not self.disciplinaExistente:
             raise DisciplinaNotFoundError()
-        if data < self.semestreExistente.data_inicio or data > self.semestreExistente.data_fim:
-            raise incorrectDate(data, "Data da atividade fora do período do semestre")
-        
+        if data_t < inicio_s or data_t > fim_s:
+            raise incorrectDate(data_t, "Data da atividade fora do período do semestre")
+
         if tipo == TipoAtividadeEnum().TRABALHO:
-            if data_apresentacao and data_apresentacao < data :
-                raise incorrectDate(data_apresentacao, "Data de apresentação não pode ser anterior à data do trabalho")
-            if data_apresentacao and (data_apresentacao < self.semestreExistente.data_inicio or data_apresentacao > self.semestreExistente.data_fim):
-                raise incorrectDate(data_apresentacao, "Data de apresentação fora do período do semestre")
-            atividade = Trabalho(nome, data, disciplina.id, nota_total, nota=nota, observacao=observacao, data_apresentacao=data_apresentacao)
+            if data_apresentacao :
+                data_apresentacao_t = datetime.strptime(data_apresentacao, "%d/%m/%Y")
+                print(data_apresentacao_t, data_t)
+                if data_apresentacao_t < data_t :
+                    raise incorrectDate(data_apresentacao_t, "Data de apresentação não pode ser anterior à data do trabalho")
+                if (data_apresentacao_t < inicio_s or data_apresentacao_t > fim_s):
+                    raise incorrectDate(data_apresentacao_t, "Data de apresentação fora do período do semestre")
+            atividade = Trabalho(nome, data, disciplina.id, nota_total, nota=nota, observacao=observacao, data_apresentacao=data_apresentacao_t)
         elif tipo == TipoAtividadeEnum().PROVA:
             atividade = Prova(nome, data, disciplina.id, nota_total, nota=nota, observacao=observacao)
         elif tipo == TipoAtividadeEnum().CAMPO:
