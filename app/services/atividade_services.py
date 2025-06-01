@@ -177,8 +177,8 @@ class AtividadeService(ABC, Database):
         data:str, 
         disciplina:"Disciplina",
         tipo:"TipoAtividadeEnum", 
-        nota_total:int=None, 
-        nota:int = None, 
+        nota_total:float=None, 
+        nota:float = None, 
         observacao:str = None, 
         lugar:str = None, 
         data_apresentacao:str = None, 
@@ -198,14 +198,14 @@ class AtividadeService(ABC, Database):
             raise incorrectDate(data_t, "Data da atividade fora do período do semestre")
 
         if tipo == TipoAtividadeEnum().TRABALHO:
-            if data_apresentacao :
+            if data_apresentacao:
                 data_apresentacao_t = datetime.strptime(data_apresentacao, "%d/%m/%Y")
                 print(data_apresentacao_t, data_t)
                 if data_apresentacao_t < data_t :
                     raise incorrectDate(data_apresentacao_t, "Data de apresentação não pode ser anterior à data do trabalho")
                 if (data_apresentacao_t < inicio_s or data_apresentacao_t > fim_s):
                     raise incorrectDate(data_apresentacao_t, "Data de apresentação fora do período do semestre")
-            atividade = Trabalho(nome, data, disciplina.id, nota_total, nota=nota, observacao=observacao, data_apresentacao=data_apresentacao_t)
+            atividade = Trabalho(nome, data, disciplina.id, nota_total=nota_total, nota=nota, observacao=observacao, data_apresentacao=data_apresentacao)
         elif tipo == TipoAtividadeEnum().PROVA:
             atividade = Prova(nome, data, disciplina.id, nota_total, nota=nota, observacao=observacao)
         elif tipo == TipoAtividadeEnum().CAMPO:

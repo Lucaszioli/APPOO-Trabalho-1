@@ -171,16 +171,13 @@ class ModalNovaAtividade(ModalBase):
         if not data["tipo"]:
             return False, "O tipo da atividade é obrigatório."
         try:
-            if data["tipo"] == "Trabalho" and isinstance(data["data_apresentacao"], str):
+            if data["tipo"] == "Trabalho" and isinstance(data["data_apresentacao"], str) and data["data_apresentacao"]:
                 apresentação = datetime.strptime(data["data_apresentacao"], "%d/%m/%Y")
                 entrega = datetime.strptime(data["data"], "%d/%m/%Y")
                 if apresentação < entrega:
                     return False, "A data de apresentação não pode ser anterior à data da atividade."
         except ValueError:
             return False, "Formato de data inválido para a apresentação."
-        return True, ""
-
-            
         return True, ""
     
     def _save(self, data: dict) -> None:
@@ -192,7 +189,7 @@ class ModalNovaAtividade(ModalBase):
                 disciplina=self.disciplina,
                 tipo=data["tipo"],
                 observacao=data.get("observacao", ""),
-                nota_total = data.get("pontuacao", None),
+                nota_total = float(data["pontuacao"]) if data.get("pontuacao") not in (None, "") else None,
                 data_apresentacao=data.get("data_apresentacao", None),
                 lugar=data.get("local", None),
                 materia=data.get("materia", None)

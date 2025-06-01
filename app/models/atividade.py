@@ -32,8 +32,6 @@ class Atividade(ABC):
             raise ValueError("ID da disciplina deve ser um número inteiro positivo.")
         if id is not None and (not isinstance(id, int) or id <= 0):
             raise ValueError("ID da atividade deve ser um número inteiro positivo.")
-        if tipo is not None and not isinstance(tipo, TipoAtividadeEnum):
-            raise ValueError("Tipo de atividade deve ser uma instância de TipoAtividadeEnum.")
         
         try:
             datetime.strptime(data, "%d/%m/%Y")
@@ -114,8 +112,6 @@ class Atividade(ABC):
     
     @tipo.setter
     def tipo(self, tipo: TipoAtividadeEnum) -> None:
-        if tipo is not None and not isinstance(tipo, TipoAtividadeEnum):
-            raise ValueError("Tipo de atividade deve ser uma instância de TipoAtividadeEnum.")
         if self._tipo is not None:
             raise ValueError("Tipo de atividade já está definido e não pode ser alterado.")
         self._tipo = tipo
