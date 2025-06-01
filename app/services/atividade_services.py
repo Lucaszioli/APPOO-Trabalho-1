@@ -8,7 +8,7 @@ from app.errors.notFound import AtividadeNotFoundError, DisciplinaNotFoundError,
 from app.models.semestre import Semestre
 from app.services.semestre_services import SemestreService
 from app.services.disciplinas_services import DisciplinaService
-from datetime import datetime
+from datetime import datetime, timedelta
 class AtividadeService(ABC, Database):
 
     def __init__(self, db_path="db.db"):
@@ -53,7 +53,7 @@ class AtividadeService(ABC, Database):
         return result
     
     def listar_por_disciplina(self, disciplina:"Disciplina") -> list[Atividade]:
-        self.query = "SELECT * FROM atividade WHERE disciplina_id = ?"
+        self.query = "SELECT * FROM atividade WHERE disciplina_id = ? ORDER BY data ASC"
         self.params = (disciplina.id,)
         atividades = self._buscar_varios(self.query, self.params)
         if not atividades:
@@ -103,6 +103,7 @@ class AtividadeService(ABC, Database):
             else:   
                 raise ValueError("Tipo de atividade inválido")
             
+        result.sort(key = lambda atv: datetime.strptime(atv.data, "%Y-%m-%d"))
         return result
 
     
@@ -289,6 +290,22 @@ class AtividadeService(ABC, Database):
             else:   
                 raise ValueError("Tipo de atividade inválido")
             result.sort(key=lambda atv: datetime.strptime(atv.data, "%Y-%m-%d"))
+        return result
+    
+    def listar_semana(self, semestre:"SemestreService"):
+        atividades = self.listar_por_semestre(semestre)
+        if not atividades:
+            return []
+        hoje = datetime.today()
+        domingo = hoje - timedelta(days=hoje.weekday() + 1)  if hoje.weekday!=6 else hoje # Último domingo
+        domingo = domingo.replace(hour=0, minute=0, second=0, microsecond=0)
+        sabado = domingo + timedelta(days=6)
+        result = []
+        for atividade in atividades:
+            data_atividade = datetime.strptime(atividade.data, "%Y-%m-%d")
+            if domingo <= data_atividade <= sabado:
+                result.append(atividade)
+        
         return result
 
 

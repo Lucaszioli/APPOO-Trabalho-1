@@ -46,7 +46,7 @@ class DisciplinaService(ServiceBase):
     def carregar_atividades(self, disciplina:"Disciplina") -> list[Atividade]:
         self.query = "SELECT * FROM atividade WHERE disciplina_id = ?"
         self.params = (disciplina.id,)
-        self.atividades = self._buscar(self.query, self.params)
+        self.atividades = self._buscar_varios(self.query, self.params)
         for atividade in self.atividades:
             if atividade[6] == TipoAtividadeEnum().TRABALHO:
                 disciplina.adicionar_atividade(Trabalho(

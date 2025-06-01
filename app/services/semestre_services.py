@@ -2,6 +2,7 @@ from app.models.disciplinas import Disciplina
 from app.errors.nomeSemestre import NomeRepetidoError
 from app.errors.notFound import SemestreNotFoundError
 from typing import TYPE_CHECKING, Optional
+from app.services.disciplinas_services import DisciplinaService
 from app.services.service_base import ServiceBase
 from app.models.semestre import Semestre 
 
@@ -113,3 +114,17 @@ class SemestreService(ServiceBase):
         self._adicionar_bd(semestre)
         return semestre
     
+    def calcular_nsg(self, semestre:"Semestre", disciplina_service:"DisciplinaService") -> float:
+        self.carregar_disciplinas(semestre)
+        if not semestre.disciplinas:
+            return 0.0
+        total_nota = 0.0
+        total_creditos = 0
+        for disciplina in semestre.disciplinas:
+            nota_final = disciplina_service.pegar_nota_total(disciplina)
+            if nota_final:
+                total_nota += nota_final * disciplina.carga_horaria
+                total_creditos += disciplina.carga_horaria
+        if total_creditos == 0:
+            return 0.0
+        return total_nota / total_creditos if total_creditos > 0 else 0.0

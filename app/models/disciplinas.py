@@ -25,7 +25,7 @@ class Disciplina:
         self._nome = nome
         self._carga_horaria = carga_horaria
         self._semestre_id = semestre_id
-        self._atividades = []
+        self._atividades : list[Atividade] = []
         self._codigo = codigo
         self._observacao = observacao
         self._id = id
