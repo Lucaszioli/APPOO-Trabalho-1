@@ -46,16 +46,18 @@ class DisciplinaService(ServiceBase):
     def carregar_atividades(self, disciplina:"Disciplina") -> list[Atividade]:
         self.query = "SELECT * FROM atividade WHERE disciplina_id = ?"
         self.params = (disciplina.id,)
-        self.atividades = self._buscar(self.query, self.params)
+        self.atividades = self._buscar_varios(self.query, self.params)
         for atividade in self.atividades:
-            if atividade[6] == TipoAtividadeEnum().TRABALHO.value:
-                disciplina.adicionar_atividade(Trabalho(atividade[1], atividade[2], atividade[3], atividade[5], atividade[6], atividade[7]))
-            elif atividade[6] == TipoAtividadeEnum().PROVA.value:
-                disciplina.adicionar_atividade(Prova(atividade[1], atividade[2], atividade[3], atividade[5], atividade[6], atividade[7]))
-            elif atividade[6] == TipoAtividadeEnum().CAMPO.value:
-                disciplina.adicionar_atividade(Aula_de_Campo(atividade[1], atividade[2], atividade[3], atividade[7]))
-            elif atividade[6] == TipoAtividadeEnum().REVISAO.value:
-                disciplina.adicionar_atividade(Revisao(atividade[1], atividade[2], atividade[3], atividade[5], atividade[6], atividade[7]))
+            if atividade[6] == TipoAtividadeEnum().TRABALHO:
+                disciplina.adicionar_atividade(Trabalho(id=atividade[0], nome=atividade[1], data=atividade[2], nota = float(atividade[3]), nota_total = float(atividade[4]), disciplina_id=atividade[5], observacao=atividade[7], data_apresentacao=atividade[9]))
+            elif atividade[6] == TipoAtividadeEnum().PROVA:
+                disciplina.adicionar_atividade(Prova(id=atividade[0], nome=atividade[1], data=atividade[2], nota = float(atividade[3]), nota_total = float(atividade[4]), disciplina_id=atividade[5], observacao=atividade[7]))
+            elif atividade[6] == TipoAtividadeEnum().CAMPO:
+                disciplina.adicionar_atividade(Aula_de_Campo(id=atividade[0], nome=atividade[1], data=atividade[2], disciplina_id=atividade[5], observacao=atividade[7], lugar=atividade[8]))
+            elif atividade[6] == TipoAtividadeEnum().REVISAO:
+                disciplina.adicionar_atividade(Revisao(id=atividade[0], nome=atividade[1], data=atividade[2], disciplina_id=atividade[5], observacao=atividade[7], materia=atividade[10]))
+            else:   
+                raise ValueError("Tipo de atividade inválido")
         return disciplina.atividades
     
     def criar_disciplina(self, nome:str, carga_horaria:int, codigo:str, semestre:"Semestre", observacao:str = None):
@@ -80,5 +82,10 @@ class DisciplinaService(ServiceBase):
         if not disciplinas:
             return []
         return [Disciplina(id=row[0], nome=row[1], carga_horaria=row[3], semestre_id=row[4], codigo=row[2], observacao=row[5]) for row in self.disciplinas]
-
-
+    
+    def pegar_nota_total(self, disciplina:"Disciplina"):
+        self.carregar_atividades(disciplina)
+        soma = 0.0
+        for atividade in disciplina.atividades:
+            soma += getattr(atividade,"nota", 0.0)
+        return soma
