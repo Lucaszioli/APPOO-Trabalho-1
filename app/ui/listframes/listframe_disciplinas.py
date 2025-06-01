@@ -1,25 +1,22 @@
 # app/components/disciplinas_frame.py
 import logging
 from typing import Any
-from app.components.improved_list_frame import ImprovedListFrame, ItemCard
-from app.components.ui.base_components import StyledLabel
+from app.ui.listframes.listframe_base import ListFrameBase, ItemCard
+from app.ui.components.components_base import StyledLabel
+from app.services.disciplinas_services import DisciplinaService
+
 import customtkinter
 
-from app.components.base_list_frame import BaseListFrame
-from app.services.disciplinas_services import DisciplinaService
 
 logger = logging.getLogger(__name__)
 
 class DisciplinaCard(ItemCard):
-    """Card específico para disciplinas."""
-    
-    def _add_item_info(self, parent):
-        """Adiciona informações específicas da disciplina."""
+    """Card para exibir informações de uma disciplina."""
+    def _add_item_info(self, parent: Any) -> None:
         info_container = customtkinter.CTkFrame(parent, fg_color="transparent")
         info_container.pack(fill="x")
         info_container.grid_columnconfigure((0, 1), weight=1)
         
-        # Código
         codigo_label = StyledLabel(
             info_container,
             text=f"Código: {self.item.codigo}",
@@ -27,7 +24,6 @@ class DisciplinaCard(ItemCard):
         )
         codigo_label.grid(row=0, column=0, sticky="w", padx=(0, 10))
         
-        # Carga horária
         carga_label = StyledLabel(
             info_container,
             text=f"{self.item.carga_horaria}h",
@@ -35,7 +31,6 @@ class DisciplinaCard(ItemCard):
         )
         carga_label.grid(row=0, column=1, sticky="e")
         
-        # Observação (se houver)
         if hasattr(self.item, 'observacao') and self.item.observacao:
             obs_label = StyledLabel(
                 parent,
@@ -45,26 +40,26 @@ class DisciplinaCard(ItemCard):
             )
             obs_label.pack(anchor="w", pady=(5, 0))
 
-class DisciplinasFrame(ImprovedListFrame):
-    """Frame para listar e gerenciar disciplinas com design melhorado."""
+class DisciplinasFrame(ListFrameBase):
+    """Frame para listar e gerenciar disciplinas."""
 
-    def get_items(self, conexao: Any):
+    def get_items(self, conexao: Any) -> list:
         """Retorna todas as disciplinas cadastradas."""
         return self.service.disciplina_service.listar_por_semestre(self.semestre)
 
-    def modal_class_add(self):
+    def modal_class_add(self) -> type:
         """Classe do modal usado para criar nova disciplina."""
-        from app.components.modal_nova_disciplina import ModalNovaDisciplina
+        from app.ui.modals.modal_nova_disciplina import ModalNovaDisciplina
         return ModalNovaDisciplina
     
-    def modal_class_update(self):
-        from app.components.modal_atualiza_disciplina import ModalAtualizaDisciplina
+    def modal_class_update(self) -> type:
+        from app.ui.modals.modal_atualiza_disciplina import ModalAtualizaDisciplina
         return ModalAtualizaDisciplina
 
     def detail_view_class(self):
         """Classe da view de detalhe de disciplina."""
-        print("Disciplina selecionada")
-        return None
+        from app.ui.views.pagina_disciplina import PaginaDisciplina
+        return PaginaDisciplina
 
     def get_id(self, item: Any):
         """Extrai o identificador único da disciplina."""

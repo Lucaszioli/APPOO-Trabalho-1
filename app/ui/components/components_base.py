@@ -7,27 +7,23 @@ logger = logging.getLogger(__name__)
 
 class BaseComponent(customtkinter.CTkFrame, ABC):
     """Componente base com funcionalidades comuns."""
-    
-    def __init__(self, master, **kwargs):
+    def __init__(self, master: Any, **kwargs) -> None:
         super().__init__(master, **kwargs)
         self._setup_style()
         self._build_ui()
-        
-    def _setup_style(self):
-        """Define estilos padrão do componente."""
+
+    def _setup_style(self) -> None:
         self.configure(
             corner_radius=8,
             fg_color=("gray95", "gray10")
         )
-        
+
     @abstractmethod
-    def _build_ui(self):
-        """Constrói a interface do componente."""
+    def _build_ui(self) -> None:
         pass
 
 class StyledButton(customtkinter.CTkButton):
     """Botão com estilos predefinidos."""
-    
     STYLES = {
         'primary': {
             'fg_color': ("blue", "#1f538d"),
@@ -50,15 +46,13 @@ class StyledButton(customtkinter.CTkButton):
             'text_color': ("white", "white")
         }
     }
-    
-    def __init__(self, master, style: str = 'primary', **kwargs):
+    def __init__(self, master: Any, style: str = 'primary', **kwargs) -> None:
         style_config = self.STYLES.get(style, self.STYLES['primary'])
         super().__init__(master, **{**style_config, **kwargs})
 
 class StyledLabel(customtkinter.CTkLabel):
     """Label com estilos predefinidos."""
-    
-    def __init__(self, master, style: str = 'normal', **kwargs):
+    def __init__(self, master: Any, style: str = 'normal', **kwargs) -> None:
         styles = {
             'title': {'font': customtkinter.CTkFont(size=28, weight="bold")},
             'subtitle': {'font': customtkinter.CTkFont(size=18, weight="bold")},
@@ -67,14 +61,12 @@ class StyledLabel(customtkinter.CTkLabel):
             'small': {'font': customtkinter.CTkFont(size=12)},
             'caption': {'font': customtkinter.CTkFont(size=11, slant="italic")}
         }
-        
         style_config = styles.get(style, styles['normal'])
         super().__init__(master, **{**style_config, **kwargs})
 
 class StyledEntry(customtkinter.CTkEntry):
     """Entry com validação e estilos."""
-    
-    def __init__(self, master, placeholder: str = "", validator: Optional[Callable] = None, **kwargs):
+    def __init__(self, master: Any, placeholder: str = "", validator: Optional[Callable[[str], bool]] = None, **kwargs) -> None:
         super().__init__(master, placeholder_text=placeholder, **kwargs)
         self.validator = validator
         self.configure(
@@ -82,12 +74,10 @@ class StyledEntry(customtkinter.CTkEntry):
             border_width=2,
             height=35
         )
-        
         if validator:
             self.bind('<KeyRelease>', self._validate)
-            
-    def _validate(self, event=None):
-        """Valida o conteúdo do campo."""
+
+    def _validate(self, event: Any = None) -> None:
         if self.validator and self.get():
             is_valid = self.validator(self.get())
             color = ("green", "#28a745") if is_valid else ("red", "#dc3545")
@@ -95,31 +85,26 @@ class StyledEntry(customtkinter.CTkEntry):
 
 class Card(BaseComponent):
     """Componente de card para agrupar conteúdo."""
-    
-    def __init__(self, master, title: str = "", **kwargs):
+    def __init__(self, master: Any, title: str = "", **kwargs) -> None:
         self.title = title
         super().__init__(master, **kwargs)
-        
-    def _build_ui(self):
+
+    def _build_ui(self) -> None:
         self.configure(
             corner_radius=12,
             border_width=1,
-            border_color=("gray80", "gray20")  # Corrigido para combinar com ImprovedListFrame
+            border_color=("gray80", "gray20")
         )
-        
         if self.title:
             title_label = StyledLabel(
-                self, 
+                self,
                 text=self.title,
                 style='heading',
                 text_color=("gray10", "gray90")
             )
             title_label.pack(pady=(15, 10), padx=15, anchor="w")
-        
-        # Container para conteúdo
         self.content_frame = customtkinter.CTkFrame(
             self,
             fg_color="transparent"
         )
-        # Corrige: padding vertical para dentro do card, sem colar nas bordas
         self.content_frame.pack(fill="both", expand=True, padx=15, pady=(10, 10))
