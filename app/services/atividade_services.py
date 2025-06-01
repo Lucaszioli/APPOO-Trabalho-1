@@ -103,7 +103,7 @@ class AtividadeService(ABC, Database):
             else:   
                 raise ValueError("Tipo de atividade inválido")
             
-        result.sort(key = lambda atv: datetime.strptime(atv.data, "%Y-%m-%d"))
+        result.sort(key = lambda atv: datetime.strptime(atv.data, "%d/%m/%Y"))
         return result
 
     
