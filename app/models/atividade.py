@@ -1,6 +1,7 @@
 from abc import ABC
 from typing import Optional
-
+from datetime import datetime
+from app.errors.incorrectDate import incorrectDate
 class TipoAtividadeEnum:
     def __init__(self):
         self.TRABALHO = "Trabalho"
@@ -19,6 +20,24 @@ class Atividade(ABC):
         id: Optional[int]=None,
         tipo: Optional[TipoAtividadeEnum] = None
         ):
+        if not nome:
+            raise ValueError("Nome da atividade não pode ser vazio.")
+        if not isinstance(nome, str):
+            raise ValueError("Nome da atividade deve ser uma string.")
+        if not data:
+            raise ValueError("Data da atividade não pode ser vazia.")
+        if not isinstance(data, str):
+            raise ValueError("Data da atividade deve ser uma string.")
+        if not isinstance(disciplina_id, int) or disciplina_id <= 0:
+            raise ValueError("ID da disciplina deve ser um número inteiro positivo.")
+        if id is not None and (not isinstance(id, int) or id <= 0):
+            raise ValueError("ID da atividade deve ser um número inteiro positivo.")
+        
+        try:
+            datetime.strptime(data, "%d/%m/%Y")
+        except ValueError:
+            raise ValueError("Data da atividade deve estar no formato 'dd/mm/yyyy'.")
+        
         self._id = id
         self._nome = nome
         self._data = data
@@ -32,6 +51,10 @@ class Atividade(ABC):
     
     @id.setter
     def id(self, id: int) -> None:
+        if id is not None and (not isinstance(id, int) or id <= 0):
+            raise ValueError("ID da atividade deve ser um número inteiro positivo.")
+        if self._id is not None:
+            raise ValueError("ID já está definido e não pode ser alterado.")
         self._id = id
 
     @property
@@ -40,6 +63,10 @@ class Atividade(ABC):
     
     @nome.setter
     def nome(self, nome: str) -> None:
+        if not nome:
+            raise ValueError("Nome da atividade não pode ser vazio.")
+        if not isinstance(nome, str):
+            raise ValueError("Nome da atividade deve ser uma string.")
         self._nome = nome
 
     @property
@@ -48,6 +75,15 @@ class Atividade(ABC):
     
     @data.setter
     def data(self, data: str) -> None:
+        if not data:
+            raise ValueError("Data da atividade não pode ser vazia.")
+        if not isinstance(data, str):
+            raise ValueError("Data da atividade deve ser uma string.")
+        try:
+            datetime.strptime(data, "%d/%m/%Y")
+        except ValueError:
+            raise ValueError("Data da atividade deve estar no formato 'dd/mm/yyyy'.")
+
         self._data = data
 
     @property
@@ -56,6 +92,10 @@ class Atividade(ABC):
     
     @disciplina_id.setter
     def disciplina_id(self, disciplina_id: int) -> None:
+        if not isinstance(disciplina_id, int) or disciplina_id <= 0:
+            raise ValueError("ID da disciplina deve ser um número inteiro positivo.")
+        if self._disciplina_id is not None:
+            raise ValueError("ID da disciplina já está definido e não pode ser alterado.")
         self._disciplina_id = disciplina_id
 
     @property
@@ -72,6 +112,8 @@ class Atividade(ABC):
     
     @tipo.setter
     def tipo(self, tipo: TipoAtividadeEnum) -> None:
+        if self._tipo is not None:
+            raise ValueError("Tipo de atividade já está definido e não pode ser alterado.")
         self._tipo = tipo
 
 class Trabalho(Atividade):
@@ -80,13 +122,31 @@ class Trabalho(Atividade):
         nome: str, 
         data: str, 
         disciplina_id: int, 
-        nota_total: float, 
+        nota_total: Optional[float], 
         data_apresentacao: Optional[str] = None, 
         nota: Optional[float] = None, 
         observacao: Optional[str] = None, 
         id: Optional[int] = None
         ):
+        if nota_total <= 0:
+            raise ValueError("Nota total deve ser um número positivo.")
+        if nota is not None and (nota < 0 or nota > nota_total):
+            raise ValueError("Nota deve ser um número entre 0 e a nota total.")
+        if nota is not None and not isinstance(nota, float):
+            raise ValueError("Nota deve ser um número.")
+        if nota_total is not None and not isinstance(nota_total, float):
+            raise ValueError("Nota total deve ser um número.")
+        if data_apresentacao is not None and not isinstance(data_apresentacao, str):
+            raise ValueError("Data de apresentação deve ser uma string.")
         super().__init__(nome, data, disciplina_id, observacao, id)
+        if data_apresentacao:
+            try:
+                datetime.strptime(data_apresentacao, "%d/%m/%Y")
+            except ValueError:
+                raise ValueError("Data de apresentação deve estar no formato 'dd/mm/yyyy'.")
+            apresentacao = datetime.strptime(data_apresentacao, "%d/%m/%Y")
+            if apresentacao < datetime.strptime(data, "%d/%m/%Y"):
+                raise incorrectDate("Data de apresentação não pode ser anterior à data da atividade.")
         self._tipo = TipoAtividadeEnum().TRABALHO
         self._data_apresentacao = data_apresentacao
         self._nota_total = nota_total
@@ -98,6 +158,16 @@ class Trabalho(Atividade):
     
     @data_apresentacao.setter
     def data_apresentacao(self, data_apresentacao: str) -> None:
+        if data_apresentacao is not None and not isinstance(data_apresentacao, str):
+            raise ValueError("Data de apresentação deve ser uma string.")
+        if data_apresentacao is not None and not data_apresentacao:
+            raise ValueError("Data de apresentação não pode ser vazia.")
+        try:
+            datetime.strptime(data_apresentacao, "%d/%m/%Y")
+        except ValueError:
+            raise ValueError("Data de apresentação deve estar no formato 'dd/mm/yyyy'.")
+        if self._data and datetime.strptime(data_apresentacao, "%d/%m/%Y") < datetime.strptime(self._data, "%d/%m/%Y"):
+            raise incorrectDate("Data de apresentação não pode ser anterior à data da atividade.")
         self._data_apresentacao = data_apresentacao
     
     @property
@@ -106,6 +176,12 @@ class Trabalho(Atividade):
     
     @nota_total.setter
     def nota_total(self, nota_total: float) -> None:
+        if nota_total is not None and nota_total <= 0:
+            raise ValueError("Nota total deve ser um número positivo.")
+        if self._nota is not None and (self._nota < 0 or self._nota > nota_total):
+            raise ValueError("Nota deve ser um número entre 0 e a nota total.")
+        if nota_total is not None and not isinstance(nota_total, float):
+            raise ValueError("Nota total deve ser um número.")
         self._nota_total = nota_total
 
     @property
@@ -114,6 +190,10 @@ class Trabalho(Atividade):
     
     @nota.setter
     def nota(self, nota: float) -> None:
+        if nota is not None and (nota < 0 or nota > self._nota_total):
+            raise ValueError("Nota deve ser um número entre 0 e a nota total.")
+        if nota is not None and not isinstance(nota, float):
+            raise ValueError("Nota deve ser um número.")
         self._nota = nota
     
         
@@ -130,16 +210,34 @@ class Prova(Atividade):
         id: Optional[int]=None
         ):
         super().__init__(nome, data, disciplina_id, observacao, id)
+        if nota_total <= 0:
+            raise ValueError("Nota total deve ser um número positivo.")
+        if nota is not None and (nota < 0 or nota > nota_total):
+            raise ValueError("Nota deve ser um número entre 0 e a nota total.")
+        if nota is not None and not isinstance(nota, float):
+            raise ValueError("Nota deve ser um número.")
+        if nota_total is not None and not isinstance(nota_total, float):
+            raise ValueError("Nota total deve ser um número.")
+        if not nota_total:
+            raise ValueError("Nota total não pode ser vazia.")
         self._tipo = TipoAtividadeEnum().PROVA
         self._nota_total = nota_total
         self._nota = nota
 
     @property
-    def nota_total(self) -> Optional[float]:
+    def nota_total(self) -> float:
         return self._nota_total
     
     @nota_total.setter
     def nota_total(self, nota_total: float) -> None:
+        if nota_total <= 0:
+            raise ValueError("Nota total deve ser um número positivo.")
+        if self._nota is not None and (self._nota < 0 or self._nota > nota_total):
+            raise ValueError("Nota deve ser um número entre 0 e a nota total.")
+        if nota_total is not None and not isinstance(nota_total, float):
+            raise ValueError("Nota total deve ser um número.")
+        if not nota_total:
+            raise ValueError("Nota total não pode ser vazia.")
         self._nota_total = nota_total
 
     @property
@@ -148,6 +246,12 @@ class Prova(Atividade):
     
     @nota.setter
     def nota(self, nota: float) -> None:
+        if nota is not None and (nota < 0 or nota > self._nota_total):
+            raise ValueError("Nota deve ser um número entre 0 e a nota total.")
+        if nota is not None and not isinstance(nota, float):
+            raise ValueError("Nota deve ser um número.")
+        if self._nota is not None and (self._nota < 0 or self._nota > self._nota_total):
+            raise ValueError("Nota deve ser um número entre 0 e a nota total.")
         self._nota = nota
 
 
@@ -159,20 +263,24 @@ class Aula_de_Campo(Atividade):
         nome: str, 
         data: str, 
         disciplina_id: int, 
-        lugar: str, 
+        lugar: Optional[str], 
         observacao: Optional[str] = None, 
         id: Optional[int]=None
         ):
         super().__init__(nome, data, disciplina_id, observacao, id)
+        if lugar and not isinstance(lugar, str):
+            raise ValueError("Lugar deve ser uma string.")
         self.tipo = TipoAtividadeEnum().CAMPO
         self.lugar = lugar
 
     @property
-    def lugar(self) -> str:
+    def lugar(self) -> Optional[str]:
         return self._lugar
     
     @lugar.setter
     def lugar(self, lugar: str) -> None:
+        if lugar is not None and not isinstance(lugar, str):
+            raise ValueError("Lugar deve ser uma string.")
         self._lugar = lugar
 
 
@@ -188,6 +296,9 @@ class Revisao(Atividade):
         ):
         super().__init__(nome, data, disciplina_id, observacao, id)
         self._tipo = TipoAtividadeEnum().REVISAO
+        if materia is not None and not isinstance(materia, str):
+            raise ValueError("Matéria deve ser uma string.")
+            
         self._materia = materia
 
     @property
@@ -196,4 +307,6 @@ class Revisao(Atividade):
     
     @materia.setter
     def materia(self, materia: str) -> None:
+        if materia is not None and not isinstance(materia, str):
+            raise ValueError("Matéria deve ser uma string.")
         self._materia = materia

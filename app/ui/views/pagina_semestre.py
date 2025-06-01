@@ -1,5 +1,6 @@
 from app.ui.views.base_window import BaseWindow
 from app.ui.listframes.listframe_disciplinas import DisciplinasFrame
+from app.ui.listframes.listframe_atividades import AtividadesFrame
 from typing import Any
 
 class PaginaSemestre(BaseWindow):
@@ -7,7 +8,7 @@ class PaginaSemestre(BaseWindow):
     def __init__(self, semestre: Any, conexao: Any, service: Any) -> None:
         self.semestre = semestre
         periodo = self._format_periodo(semestre)
-        title = f"{semestre.nome} {periodo}"
+        title = f"Semestre: {semestre.nome} {periodo}"
         super().__init__(
             conexao=conexao,
             title=title,
@@ -46,3 +47,19 @@ class PaginaSemestre(BaseWindow):
                 "Erro de Inicialização",
                 f"Não foi possível carregar as disciplinas do semestre: {str(e)}"
             )
+
+    def show_frame(self, disciplina):
+        # Remove o frame atual, se existir
+        if hasattr(self, 'disciplinas_frame') and self.disciplinas_frame:
+            self.disciplinas_frame.destroy()
+        elif hasattr(self, 'atividades_frame') and self.atividades_frame:
+            self.atividades_frame.destroy()
+        # Cria e exibe o frame de atividades da disciplina
+        self.disciplinas_frame = AtividadesFrame(
+            conexao=self.conexao,
+            disciplina=disciplina,
+            service=self.service,
+            master=self
+        )
+        self.disciplinas_frame.configure(corner_radius=0)
+        self.disciplinas_frame.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)

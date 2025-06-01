@@ -49,18 +49,48 @@ class DisciplinaService(ServiceBase):
         self.atividades = self._buscar_varios(self.query, self.params)
         for atividade in self.atividades:
             if atividade[6] == TipoAtividadeEnum().TRABALHO:
-                disciplina.adicionar_atividade(Trabalho(id=atividade[0], nome=atividade[1], data=atividade[2], nota = float(atividade[3]), nota_total = float(atividade[4]), disciplina_id=atividade[5], observacao=atividade[7], data_apresentacao=atividade[9]))
+                disciplina.adicionar_atividade(Trabalho(
+                    atividade[1], 
+                    atividade[2], 
+                    atividade[3], 
+                    atividade[5], 
+                    atividade[6], 
+                    atividade[7]
+                ))
             elif atividade[6] == TipoAtividadeEnum().PROVA:
-                disciplina.adicionar_atividade(Prova(id=atividade[0], nome=atividade[1], data=atividade[2], nota = float(atividade[3]), nota_total = float(atividade[4]), disciplina_id=atividade[5], observacao=atividade[7]))
+                disciplina.adicionar_atividade(Prova(
+                    atividade[1], 
+                    atividade[2], 
+                    atividade[3], 
+                    atividade[5], 
+                    atividade[6], 
+                    atividade[7]
+                ))
             elif atividade[6] == TipoAtividadeEnum().CAMPO:
-                disciplina.adicionar_atividade(Aula_de_Campo(id=atividade[0], nome=atividade[1], data=atividade[2], disciplina_id=atividade[5], observacao=atividade[7], lugar=atividade[8]))
+                disciplina.adicionar_atividade(Aula_de_Campo(
+                    atividade[1], 
+                    atividade[2], 
+                    atividade[3], 
+                    atividade[7]
+                ))
             elif atividade[6] == TipoAtividadeEnum().REVISAO:
-                disciplina.adicionar_atividade(Revisao(id=atividade[0], nome=atividade[1], data=atividade[2], disciplina_id=atividade[5], observacao=atividade[7], materia=atividade[10]))
-            else:   
-                raise ValueError("Tipo de atividade inválido")
+                disciplina.adicionar_atividade(Revisao(
+                    atividade[1], 
+                    atividade[2], 
+                    atividade[3], 
+                    atividade[5], 
+                    atividade[6], 
+                    atividade[7]
+                ))
         return disciplina.atividades
     
-    def criar_disciplina(self, nome:str, carga_horaria:int, codigo:str, semestre:"Semestre", observacao:str = None):
+    def criar_disciplina(self,
+        nome:str, 
+        carga_horaria:int, 
+        codigo:str, 
+        semestre:"Semestre", 
+        observacao:str = None
+    ):
         self.disciplina = Disciplina(nome, carga_horaria, semestre.id, codigo, observacao)
         self._adicionar_bd(self.disciplina)
         semestre.adicionar_disciplina(self.disciplina)
@@ -73,7 +103,14 @@ class DisciplinaService(ServiceBase):
         self.disciplinas = self._buscar_varios(self.query, self.params)
         if not self.disciplinas:
             return []
-        return [Disciplina(id=row[0], nome=row[1], carga_horaria=row[3], semestre_id=row[4], codigo=row[2], observacao=row[5]) for row in self.disciplinas]
+        return [Disciplina(
+            id=row[0], 
+            nome=row[1], 
+            codigo=row[2], 
+            carga_horaria=row[3], 
+            semestre_id=row[4], 
+            observacao=row[5]
+        ) for row in self.disciplinas]
     
     def listar(self) -> list["Disciplina"]:
         self.query = "SELECT * FROM disciplina"
@@ -81,11 +118,13 @@ class DisciplinaService(ServiceBase):
         disciplinas = self._buscar_varios(self.query, self.params)
         if not disciplinas:
             return []
-        return [Disciplina(id=row[0], nome=row[1], carga_horaria=row[3], semestre_id=row[4], codigo=row[2], observacao=row[5]) for row in self.disciplinas]
-    
-    def pegar_nota_total(self, disciplina:"Disciplina"):
-        self.carregar_atividades(disciplina)
-        soma = 0.0
-        for atividade in disciplina.atividades:
-            soma += getattr(atividade,"nota", 0.0)
-        return soma
+        return [Disciplina(
+            id=row[0], 
+            nome=row[1], 
+            codigo=row[2], 
+            carga_horaria=row[3], 
+            semestre_id=row[4], 
+            observacao=row[5]
+        ) for row in self.disciplinas]
+
+

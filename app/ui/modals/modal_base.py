@@ -3,7 +3,7 @@ import logging
 import customtkinter
 from CTkMessagebox import CTkMessagebox
 from app.errors.nomeSemestre import NomeRepetidoError
-from app.services.service_base import ServiceBase
+from app.services.service_universal import ServiceUniversal
 from app.ui.components.components_base import StyledLabel, StyledEntry, StyledButton, Card
 from typing import Type, Optional, Callable, Dict, Any
 
@@ -15,7 +15,7 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
     def __init__(
         self,
         conexao,
-        service: Type[ServiceBase],
+        service: Type[ServiceUniversal],
         master=None,
         callback=None,
         title: str = "Modal",
@@ -68,9 +68,9 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
         content_card.pack(fill="both", expand=True)
         
         # Área do formulário
-        self.form_frame = customtkinter.CTkFrame(
+        self.form_frame = customtkinter.CTkScrollableFrame(
             content_card.content_frame,
-            fg_color="transparent"
+            fg_color="transparent",
         )
         self.form_frame.pack(fill="both", expand=True, pady=(0, 20))
         
@@ -130,6 +130,18 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
                 corner_radius=6,
                 **kwargs
             )
+        elif field_type == "combobox":
+            # Suporte ao combobox
+            values = kwargs.get("values", [])
+            field = customtkinter.CTkComboBox(
+                self.form_frame,
+                values=values,
+                state="readonly"
+            )
+            if values:
+                field.set(values[0])  # valor padrão
+            if "command" in kwargs:
+                field.configure(command=kwargs["command"])
         else:
             raise ValueError(f"Tipo de campo não suportado: {field_type}")
             
@@ -191,6 +203,8 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
                 data[key] = widget.get().strip()
             elif field_type == "textbox":
                 data[key] = widget.get("1.0", "end-1c").strip()
+            elif field_type == "combobox":
+                data[key] = widget.get().strip()
                 
         return data
         

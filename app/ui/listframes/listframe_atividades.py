@@ -24,6 +24,14 @@ class AtividadeCard(ItemCard):
         )
         data_label.grid(row=0, column=1, sticky="e")
         
+        if hasattr(self.item, 'tipo') and (self.item.tipo == "Trabalho" or self.item.tipo == "Prova"):
+            pontuacao_label = StyledLabel(
+                info_container,
+                text=f"Pontuação: {self.item.nota_total} pontos",
+                style='small'
+            )
+            pontuacao_label.grid(row=1, column=0, sticky="w", padx=(0, 10))
+            
         if hasattr(self.item, 'observacao') and self.item.observacao:
             obs_label = StyledLabel(
                 parent,
@@ -51,8 +59,8 @@ class AtividadesFrame(ListFrameBase):
     
     def modal_class_update(self) -> type:
         """Classe do modal usado para atualizar atividade."""
-        # from app.ui.modals.modal_atualiza_atividade import ModalAtualizaAtividade
-        return True
+        from app.ui.modals.modal_atualiza_atividade import ModalAtualizaAtividade
+        return ModalAtualizaAtividade
     
     def detail_view_class(self):
         return True
@@ -71,7 +79,7 @@ class AtividadesFrame(ListFrameBase):
         return "atividades"
     
     def title_text(self):
-        return f"Atividades de {self.disciplina.nome}"
+        return f"Disciplina: {self.disciplina.nome}"
     
     def subtitle_text(self):
         return "Gerencie as atividades desta disciplina"
@@ -89,10 +97,9 @@ class AtividadesFrame(ListFrameBase):
         
     def _create_item_card(self, item):
         return AtividadeCard(
-            item=item,
-            service=self.service,
-            conexao=self.conexao,
-            master=self.master
+            self.list_container,  # master
+            item,
+            self  # list_frame
         )
         
     def _get_stats_text(self):
@@ -103,3 +110,9 @@ class AtividadesFrame(ListFrameBase):
             int(getattr(item, 'pontuacao', 0) or 0) for item in self.items
         )
         return f"Total de atividades: {total_atividades} • Pontuação total distribuida: {total_pontuacao}"
+    
+    def _on_add(self):
+        cls = self.modal_class_add()
+        params = dict(conexao=self.conexao, service=self.service, master=self, callback=self._reload)
+        params['disciplina'] = self.disciplina  # Corrige para passar a disciplina
+        cls(**params)

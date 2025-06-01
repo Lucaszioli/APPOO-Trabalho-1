@@ -62,15 +62,44 @@ class AtividadeService(ABC, Database):
         result = []
         for atividade in atividades:
             if atividade[6] == TipoAtividadeEnum().TRABALHO:
-                result.append(Trabalho(id=atividade[0], nome=atividade[1], data=atividade[2], nota=atividade[3], nota_total=atividade[4], disciplina_id=atividade[5], observacao=atividade[7], data_apresentacao=atividade[9]))
-                if atividade[9] :
-                    result.append(Trabalho(id=atividade[0], nome=atividade[1]+" (apresentação)", data=atividade[9], nota=None, nota_total=None, disciplina_id=atividade[5], observacao="Apresentação do trabalho"))
+                result.append(Trabalho(
+                    id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    nota=atividade[3], 
+                    nota_total=atividade[4], 
+                    disciplina_id=atividade[5], 
+                    observacao=atividade[7], 
+                    data_apresentacao=atividade[9]
+                ))
             elif atividade[6] == TipoAtividadeEnum().PROVA:
-                result.append(Prova(id=atividade[0], nome=atividade[1], data=atividade[2], nota=atividade[3], nota_total=atividade[4], disciplina_id=atividade[5], observacao=atividade[7]))
+                result.append(Prova(
+                    id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    nota=atividade[3], 
+                    nota_total=atividade[4], 
+                    disciplina_id=atividade[5], 
+                    observacao=atividade[7]
+                ))
             elif atividade[6] == TipoAtividadeEnum().CAMPO:
-                result.append(Aula_de_Campo(id=atividade[0], nome=atividade[1], data=atividade[2], disciplina_id=atividade[5], observacao=atividade[7], lugar=atividade[8]))
+                result.append(Aula_de_Campo(
+                    id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    disciplina_id=atividade[5], 
+                    observacao=atividade[7], 
+                    lugar=atividade[8]
+                ))
             elif atividade[6] == TipoAtividadeEnum().REVISAO:
-                result.append(Revisao(id=atividade[0], nome=atividade[1], data=atividade[2], disciplina_id=atividade[5], observacao=atividade[7], materia=atividade[10]))
+                result.append(Revisao(
+                    id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    disciplina_id=atividade[5], 
+                    observacao=atividade[7], 
+                    materia=atividade[10]
+                ))
             else:   
                 raise ValueError("Tipo de atividade inválido")
             
@@ -84,14 +113,43 @@ class AtividadeService(ABC, Database):
         atividade = self._buscar_um(self.query, self.params)
         if atividade:
             if atividade[6] == TipoAtividadeEnum().TRABALHO:
-                return Trabalho(id=atividade[0], nome=atividade[1], data=atividade[2], disciplina_id=atividade[5], nota_total=atividade[4], nota=atividade[3], observacao=atividade[7], data_apresentacao=atividade[9])
+                return Trabalho(
+                    id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    nota=atividade[3],
+                    nota_total=atividade[4], 
+                    disciplina_id=atividade[5], 
+                    observacao=atividade[7], 
+                    data_apresentacao=atividade[9]
+                )
             elif atividade[6] == TipoAtividadeEnum().PROVA:
-                return Prova(id=atividade[0], nome=atividade[1], data=atividade[2], disciplina_id=atividade[5], nota_total=atividade[4], nota=atividade[3], observacao=atividade[7])
+                return Prova(
+                    id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    nota=atividade[3], 
+                    nota_total=atividade[4],
+                    disciplina_id=atividade[5], 
+                    observacao=atividade[7]
+                )
             elif atividade[6] == TipoAtividadeEnum().CAMPO:
-                print(atividade)
-                return Aula_de_Campo(id=atividade[0], nome=atividade[1], data=atividade[2], disciplina_id=atividade[5],observacao=atividade[7], lugar=atividade[8])
+                return Aula_de_Campo(
+                    id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    disciplina_id=atividade[5],
+                    observacao=atividade[7], 
+                    lugar=atividade[8]
+                )
             elif atividade[6] == TipoAtividadeEnum().REVISAO:
-                return Revisao(id=atividade[0], nome=atividade[1], data=atividade[2], disciplina_id=atividade[5], observacao=atividade[7], materia=atividade[10])
+                return Revisao(id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    disciplina_id=atividade[5], 
+                    observacao=atividade[7], 
+                    materia=atividade[10]
+                )
             else:   
                 raise ValueError("Tipo de atividade inválido")
         return None
@@ -115,23 +173,40 @@ class AtividadeService(ABC, Database):
         del atividade
         return self.rows
     
-    def criar_atividade(self, nome:str, data:str, disciplina:"Disciplina",tipo:"TipoAtividadeEnum", nota_total:int=None, nota:int = None, observacao:str = None, lugar:str = None, data_apresentacao:str = None, materia=None) -> Atividade:
+    def criar_atividade(self,
+        nome:str, 
+        data:str, 
+        disciplina:"Disciplina",
+        tipo:"TipoAtividadeEnum", 
+        nota_total:float=None, 
+        nota:float = None, 
+        observacao:str = None, 
+        lugar:str = None, 
+        data_apresentacao:str = None, 
+        materia=None
+        ) -> Atividade:
         self.semestreExistente = SemestreService(self._db_path).buscar_por_id(disciplina.semestre_id)
         if not self.semestreExistente:
             raise SemestreNotFoundError()
-        
         self.disciplinaExistente = DisciplinaService(self._db_path).buscar_por_id(disciplina.id)
         if not self.disciplinaExistente:
             raise DisciplinaNotFoundError()
-        if data < self.semestreExistente.data_inicio or data > self.semestreExistente.data_fim:
-            raise incorrectDate(data, "Data da atividade fora do período do semestre")
         
+        inicio_s = datetime.strptime(self.semestreExistente.data_inicio, "%d/%m/%Y")
+        fim_s = datetime.strptime(self.semestreExistente.data_fim, "%d/%m/%Y")
+        data_t = datetime.strptime(data, "%d/%m/%Y")
+        if data_t < inicio_s or data_t > fim_s:
+            raise incorrectDate(data_t, "Data da atividade fora do período do semestre")
+
         if tipo == TipoAtividadeEnum().TRABALHO:
-            if data_apresentacao and data_apresentacao < data :
-                raise incorrectDate(data_apresentacao, "Data de apresentação não pode ser anterior à data do trabalho")
-            if data_apresentacao and (data_apresentacao < self.semestreExistente.data_inicio or data_apresentacao > self.semestreExistente.data_fim):
-                raise incorrectDate(data_apresentacao, "Data de apresentação fora do período do semestre")
-            atividade = Trabalho(nome, data, disciplina.id, nota_total, nota=nota, observacao=observacao, data_apresentacao=data_apresentacao)
+            if data_apresentacao:
+                data_apresentacao_t = datetime.strptime(data_apresentacao, "%d/%m/%Y")
+                print(data_apresentacao_t, data_t)
+                if data_apresentacao_t < data_t :
+                    raise incorrectDate(data_apresentacao_t, "Data de apresentação não pode ser anterior à data do trabalho")
+                if (data_apresentacao_t < inicio_s or data_apresentacao_t > fim_s):
+                    raise incorrectDate(data_apresentacao_t, "Data de apresentação fora do período do semestre")
+            atividade = Trabalho(nome, data, disciplina.id, nota_total=nota_total, nota=nota, observacao=observacao, data_apresentacao=data_apresentacao)
         elif tipo == TipoAtividadeEnum().PROVA:
             atividade = Prova(nome, data, disciplina.id, nota_total, nota=nota, observacao=observacao)
         elif tipo == TipoAtividadeEnum().CAMPO:
@@ -164,15 +239,54 @@ class AtividadeService(ABC, Database):
         result = []
         for atividade in atividades:
             if atividade[6] == TipoAtividadeEnum().TRABALHO:
-                result.append(Trabalho(id=atividade[0], nome=atividade[1], data=atividade[2], nota=atividade[3], nota_total=atividade[4], disciplina_id=atividade[5], observacao=atividade[7], data_apresentacao=atividade[9]))
+                result.append(Trabalho(
+                    id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    nota=atividade[3], 
+                    nota_total=atividade[4], 
+                    disciplina_id=atividade[5], 
+                    observacao=atividade[7], 
+                    data_apresentacao=atividade[9]
+                ))
                 if atividade[9] :
-                    result.append(Trabalho(id=atividade[0], nome=atividade[1]+" (apresentação)", data=atividade[9], nota=None, nota_total=None, disciplina_id=atividade[5], observacao="Apresentação do trabalho"))
+                    result.append(Trabalho(
+                        id=atividade[0], 
+                        nome=atividade[1]+" (apresentação)", 
+                        nota=None, 
+                        nota_total=None,
+                        disciplina_id=atividade[5], 
+                        observacao="Apresentação do trabalho",
+                        data=atividade[9], 
+                    ))
             elif atividade[6] == TipoAtividadeEnum().PROVA:
-                result.append(Prova(id=atividade[0], nome=atividade[1], data=atividade[2], nota=atividade[3], nota_total=atividade[4], disciplina_id=atividade[5], observacao=atividade[7]))
+                result.append(Prova(
+                    id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    nota=atividade[3], 
+                    nota_total=atividade[4], 
+                    disciplina_id=atividade[5], 
+                    observacao=atividade[7]
+                ))
             elif atividade[6] == TipoAtividadeEnum().CAMPO:
-                result.append(Aula_de_Campo(id=atividade[0], nome=atividade[1], data=atividade[2], disciplina_id=atividade[5], observacao=atividade[7], lugar=atividade[8]))
+                result.append(Aula_de_Campo(
+                    id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    disciplina_id=atividade[5], 
+                    observacao=atividade[7], 
+                    lugar=atividade[8]
+                ))
             elif atividade[6] == TipoAtividadeEnum().REVISAO:
-                result.append(Revisao(id=atividade[0], nome=atividade[1], data=atividade[2], disciplina_id=atividade[5], observacao=atividade[7], materia=atividade[10]))
+                result.append(Revisao(
+                    id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    disciplina_id=atividade[5], 
+                    observacao=atividade[7], 
+                    materia=atividade[10]
+                ))
             else:   
                 raise ValueError("Tipo de atividade inválido")
             result.sort(key=lambda atv: datetime.strptime(atv.data, "%Y-%m-%d"))

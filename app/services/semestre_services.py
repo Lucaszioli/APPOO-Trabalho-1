@@ -54,7 +54,12 @@ class SemestreService(ServiceBase):
         self.semestres = self._buscar_varios(self.query, self.params)
         if not self.semestres:
             return []
-        return [Semestre(id=row[0], nome=row[1], data_inicio=row[2], data_fim=row[3]) for row in self.semestres]
+        return [Semestre(
+            id=row[0], 
+            nome=row[1], 
+            data_inicio=row[2], 
+            data_fim=row[3]
+        ) for row in self.semestres]
     
 
     def buscar_ultimo_semestre(self) -> Optional["Semestre"]:
@@ -62,7 +67,12 @@ class SemestreService(ServiceBase):
         self.params = ()
         self.semestre = self._buscar_um(self.query, self.params)
         if self.semestre:
-            return Semestre(id=self.semestre[0], nome=self.semestre[1], data_inicio=self.semestre[2], data_fim=self.semestre[3])
+            return Semestre(
+                id=self.semestre[0], 
+                nome=self.semestre[1], 
+                data_inicio=self.semestre[2], 
+                data_fim=self.semestre[3]
+            )
         return None
     
     
@@ -72,7 +82,14 @@ class SemestreService(ServiceBase):
         self.params = (semestre.id,)
         self.disciplinas = self._buscar_varios(self.query, self.params)
         for row in self.disciplinas:
-            disciplina = Disciplina(id=row[0], nome=row[1], carga_horaria=row[3], semestre_id=row[4], codigo=row[2], observacao=row[5])
+            disciplina = Disciplina(
+                id=row[0], 
+                nome=row[1], 
+                codigo=row[2], 
+                carga_horaria=row[3], 
+                semestre_id=row[4], 
+                observacao=row[5]
+            )
             semestre.adicionar_disciplina(disciplina)
         return semestre.disciplinas
 
@@ -81,7 +98,12 @@ class SemestreService(ServiceBase):
         self.params = (nome,)
         row = self._buscar_um(self.query, self.params)
         if row:
-            return Semestre(id=row[0], nome=row[1], data_inicio=row[2], data_fim=row[3])
+            return Semestre(
+                id=row[0], 
+                nome=row[1], 
+                data_inicio=row[2], 
+                data_fim=row[3]
+            )
         return None
             
     def criar_semestre(self, nome:str, data_inicio:str, data_fim:str) -> "Semestre":
