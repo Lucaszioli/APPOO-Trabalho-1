@@ -1,5 +1,4 @@
 from app.ui.views.base_window import BaseWindow
-import app.ui.listframes.listframe_atividades as ListFrameAtividades
 from typing import Any
 
 class PaginaDisciplina(BaseWindow):
@@ -15,7 +14,9 @@ class PaginaDisciplina(BaseWindow):
 
     def _create_body(self) -> None:
         try:
-            self.atividades_frame = ListFrameAtividades.AtividadesFrame(
+            from app.ui.listframes.listframe_atividades import AtividadesFrame
+            
+            self.atividades_frame = AtividadesFrame(
                 conexao=self.conexao,
                 disciplina=self.disciplina,
                 service=self.service,
@@ -31,10 +32,16 @@ class PaginaDisciplina(BaseWindow):
 
     def show_frame(self, atividade):
         # Remove o frame atual, se existir
-        if hasattr(self, 'atividades_frame') and self.atividades_frame:
+        if hasattr(self, 'disciplinas_frame') and self.disciplinas_frame:
+            self.disciplinas_frame.destroy()
+        elif hasattr(self, 'atividades_frame') and self.atividades_frame:
             self.atividades_frame.destroy()
+            
+        # Corrigido: importação direta
+        from app.ui.listframes.listframe_atividades import AtividadesFrame
+        
         # Cria e exibe novamente o AtividadesFrame (pode ser adaptado para detalhe de atividade futuramente)
-        self.atividades_frame = ListFrameAtividades.AtividadesFrame(
+        self.atividades_frame = AtividadesFrame(
             conexao=self.conexao,
             disciplina=self.disciplina,
             service=self.service,
