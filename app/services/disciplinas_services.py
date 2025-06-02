@@ -50,37 +50,37 @@ class DisciplinaService(ServiceBase):
         for atividade in self.atividades:
             if atividade[6] == TipoAtividadeEnum().TRABALHO:
                 disciplina.adicionar_atividade(Trabalho(
-                    atividade[1], 
-                    atividade[2], 
-                    atividade[3], 
-                    atividade[5], 
-                    atividade[6], 
-                    atividade[7]
+                    nome=atividade[1],
+                    data=atividade[2],
+                    disciplina_id=disciplina.id,
+                    nota_total=atividade[4],
+                    observacao=atividade[5],
+                    id=atividade[0]
                 ))
             elif atividade[6] == TipoAtividadeEnum().PROVA:
                 disciplina.adicionar_atividade(Prova(
-                    atividade[1], 
-                    atividade[2], 
-                    atividade[3], 
-                    atividade[5], 
-                    atividade[6], 
-                    atividade[7]
+                    nome=atividade[1],
+                    data=atividade[2],
+                    disciplina_id=disciplina.id,
+                    nota_total=atividade[4],
+                    observacao=atividade[5],
+                    id=atividade[0]
                 ))
             elif atividade[6] == TipoAtividadeEnum().CAMPO:
                 disciplina.adicionar_atividade(Aula_de_Campo(
-                    atividade[1], 
-                    atividade[2], 
-                    atividade[3], 
-                    atividade[7]
+                    nome=atividade[1],
+                    data=atividade[2],
+                    disciplina_id=disciplina.id,
+                    id=atividade[0],
+                    observacao=atividade[7] if len(atividade) > 7 else None
                 ))
             elif atividade[6] == TipoAtividadeEnum().REVISAO:
                 disciplina.adicionar_atividade(Revisao(
-                    atividade[1], 
-                    atividade[2], 
-                    atividade[3], 
-                    atividade[5], 
-                    atividade[6], 
-                    atividade[7]
+                    nome=atividade[1],
+                    data=atividade[2],
+                    disciplina_id=disciplina.id,
+                    observacao=atividade[5],
+                    id=atividade[0]
                 ))
         return disciplina.atividades
     
@@ -126,5 +126,23 @@ class DisciplinaService(ServiceBase):
             semestre_id=row[4], 
             observacao=row[5]
         ) for row in self.disciplinas]
+
+    def pegar_nota_total(self, disciplina: "Disciplina") -> float:
+        """
+        Calcula a nota final da disciplina com base nas atividades cadastradas.
+        Retorna 0.0 se não houver atividades ou notas.
+        """
+        self.carregar_atividades(disciplina)
+        if not hasattr(disciplina, 'atividades') or not disciplina.atividades:
+            return 0.0
+        total = 0.0
+        peso_total = 0.0
+        for atividade in disciplina.atividades:
+            if hasattr(atividade, 'nota_obtida') and hasattr(atividade, 'nota_total') and atividade.nota_total:
+                total += (atividade.nota_obtida / atividade.nota_total) * 100
+                peso_total += 1
+        if peso_total == 0:
+            return 0.0
+        return total / peso_total
 
 
