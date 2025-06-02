@@ -5,7 +5,7 @@ from CTkMessagebox import CTkMessagebox
 from app.errors.nomeSemestre import NomeRepetidoError
 from app.services.service_universal import ServiceUniversal
 from app.ui.components.components_base import StyledLabel, StyledEntry, StyledButton, Card
-from typing import Type, Optional, Callable, Dict, Any
+from typing import Optional, Callable, Dict, Any
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +15,7 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
     def __init__(
         self,
         conexao,
-        service: Type[ServiceUniversal],
+        service: ServiceUniversal,  # Corrigido: era Type[ServiceUniversal]
         master=None,
         callback=None,
         title: str = "Modal",
@@ -37,7 +37,7 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
         
         self._setup_window(title, size)
         self._build_ui()
-        
+
     def _setup_window(self, title: str, size: tuple[int, int]):
         """Configura a janela do modal."""
         self.title(title)
@@ -56,7 +56,7 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
         
         # Foco no modal
         self.focus()
-        
+
     def _build_ui(self):
         """Constrói a interface do modal."""
         # Container principal
@@ -78,11 +78,11 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
         
         # Botões de ação
         self._build_action_buttons(content_card.content_frame)
-        
+
     def _build_action_buttons(self, parent):
         """Cria os botões de ação."""
         buttons_frame = customtkinter.CTkFrame(parent, fg_color="transparent")
-        buttons_frame.pack(fill="x")
+        buttons_frame.pack(fill="x", pady=(10, 0))  # Adicionado padding top
         buttons_frame.grid_columnconfigure((0, 1), weight=1)
         
         # Botão cancelar
@@ -104,7 +104,7 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
             height=40
         )
         save_btn.grid(row=0, column=1, sticky="ew")
-        
+
     def add_field(self, key: str, label: str, field_type: str = "entry", 
                   required: bool = True, validator: Optional[Callable] = None, **kwargs):
         """Adiciona um campo ao formulário."""
@@ -131,7 +131,6 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
                 **kwargs
             )
         elif field_type == "combobox":
-            # Suporte ao combobox
             values = kwargs.get("values", [])
             field = customtkinter.CTkComboBox(
                 self.form_frame,
@@ -156,7 +155,7 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
         }
         
         return field
-        
+
     def _on_submit(self):
         """Processa o envio do formulário."""
         # Coleta dados
@@ -165,8 +164,11 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
         # Valida
         is_valid, error_msg = self._validate_all(data)
         if not is_valid:
-            self.grab_release()
+            # Corrigido: verifica se ainda está "grabbed" antes de liberar
+            if self.grab_current() == self:
+                self.grab_release()
             CTkMessagebox(title="Erro de Validação", message=error_msg, icon="cancel")
+            self.grab_set()  # Restaura o grab
             return
             
         # Salva
@@ -174,13 +176,17 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
             self._save(data)
         except NomeRepetidoError as e:
             logger.exception("Nome repetido")
-            self.grab_release()
+            if self.grab_current() == self:
+                self.grab_release()
             CTkMessagebox(title="Erro", message=str(e), icon="cancel")
+            self.grab_set()  # Restaura o grab
             return
         except Exception as e:
             logger.exception("Erro ao salvar")
-            self.grab_release()
+            if self.grab_current() == self:
+                self.grab_release()
             CTkMessagebox(title="Erro", message=f"Falha ao salvar: {str(e)}", icon="cancel")
+            self.grab_set()  # Restaura o grab
             return
             
         # Callback e fechar
@@ -191,7 +197,7 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
                 logger.warning("Callback falhou")
                 
         self.destroy()
-        
+
     def _collect_data(self) -> dict:
         """Coleta dados de todos os campos."""
         data = {}
@@ -207,18 +213,18 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
                 data[key] = widget.get().strip()
                 
         return data
-        
+
     def _validate_all(self, data: dict) -> tuple[bool, str]:
         """Valida todos os campos."""
         # Campos obrigatórios
         for key, field_info in self.fields.items():
             if field_info['required'] and not data.get(key):
-                return False, f"Campo obrigatório não preenchido."
+                return False, f"Campo '{key}' é obrigatório."  # Melhorada mensagem de erro
                 
             # Validador customizado
             if field_info['validator'] and data.get(key):
                 if not field_info['validator'](data[key]):
-                    return False, f"Valor inválido no campo."
+                    return False, f"Valor inválido no campo '{key}'."  # Melhorada mensagem de erro
                     
         # Validação customizada
         return self._validate_custom(data)
@@ -226,7 +232,7 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
     def _validate_custom(self, data: dict) -> tuple[bool, str]:
         """Validação customizada. Pode ser sobrescrita."""
         return True, ""
-        
+
     @abstractmethod
     def _build_form(self):
         """Constrói o formulário. Deve ser implementado pelas subclasses."""
