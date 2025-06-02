@@ -53,15 +53,18 @@ class DisciplinaService(ServiceBase):
                     nome=atividade[1],
                     data=atividade[2],
                     disciplina_id=disciplina.id,
+                    nota=atividade[3],
                     nota_total=atividade[4],
                     observacao=atividade[5],
-                    id=atividade[0]
+                    data_apresentacao=atividade[9],
+                    id=atividade[0],
                 ))
             elif atividade[6] == TipoAtividadeEnum().PROVA:
                 disciplina.adicionar_atividade(Prova(
                     nome=atividade[1],
                     data=atividade[2],
                     disciplina_id=disciplina.id,
+                    nota=atividade[3],
                     nota_total=atividade[4],
                     observacao=atividade[5],
                     id=atividade[0]
@@ -138,8 +141,9 @@ class DisciplinaService(ServiceBase):
         total = 0.0
         peso_total = 0.0
         for atividade in disciplina.atividades:
-            if hasattr(atividade, 'nota_obtida') and hasattr(atividade, 'nota_total') and atividade.nota_total:
-                total += (atividade.nota_obtida / atividade.nota_total) * 100
+            print(atividade.__dict__)
+            if hasattr(atividade, 'nota') and hasattr(atividade, 'nota_total') and atividade.nota_total and atividade.nota:
+                total += (atividade.nota / atividade.nota_total) * 100
                 peso_total += 1
         if peso_total == 0:
             return 0.0
