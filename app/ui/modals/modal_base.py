@@ -14,12 +14,8 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
     
     def __init__(
         self,
-<<<<<<< HEAD
-        conexao,
-        service: ServiceUniversal, 
-=======
+
         service: ServiceUniversal,  # Corrigido: era Type[ServiceUniversal]
->>>>>>> 2b786c4500e2df93eddb399c8dbccf6a6e31827c
         master=None,
         callback=None,
         title: str = "Modal",

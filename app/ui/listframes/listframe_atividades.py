@@ -130,13 +130,9 @@ class AtividadesFrame(ListFrameBase):
     
     def _on_add(self):
         cls = self.modal_class_add()
-<<<<<<< HEAD
-        params = dict(conexao=self.conexao, service=self.service, master=self, callback=self._reload)
-        params['disciplina'] = self.disciplina  
-=======
+
         params = dict(service=self.service, master=self, callback=self._reload)
         params['disciplina'] = self.disciplina  # Corrige para passar a disciplina
->>>>>>> 2b786c4500e2df93eddb399c8dbccf6a6e31827c
         cls(**params)
     
     def _build_ui(self):
