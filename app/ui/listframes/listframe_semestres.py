@@ -31,6 +31,22 @@ class SemestreCard(ItemCard):
         )
         fim_label.grid(row=0, column=1, sticky="e")
         
+        #NSG
+        nsg_text = self.item.nsg if self.item.nsg is not None else 0
+        nsg_label = StyledLabel(
+            info_container,
+            text=f"NSG: {nsg_text}",
+            style='small'
+        )
+        nsg_label.grid(row=1, column=0, sticky="w", padx=(0, 10))
+        
+        if nsg_text < 50:
+            nsg_label.configure(text_color="red")
+        elif nsg_text < 80:
+            nsg_label.configure(text_color="green")
+        else:
+            nsg_label.configure(text_color="blue")
+        
         # Status (ativo/inativo)
         status_frame = customtkinter.CTkFrame(parent, fg_color="transparent")
         status_frame.pack(fill="x", pady=(5, 0))
