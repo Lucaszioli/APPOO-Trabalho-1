@@ -81,7 +81,7 @@ class ModalAtualizaAtividade(ModalBase):
         self.date_picker.set_allow_manual_input(False)
         if data_val:
             self.date_picker.insert(self._to_br_format(data_val))
-        self.date_picker.grid(row=1, column=0, sticky="ew", padx=(0, 10))
+        self.date_picker.grid(row=1, column=0)
         
         self.dynamic_container = customtkinter.CTkFrame(self.form_frame, fg_color="transparent")
         self._update_dynamic_fields(self.type.get())
