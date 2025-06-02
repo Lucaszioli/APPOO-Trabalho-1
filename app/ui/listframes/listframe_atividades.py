@@ -27,12 +27,14 @@ class AtividadeCard(ItemCard):
         data_label.grid(row=0, column=1, sticky="e")
         
         if hasattr(self.item, 'tipo') and (self.item.tipo == "Trabalho" or self.item.tipo == "Prova"):
-            pontuacao_label = StyledLabel(
-                info_container,
-                text=f"Pontuação: {self.item.nota_total} pontos",
-                style='small'
-            )
-            pontuacao_label.grid(row=1, column=1, sticky="e")
+            print(self.item.__dict__)
+            if hasattr(self.item, 'nota_total') and self.item.nota_total is not None:
+                pontuacao_label = StyledLabel(
+                    info_container,
+                    text=f"Pontuação: {self.item.nota_total} pontos",
+                    style='small'
+                )
+                pontuacao_label.grid(row=1, column=1, sticky="e")
             if hasattr(self.item, 'nota') and self.item.nota is not None:
                 nota_label = StyledLabel(
                     info_container,
@@ -55,8 +57,8 @@ class AtividadeCard(ItemCard):
                 style='caption',
                 wraplength=300
             )
-            obs_label.pack(anchor="w", pady=(5, 0))
-            
+            obs_label.grid(row=3, column=0, sticky="w", padx=(0, 10))
+
 class AtividadesFrame(ListFrameBase):
     """Frame para listar e gerenciar atividades com calendário integrado."""
 

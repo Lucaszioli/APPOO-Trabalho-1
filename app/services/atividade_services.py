@@ -74,6 +74,17 @@ class AtividadeService(ABC, Database):
                     data_apresentacao=atividade[9],
                     progresso=progresso
                 ))
+                if atividade[9] :
+                    result.append(Trabalho(
+                        id=atividade[0], 
+                        nome=atividade[1]+" (apresentação)", 
+                        nota=None, 
+                        nota_total=None,
+                        disciplina_id=atividade[5], 
+                        observacao="Apresentação do trabalho",
+                        data=atividade[9], 
+                        progresso=atividade[11]
+                    ))
             elif atividade[6] == TipoAtividadeEnum().PROVA:
                 result.append(Prova(
                     id=atividade[0], 
@@ -268,6 +279,7 @@ class AtividadeService(ABC, Database):
                         disciplina_id=atividade[5], 
                         observacao="Apresentação do trabalho",
                         data=atividade[9], 
+                        progresso=atividade[11]
                     ))
             elif atividade[6] == TipoAtividadeEnum().PROVA:
                 result.append(Prova(
