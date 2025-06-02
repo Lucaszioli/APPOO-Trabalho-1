@@ -30,8 +30,22 @@ class AtividadeCard(ItemCard):
                 text=f"Pontuação: {self.item.nota_total} pontos",
                 style='small'
             )
-            pontuacao_label.grid(row=1, column=0, sticky="w", padx=(0, 10))
-            
+            pontuacao_label.grid(row=1, column=1, sticky="e")
+            if hasattr(self.item, 'nota') and self.item.nota is not None:
+                nota_label = StyledLabel(
+                    info_container,
+                    text=f"Nota: {self.item.nota} pontos",
+                    style='small'
+                )
+                nota_label.grid(row=1, column=0, sticky="w", padx=(0, 10))
+        if hasattr(self.item, 'progresso'):
+            progresso_label = StyledLabel(
+                info_container,
+                text=f"Progresso: {self.item.progresso}",
+                style='caption',
+                wraplength=300
+            )
+            progresso_label.grid(row=2, column=0, sticky="w", padx=(0, 10))
         if hasattr(self.item, 'observacao') and self.item.observacao:
             obs_label = StyledLabel(
                 parent,
