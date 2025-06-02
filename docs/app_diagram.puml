@@ -1,0 +1,558 @@
+@startuml Complete_App_Architecture
+
+!define ABSTRACT_CLASS abstract class
+!define INTERFACE interface
+
+title Sistema de Gerenciamento Acadêmico - Arquitetura Completa
+
+' ==========================
+' LAYER COLORS
+' ==========================
+!define MODEL_COLOR #E8F4FD
+!define DATABASE_COLOR #FFF2CC
+!define SERVICE_COLOR #E1D5E7
+!define UI_COLOR #D5E8D4
+!define ERROR_COLOR #F8CECC
+
+' ==========================
+' MODELS LAYER
+' ==========================
+
+package "Models Layer" MODEL_COLOR {
+    
+    enum TipoAtividadeEnum {
+        TRABALHO = "Trabalho"
+        PROVA = "Prova"
+        CAMPO = "Aula de campo"
+        REVISAO = "Aula de revisão"
+    }
+    
+    ABSTRACT_CLASS Atividade {
+        # _id: Optional[int]
+        # _nome: str
+        # _data: str
+        # _disciplina_id: int
+        # _observacao: Optional[str]
+        # _tipo: TipoAtividadeEnum
+        # _progresso: str
+        --
+        + __init__(...)
+        + id: int {get/set}
+        + nome: str {get/set}
+        + data: str {get/set}
+        + disciplina_id: int {get/set}
+        + observacao: str {get/set}
+        + tipo: TipoAtividadeEnum {get/set}
+        + progresso: str {get/set}
+    }
+    
+    class Trabalho {
+        - _nota_total: Optional[float]
+        - _nota: Optional[float]
+        - _data_apresentacao: Optional[str]
+        --
+        + nota_total: float {get/set}
+        + nota: float {get/set}
+        + data_apresentacao: str {get/set}
+    }
+
+    class Prova {
+        - _nota_total: Optional[float]
+        - _nota: Optional[float]
+        --
+        + nota_total: float {get/set}
+        + nota: float {get/set}
+    }
+
+    class Aula_de_Campo {
+        - _lugar: Optional[str]
+        --
+        + lugar: str {get/set}
+    }
+
+    class Revisao {
+        - _materia: Optional[str]
+        --
+        + materia: str {get/set}
+    }
+    
+    class Disciplina {
+        - _id: Optional[int]
+        - _nome: str
+        - _codigo: str
+        - _carga_horaria: int
+        - _semestre_id: int
+        - _observacao: Optional[str]
+        - _atividades: List[Atividade]
+        --
+        + id: int {get/set}
+        + nome: str {get/set}
+        + codigo: str {get/set}
+        + carga_horaria: int {get/set}
+        + semestre_id: int {get/set}
+        + observacao: str {get/set}
+        + atividades: List[Atividade] {get}
+        + adicionar_atividade(atividade: Atividade)
+        + remover_atividade(atividade: Atividade)
+    }
+    
+    class Semestre {
+        - _id: Optional[int]
+        - _nome: str
+        - _data_inicio: str
+        - _data_fim: str
+        - _disciplinas: List[Disciplina]
+        - _nsg: Optional[float]
+        --
+        + id: int {get/set}
+        + nome: str {get/set}
+        + data_inicio: str {get/set}
+        + data_fim: str {get/set}
+        + disciplinas: List[Disciplina] {get}
+        + nsg: float {get/set}
+        + adicionar_disciplina(disciplina: Disciplina)
+        + remover_disciplina(disciplina: Disciplina)
+    }
+}
+
+' ==========================
+' DATABASE LAYER
+' ==========================
+
+package "Database Layer" DATABASE_COLOR {
+    class Database {
+        # _db_path: str
+        # _conexao: sqlite3.Connection
+        # _cursor: sqlite3.Cursor
+        --
+        + __init__(db_path: str)
+        + conectar()
+        + desconectar()
+        + inicializar_bd()
+        # _adicionar(query: str, params: tuple): int
+        # _editar(query: str, params: tuple): int
+        # _deletar(query: str, params: tuple): int
+        # _buscar_um(query: str, params: tuple): tuple
+        # _buscar_varios(query: str, params: tuple): List[tuple]
+    }
+    
+    ABSTRACT_CLASS ServiceBase {
+        # _db_path: str
+        --
+        + __init__(db_path: str)
+        # _adicionar(query: str, params: tuple): int
+        # _editar(query: str, params: tuple): int
+        # _deletar(query: str, params: tuple): int
+        # _buscar_um(query: str, params: tuple): tuple
+        # _buscar_varios(query: str, params: tuple): List[tuple]
+    }
+}
+
+' ==========================
+' SERVICES LAYER
+' ==========================
+
+package "Services Layer" SERVICE_COLOR {
+    
+    class AtividadeService {
+        + listar(): List[Atividade]
+        + listar_por_disciplina(disciplina: Disciplina): List[Atividade]
+        + listar_por_semestre(semestre: Semestre): List[Atividade]
+        + buscar_por_id(id: int): Optional[Atividade]
+        + criar_atividade(...): Atividade
+        + editar_bd(atividade: Atividade): Atividade
+        + deletar(atividade: Atividade): int
+        + _adicionar_bd(atividade: Atividade): Atividade
+    }
+
+    class DisciplinaService {
+        + listar(): List[Disciplina]
+        + listar_por_semestre(semestre: Semestre): List[Disciplina]
+        + buscar_por_id(id: int): Optional[Disciplina]
+        + criar_disciplina(...): Disciplina
+        + editar_bd(disciplina: Disciplina): Disciplina
+        + deletar(disciplina: Disciplina): int
+        + carregar_atividades(disciplina: Disciplina): List[Atividade]
+        + pegar_nota_total(disciplina: Disciplina): float
+        + _adicionar_bd(disciplina: Disciplina): Disciplina
+    }
+
+    class SemestreService {
+        + listar(): List[Semestre]
+        + buscar_por_id(id: int): Optional[Semestre]
+        + buscar_por_nome(nome: str): Optional[Semestre]
+        + buscar_ultimo_semestre(): Optional[Semestre]
+        + criar_semestre(...): Semestre
+        + editar_bd(semestre: Semestre): Semestre
+        + deletar(semestre: Semestre): int
+        + carregar_disciplinas(semestre: Semestre): List[Disciplina]
+        + calcular_nsg(semestre: Semestre): float
+        + _adicionar_bd(semestre: Semestre): Semestre
+    }
+
+    class ServiceUniversal {
+        + atividade_service: AtividadeService
+        + disciplina_service: DisciplinaService
+        + semestre_service: SemestreService
+        --
+        + __init__(db_path: str)
+    }
+}
+
+' ==========================
+' UI BASE COMPONENTS
+' ==========================
+
+package "UI Base Components" UI_COLOR {
+    
+    ABSTRACT_CLASS BaseComponent {
+        - master: Any
+        --
+        + __init__(master: Any, **kwargs)
+        # _setup_style()
+        {abstract} # _build_ui()
+    }
+
+    class StyledButton {
+        + STYLES: dict
+        --
+        + __init__(master, style: str, **kwargs)
+    }
+
+    class StyledLabel {
+        - style: str
+        --
+        + __init__(master, style: str, **kwargs)
+    }
+
+    class StyledEntry {
+        - validator: Optional[Callable]
+        --
+        + __init__(master, placeholder: str, validator: Optional[Callable], **kwargs)
+        # _validate(event: Any)
+    }
+
+    class Card {
+        + content_frame: CTkFrame
+        - title: str
+        --
+        + __init__(master, title: str, **kwargs)
+        # _build_ui()
+    }
+
+    class CalendarioAtividades {
+        - service: ServiceUniversal
+        - disciplina: Optional[Any]
+        - semestre: Optional[Any]
+        - current_period: str
+        - atividades_container: CTkScrollableFrame
+        --
+        + refresh()
+        + set_disciplina(disciplina)
+        + set_semestre(semestre)
+        # _load_atividades()
+        # _get_atividades_for_period(): List[Any]
+    }
+}
+
+' ==========================
+' UI MODALS
+' ==========================
+
+package "UI Modals" UI_COLOR {
+    
+    ABSTRACT_CLASS ModalBase {
+        # service: ServiceUniversal
+        # callback: Optional[Callable]
+        # item: Optional[Any]
+        # fields: Dict[str, Any]
+        # form_frame: CTkFrame
+        --
+        + add_field(...)
+        # _on_submit()
+        # _collect_data(): dict
+        # _validate_all(data: dict): tuple[bool, str]
+        {abstract} # _build_form()
+        {abstract} # _validate_custom(data: dict): tuple[bool, str]
+        {abstract} # _save(data: dict)
+    }
+
+    class ModalNovoSemestre {
+        - date_inicio: CTkDatePicker
+        - date_fim: CTkDatePicker
+        --
+        # _build_form()
+        # _validate_custom(data: dict): tuple[bool, str]
+        # _save(data: dict)
+        # _collect_data(): dict
+    }
+
+    class ModalAtualizaSemestre {
+        - date_inicio: CTkDatePicker
+        - date_fim: CTkDatePicker
+        --
+        # _build_form()
+        # _validate_custom(data: dict): tuple[bool, str]
+        # _save(data: dict)
+        # _collect_data(): dict
+        # _to_br_format(date_str): str
+    }
+
+    class ModalNovaDisciplina {
+        - semestre: Any
+        --
+        # _build_form()
+        # _validate_custom(data: dict): tuple[bool, str]
+        # _validate_carga_horaria(value: str): bool
+        # _save(data: dict)
+    }
+
+    class ModalAtualizaDisciplina {
+        --
+        # _build_form()
+        # _validate_custom(data: dict): tuple[bool, str]
+        # _validate_carga_horaria(value: str): bool
+        # _save(data: dict)
+    }
+
+    class ModalNovaAtividade {
+        - disciplina: Any
+        - type: CTkComboBox
+        - date_picker: CTkDatePicker
+        - dynamic_container: CTkFrame
+        --
+        # _build_form()
+        # _on_type_change(value)
+        # _update_dynamic_fields(tipo)
+        # _validate_custom(data: dict): tuple[bool, str]
+        # _save(data: dict)
+        # _collect_data(): dict
+    }
+
+    class ModalAtualizaAtividade {
+        - dynamic_container: CTkFrame
+        --
+        # _build_form()
+        # _validate_custom(data: dict): tuple[bool, str]
+        # _save(data: dict)
+        # _collect_data(): dict
+    }
+}
+
+' ==========================
+' UI LIST FRAMES
+' ==========================
+
+package "UI List Frames" UI_COLOR {
+    
+    ABSTRACT_CLASS ListFrameBase {
+        # service: ServiceUniversal
+        # items: list
+        # list_container: CTkScrollableFrame
+        --
+        # _build_ui()
+        # _create_header()
+        # _populate_list()
+        # _reload()
+        {abstract} + get_items(): list
+        {abstract} + modal_class_add(): type
+        {abstract} + modal_class_update(): type
+        {abstract} + delete_item(item)
+        {abstract} + item_name(item): str
+        {abstract} + detail_view_class(): type
+    }
+
+    class ItemCard {
+        + item: Any
+        + list_frame: Any
+        --
+        + __init__(parent, item, list_frame)
+        # _build_ui()
+        {abstract} # _add_item_info(parent)
+    }
+
+    class SemestreCard {
+        --
+        # _add_item_info(parent)
+        # _format_date(date_obj): str
+        # _get_status_info(): tuple[str, str]
+    }
+
+    class DisciplinaCard {
+        --
+        # _add_item_info(parent)
+    }
+
+    class AtividadeCard {
+        --
+        # _add_item_info(parent)
+    }
+
+    class SemestresFrame {
+        --
+        + get_items(): list
+        + modal_class_add(): type
+        + modal_class_update(): type
+        + detail_view_class(): type
+        + delete_item(item)
+        + item_name(item): str
+        # _create_item_card(item): SemestreCard
+    }
+
+    class DisciplinasFrame {
+        - semestre: Any
+        - calendario: CalendarioAtividades
+        --
+        + get_items(): list
+        + modal_class_add(): type
+        + modal_class_update(): type
+        + detail_view_class(): type
+        + delete_item(item)
+        + item_name(item): str
+    }
+
+    class AtividadesFrame {
+        - disciplina: Any
+        - calendario: CalendarioAtividades
+        --
+        + get_items(): list
+        + modal_class_add(): type
+        + modal_class_update(): type
+        + delete_item(item)
+        + item_name(item): str
+    }
+}
+
+' ==========================
+' UI WINDOWS
+' ==========================
+
+package "UI Windows" UI_COLOR {
+    
+    ABSTRACT_CLASS BaseWindow {
+        # service: ServiceUniversal
+        --
+        + change_appearance_mode_event(new_mode: str)
+        + change_theme_mode_event(new_theme: str)
+        + show_error_message(title: str, message: str)
+        + show_success_message(title: str, message: str)
+        {abstract} # _create_body()
+    }
+
+    class PaginaInicial {
+        - current_frame: SemestresFrame
+        --
+        # _create_body()
+        + show_frame(semestre: Any)
+    }
+
+    class PaginaSemestre {
+        - semestre: Any
+        - disciplinas_frame: DisciplinasFrame
+        - atividades_frame: AtividadesFrame
+        --
+        # _create_body()
+        + show_frame(disciplina)
+    }
+
+    class PaginaDisciplina {
+        - disciplina: Any
+        - atividades_frame: AtividadesFrame
+        --
+        # _create_body()
+        + show_frame(atividade)
+    }
+}
+
+' ==========================
+' ERROR HANDLING
+' ==========================
+
+package "Error Handling" ERROR_COLOR {
+    class NomeRepetidoError
+    class AtividadeNotFoundError
+    class DisciplinaNotFoundError
+    class SemestreNotFoundError
+    class incorrectDate
+}
+
+' ==========================
+' RELATIONSHIPS
+' ==========================
+
+' HERANÇA (Inheritance) - Linhas sólidas com triângulo vazio
+TipoAtividadeEnum ||..o{ Atividade : "usa"
+Atividade <|-- Trabalho : "herda"
+Atividade <|-- Prova : "herda"
+Atividade <|-- Aula_de_Campo : "herda"
+Atividade <|-- Revisao : "herda"
+
+Database <|-- ServiceBase : "herda"
+ServiceBase <|-- AtividadeService : "herda"
+ServiceBase <|-- DisciplinaService : "herda" 
+ServiceBase <|-- SemestreService : "herda"
+
+BaseComponent <|-- Card : "herda"
+BaseComponent <|-- CalendarioAtividades : "herda"
+BaseComponent <|-- ListFrameBase : "herda"
+
+ModalBase <|-- ModalNovoSemestre : "herda"
+ModalBase <|-- ModalAtualizaSemestre : "herda"
+ModalBase <|-- ModalNovaDisciplina : "herda"
+ModalBase <|-- ModalAtualizaDisciplina : "herda"
+ModalBase <|-- ModalNovaAtividade : "herda"
+ModalBase <|-- ModalAtualizaAtividade : "herda"
+
+ListFrameBase <|-- SemestresFrame : "herda"
+ListFrameBase <|-- DisciplinasFrame : "herda"
+ListFrameBase <|-- AtividadesFrame : "herda"
+
+ItemCard <|-- SemestreCard : "herda"
+ItemCard <|-- DisciplinaCard : "herda"
+ItemCard <|-- AtividadeCard : "herda"
+
+BaseWindow <|-- PaginaInicial : "herda"
+BaseWindow <|-- PaginaSemestre : "herda"
+BaseWindow <|-- PaginaDisciplina : "herda"
+
+' COMPOSIÇÃO (Composition) - Losango preenchido
+Semestre *-- Disciplina : "contém"
+Disciplina *-- Atividade : "contém"
+
+ServiceUniversal *-- AtividadeService : "contém"
+ServiceUniversal *-- DisciplinaService : "contém"
+ServiceUniversal *-- SemestreService : "contém"
+
+PaginaInicial *-- SemestresFrame : "contém"
+PaginaSemestre *-- DisciplinasFrame : "contém"
+PaginaDisciplina *-- AtividadesFrame : "contém"
+
+DisciplinasFrame *-- CalendarioAtividades : "contém"
+AtividadesFrame *-- CalendarioAtividades : "contém"
+
+' AGREGAÇÃO (Aggregation) - Losango vazio
+ListFrameBase o-- ServiceUniversal : "usa"
+ModalBase o-- ServiceUniversal : "usa"
+BaseWindow o-- ServiceUniversal : "usa"
+CalendarioAtividades o-- ServiceUniversal : "usa"
+
+SemestresFrame o-- SemestreCard : "usa"
+DisciplinasFrame o-- DisciplinaCard : "usa"
+AtividadesFrame o-- AtividadeCard : "usa"
+
+' ASSOCIAÇÃO (Association) - Linha simples
+PaginaSemestre --> ModalNovaDisciplina : "cria"
+PaginaDisciplina --> ModalNovaAtividade : "cria"
+SemestresFrame --> ModalNovoSemestre : "cria"
+SemestresFrame --> ModalAtualizaSemestre : "cria"
+
+' DEPENDÊNCIA (Dependency) - Linha tracejada
+AtividadeService ..> TipoAtividadeEnum : "usa"
+AtividadeService ..> Atividade : "cria"
+DisciplinaService ..> Disciplina : "cria"
+SemestreService ..> Semestre : "cria"
+
+ModalNovaAtividade ..> TipoAtividadeEnum : "usa"
+CalendarioAtividades ..> Atividade : "exibe"
+
+@enduml
