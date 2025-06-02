@@ -124,7 +124,7 @@ class AtividadesFrame(ListFrameBase):
         if total_atividades == 0:
             return "Nenhuma atividade cadastrada"
         total_pontuacao = sum(
-            int(getattr(item, 'pontuacao', 0) or 0) for item in self.items
+            int(getattr(item, 'nota_total', 0) or 0) for item in self.items
         )
         return f"Total de atividades: {total_atividades} • Pontuação total distribuida: {total_pontuacao}"
     
