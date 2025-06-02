@@ -66,13 +66,13 @@ class ModalAtualizaAtividade(ModalBase):
         
         dates_container = customtkinter.CTkFrame(self.form_frame, fg_color="transparent")
         dates_container.pack(fill="x", pady=10)
-        dates_container.grid_columnconfigure((0, 1), weight=1)
+        dates_container.grid_columnconfigure(0, weight=1)
         data_label = customtkinter.CTkLabel(
             dates_container,
             text="Data da Atividade*:",
             font=customtkinter.CTkFont(size=14)
         )
-        data_label.grid(row=0, column=0, sticky="w", padx=(0, 10))
+        data_label.grid(row=0, column=0, sticky="w")
         
         data_val = getattr(atividade, "data", "")
         data_placeholder = self._to_br_format(data_val) if data_val else "Ex: 27/05/2025"
@@ -81,7 +81,7 @@ class ModalAtualizaAtividade(ModalBase):
         self.date_picker.set_allow_manual_input(False)
         if data_val:
             self.date_picker.insert(self._to_br_format(data_val))
-        self.date_picker.grid(row=1, column=0)
+        self.date_picker.grid(row=1, column=0, sticky="ew")
         
         self.dynamic_container = customtkinter.CTkFrame(self.form_frame, fg_color="transparent")
         self._update_dynamic_fields(self.type.get())
