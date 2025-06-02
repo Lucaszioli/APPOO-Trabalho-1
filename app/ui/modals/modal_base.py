@@ -15,7 +15,7 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
     def __init__(
         self,
         conexao,
-        service: ServiceUniversal,  # Corrigido: era Type[ServiceUniversal]
+        service: ServiceUniversal, 
         master=None,
         callback=None,
         title: str = "Modal",
@@ -44,30 +44,24 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
         self.geometry(f"{size[0]}x{size[1]}")
         self.resizable(False, False)
         
-        # Centraliza na tela
         self.update_idletasks()
         x = (self.winfo_screenwidth() // 2) - (size[0] // 2)
         y = (self.winfo_screenheight() // 2) - (size[1] // 2)
         self.geometry(f"{size[0]}x{size[1]}+{x}+{y}")
         
-        # Torna modal
         self.transient(self.master)
         self.grab_set()
         
-        # Foco no modal
         self.focus()
 
     def _build_ui(self):
         """Constrói a interface do modal."""
-        # Container principal
         main_container = customtkinter.CTkFrame(self, fg_color="transparent")
         main_container.pack(fill="both", expand=True, padx=20, pady=20)
         
-        # Card do conteúdo
         content_card = Card(main_container)
         content_card.pack(fill="both", expand=True)
         
-        # Área do formulário
         self.form_frame = customtkinter.CTkScrollableFrame(
             content_card.content_frame,
             fg_color="transparent",
@@ -76,16 +70,14 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
         
         self._build_form()
         
-        # Botões de ação
         self._build_action_buttons(content_card.content_frame)
 
     def _build_action_buttons(self, parent):
         """Cria os botões de ação."""
         buttons_frame = customtkinter.CTkFrame(parent, fg_color="transparent")
-        buttons_frame.pack(fill="x", pady=(10, 0))  # Adicionado padding top
+        buttons_frame.pack(fill="x", pady=(10, 0))
         buttons_frame.grid_columnconfigure((0, 1), weight=1)
         
-        # Botão cancelar
         cancel_btn = StyledButton(
             buttons_frame,
             text="Cancelar",
@@ -95,7 +87,6 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
         )
         cancel_btn.grid(row=0, column=0, padx=(0, 10), sticky="ew")
         
-        # Botão salvar
         save_btn = StyledButton(
             buttons_frame,
             text="Salvar",
@@ -108,7 +99,6 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
     def add_field(self, key: str, label: str, field_type: str = "entry", 
                   required: bool = True, validator: Optional[Callable] = None, **kwargs):
         """Adiciona um campo ao formulário."""
-        # Label
         field_label = StyledLabel(
             self.form_frame,
             text=f"{label}{'*' if required else ''}:",
@@ -116,7 +106,6 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
         )
         field_label.pack(anchor="w", pady=(10, 5))
         
-        # Campo
         if field_type == "entry":
             field = StyledEntry(
                 self.form_frame,
@@ -138,7 +127,7 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
                 state="readonly"
             )
             if values:
-                field.set(values[0])  # valor padrão
+                field.set(values[0])  
             if "command" in kwargs:
                 field.configure(command=kwargs["command"])
         else:
@@ -146,7 +135,6 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
             
         field.pack(fill="x", pady=(0, 5))
         
-        # Armazena referência
         self.fields[key] = {
             'widget': field,
             'required': required,
@@ -158,20 +146,16 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
 
     def _on_submit(self):
         """Processa o envio do formulário."""
-        # Coleta dados
         data = self._collect_data()
         
-        # Valida
         is_valid, error_msg = self._validate_all(data)
         if not is_valid:
-            # Corrigido: verifica se ainda está "grabbed" antes de liberar
             if self.grab_current() == self:
                 self.grab_release()
             CTkMessagebox(title="Erro de Validação", message=error_msg, icon="cancel")
-            self.grab_set()  # Restaura o grab
+            self.grab_set()  
             return
             
-        # Salva
         try:
             self._save(data)
         except NomeRepetidoError as e:
@@ -179,17 +163,16 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
             if self.grab_current() == self:
                 self.grab_release()
             CTkMessagebox(title="Erro", message=str(e), icon="cancel")
-            self.grab_set()  # Restaura o grab
+            self.grab_set()  
             return
         except Exception as e:
             logger.exception("Erro ao salvar")
             if self.grab_current() == self:
                 self.grab_release()
             CTkMessagebox(title="Erro", message=f"Falha ao salvar: {str(e)}", icon="cancel")
-            self.grab_set()  # Restaura o grab
+            self.grab_set()  
             return
             
-        # Callback e fechar
         if self.callback:
             try:
                 self.callback()
@@ -216,17 +199,14 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
 
     def _validate_all(self, data: dict) -> tuple[bool, str]:
         """Valida todos os campos."""
-        # Campos obrigatórios
         for key, field_info in self.fields.items():
             if field_info['required'] and not data.get(key):
-                return False, f"Campo '{key}' é obrigatório."  # Melhorada mensagem de erro
+                return False, f"Campo '{key}' é obrigatório." 
                 
-            # Validador customizado
             if field_info['validator'] and data.get(key):
                 if not field_info['validator'](data[key]):
-                    return False, f"Valor inválido no campo '{key}'."  # Melhorada mensagem de erro
+                    return False, f"Valor inválido no campo '{key}'." 
                     
-        # Validação customizada
         return self._validate_custom(data)
         
     def _validate_custom(self, data: dict) -> tuple[bool, str]:

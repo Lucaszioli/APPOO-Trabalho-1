@@ -76,7 +76,7 @@ class ListFrameBase(BaseComponent, ABC):
         
         super().__init__(master)
         self._load_items()
-        self._populate_list()  # Garante que a lista aparece ao abrir
+        self._populate_list() 
         
     def _setup_style(self):
         super()._setup_style()
@@ -84,16 +84,12 @@ class ListFrameBase(BaseComponent, ABC):
         
     def _build_ui(self):
         """Constrói a interface melhorada."""
-        # Cabeçalho
         self._create_header()
         
-        # Barra de busca e filtros
         self._create_search_bar()
         
-        # Lista de itens
         self._create_items_list()
         
-        # Rodapé com estatísticas
         self._create_footer()
         
     def _create_header(self):
@@ -102,7 +98,6 @@ class ListFrameBase(BaseComponent, ABC):
         header_card.pack(fill="x", padx=20, pady=(0, 10))
         header_card.configure(border_width=1, border_color=("gray80", "gray20"))
 
-        # Título
         title_label = StyledLabel(
             header_card.content_frame,
             text=self.title_text(),
@@ -111,7 +106,6 @@ class ListFrameBase(BaseComponent, ABC):
         )
         title_label.pack(anchor="w", pady=5)
         
-        # Subtítulo
         subtitle_label = StyledLabel(
             header_card.content_frame,
             text=self.subtitle_text(),
@@ -120,7 +114,6 @@ class ListFrameBase(BaseComponent, ABC):
         )
         subtitle_label.pack(anchor="w", pady=(5, 0))
         
-        # Botão adicionar
         add_button = StyledButton(
             header_card.content_frame,
             text=f"{self.add_button_text()}",
@@ -150,7 +143,6 @@ class ListFrameBase(BaseComponent, ABC):
         list_card = Card(self, title=f"{self.item_name_plural().title()}")
         list_card.pack(fill="both", expand=True, padx=20, pady=(0, 10))
         
-        # Container scrollável
         self.list_container = customtkinter.CTkScrollableFrame(
             list_card.content_frame,
             fg_color="transparent"
@@ -195,7 +187,6 @@ class ListFrameBase(BaseComponent, ABC):
         
     def _populate_list(self):
         """Popula a lista com cards dos itens."""
-        # Limpa lista atual
         for widget in self.list_container.winfo_children():
             widget.destroy()
             
@@ -210,12 +201,10 @@ class ListFrameBase(BaseComponent, ABC):
             empty_label.pack(pady=20)
             return
             
-        # Cria cards para cada item
         for item in filtered_items:
             item_card = self._create_item_card(item)
             item_card.pack(fill="x", pady=5)
             
-        # Atualiza estatísticas
         if hasattr(self, 'stats_label'):
             self.stats_label.configure(text=self._get_stats_text())
             
@@ -241,7 +230,6 @@ class ListFrameBase(BaseComponent, ABC):
         self._load_items()
         self._populate_list()
         
-    # Métodos de ação (mantidos do código original)
     def _on_add(self):
         cls = self.modal_class_add()
         params = dict(conexao=self.conexao, service=self.service, master=self, callback=self._reload)
@@ -271,7 +259,6 @@ class ListFrameBase(BaseComponent, ABC):
         cls(conexao=self.conexao, service=self.service, master=self, callback=self._reload, item=item)
         
     def _on_select(self, item):
-        # Novo comportamento: trocar o conteúdo da janela principal
         if hasattr(self.master, 'show_frame'):
             try:
                 self.master.show_frame(item)
@@ -283,7 +270,6 @@ class ListFrameBase(BaseComponent, ABC):
                     icon="cancel"
                 )
         else:
-            # Comportamento antigo (fallback)
             key = self.get_id(item)
             if key in self.item_views and self.item_views[key].winfo_exists():
                 win = self.item_views[key]
@@ -311,7 +297,6 @@ class ListFrameBase(BaseComponent, ABC):
         if win:
             win.destroy()
             
-    # Métodos abstratos (mantidos do código original)
     @abstractmethod
     def get_items(self, conexao): ...
     

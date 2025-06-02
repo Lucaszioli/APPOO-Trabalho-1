@@ -24,7 +24,6 @@ class SidebarToggle(customtkinter.CTkFrame):
         self.controller = controller
         self.sidebar: customtkinter.CTkFrame = None
         
-        # Inicializa estado do botão de voltar
         self._show_back_button = False
         self._back_callback = None
         self._back_btn = None
@@ -43,7 +42,7 @@ class SidebarToggle(customtkinter.CTkFrame):
         """Cria o botão de toggle da sidebar."""
         self.open_button = StyledButton(
             self,
-            text="☰",  # Ícone de hambúrguer mais moderno
+            text="☰",
             width=50,
             height=50,
             style='primary',
@@ -67,7 +66,6 @@ class SidebarToggle(customtkinter.CTkFrame):
             
         try:
             self._create_sidebar()
-            # Usa o estado salvo para mostrar o botão de voltar
             show_back = getattr(self, '_show_back_button', False)
             back_callback = getattr(self, '_back_callback', None)
             self._add_options(show_back_button=show_back, back_callback=back_callback)
@@ -90,12 +88,10 @@ class SidebarToggle(customtkinter.CTkFrame):
         self.sidebar.grid(row=0, column=0, sticky="ns")
         self.sidebar.grid_columnconfigure(0, weight=1)
         
-        # Reserva espaço para todas as seções incluindo o botão de voltar opcional
-        for i in range(8):  # 0: back_btn, 1: header, 2-6: options, 7: spacer
+        for i in range(8):  
             self.sidebar.grid_rowconfigure(i, weight=0)
-        self.sidebar.grid_rowconfigure(7, weight=1)  # Spacer que expande
+        self.sidebar.grid_rowconfigure(7, weight=1)  
         
-        # Cabeçalho da sidebar (sempre na linha 1)
         header_card = Card(self.sidebar, title="⚙️ Configurações")
         header_card.grid(row=1, column=0, sticky="ew", padx=15, pady=(15, 10))
         close_btn = StyledButton(
@@ -116,7 +112,6 @@ class SidebarToggle(customtkinter.CTkFrame):
 
     def _add_options(self, show_back_button=False, back_callback=None) -> None:
         """Adiciona as opções de configuração à sidebar."""
-        # Botão de voltar no topo (linha 0), se necessário
         if hasattr(self, '_back_btn') and self._back_btn:
             self._back_btn.destroy()
             self._back_btn = None
@@ -131,31 +126,26 @@ class SidebarToggle(customtkinter.CTkFrame):
             )
             self._back_btn.grid(row=0, column=0, sticky="ew", padx=15, pady=(15, 5))
         
-        # Card de Aparência (linha 2)
         appearance_card = Card(self.sidebar, title="Aparência")
         appearance_card.grid(row=2, column=0, sticky="ew", padx=15, pady=5)
         
         self._add_appearance_option(appearance_card.content_frame)
         
-        # Card de Tema (linha 3)
         theme_card = Card(self.sidebar, title="Tema de Cores")
         theme_card.grid(row=3, column=0, sticky="ew", padx=15, pady=5)
         
         self._add_theme_option(theme_card.content_frame)
         
-        # Card de Escala (linha 4)
         scale_card = Card(self.sidebar, title="Escala da Interface")
         scale_card.grid(row=4, column=0, sticky="ew", padx=15, pady=5)
         
         self._add_scale_option(scale_card.content_frame)
         
-        # Card de Informações (linha 5)
         info_card = Card(self.sidebar, title="Sobre")
         info_card.grid(row=5, column=0, sticky="ew", padx=15, pady=5)
         
         self._add_info_section(info_card.content_frame)
         
-        # Espaçador (linha 7)
         spacer = customtkinter.CTkFrame(self.sidebar, fg_color="transparent")
         spacer.grid(row=7, column=0, sticky="ew")
 
@@ -245,14 +235,10 @@ Funcionalidades:
         self._show_back_button = show
         self._back_callback = callback
         
-        # Se a sidebar estiver aberta, atualiza apenas o botão de voltar
         if hasattr(self, 'sidebar') and self.sidebar and self.sidebar.winfo_exists():
-            # Remove o botão existente se houver
             if hasattr(self, '_back_btn') and self._back_btn:
                 self._back_btn.destroy()
-                self._back_btn = None
-            
-            # Adiciona o novo botão se necessário
+                self._back_btn = None    
             if show and callback:
                 self._back_btn = StyledButton(
                     self.sidebar,

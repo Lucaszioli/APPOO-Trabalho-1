@@ -114,12 +114,9 @@ class Atividade(ABC):
     
     @tipo.setter
     def tipo(self, tipo) -> None:
-        # Allow updates when the new value is the same as current value
-        # This allows legitimate updates and prevents unintended type changes
         if self._tipo is not None and str(self._tipo) != str(tipo):
-            # Only allow changes if both are string representations of the same type
             if hasattr(self, '_allow_tipo_update') and self._allow_tipo_update:
-                pass  # Allow the update during editing
+                pass  
             else:
                 raise ValueError("Tipo de atividade já está definido e não pode ser alterado.")
         self._tipo = tipo

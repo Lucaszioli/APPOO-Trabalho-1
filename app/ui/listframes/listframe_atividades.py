@@ -114,9 +114,9 @@ class AtividadesFrame(ListFrameBase):
         
     def _create_item_card(self, item):
         return AtividadeCard(
-            self.list_container,  # master
+            self.list_container,   
             item,
-            self  # list_frame
+            self  
         )
         
     def _get_stats_text(self):
@@ -131,19 +131,17 @@ class AtividadesFrame(ListFrameBase):
     def _on_add(self):
         cls = self.modal_class_add()
         params = dict(conexao=self.conexao, service=self.service, master=self, callback=self._reload)
-        params['disciplina'] = self.disciplina  # Corrige para passar a disciplina
+        params['disciplina'] = self.disciplina  
         cls(**params)
     
     def _build_ui(self):
         """Constrói a interface melhorada com calendário."""
-        # Criar container principal com duas colunas
         main_container = customtkinter.CTkFrame(self, fg_color="transparent")
         main_container.pack(fill="both", expand=True)
-        main_container.grid_columnconfigure(0, weight=1)  # Coluna do calendário
-        main_container.grid_columnconfigure(1, weight=1)  # Coluna da lista
+        main_container.grid_columnconfigure(0, weight=1)  
+        main_container.grid_columnconfigure(1, weight=1)  
         main_container.grid_rowconfigure(0, weight=1)
         
-        # Lado esquerdo: Calendário de atividades
         calendario_frame = customtkinter.CTkFrame(main_container, fg_color="transparent")
         calendario_frame.grid(row=0, column=0, sticky="nsew", padx=(0, 5))
         
@@ -154,28 +152,21 @@ class AtividadesFrame(ListFrameBase):
         )
         self.calendario.pack(fill="both", expand=True)
         
-        # Lado direito: Lista tradicional de atividades
         list_frame = customtkinter.CTkFrame(main_container, fg_color="transparent")
         list_frame.grid(row=0, column=1, sticky="nsew", padx=(5, 0))
         
-        # Configurar o frame da lista como container
         self.list_main_container = list_frame
         
-        # Criar componentes da lista no frame direito
         self._create_list_components()
         
     def _create_list_components(self):
         """Cria os componentes da lista de atividades."""
-        # Cabeçalho da lista
         self._create_header_in_container(self.list_main_container)
         
-        # Barra de busca
         self._create_search_bar_in_container(self.list_main_container)
         
-        # Lista de itens
         self._create_items_list_in_container(self.list_main_container)
         
-        # Rodapé
         self._create_footer_in_container(self.list_main_container)
         
     def _create_header_in_container(self, container):
@@ -185,7 +176,6 @@ class AtividadesFrame(ListFrameBase):
         header_card = Card(container, title="Lista de Atividades")
         header_card.pack(fill="x", padx=10, pady=(0, 10))
         
-        # Título
         title_label = StyledLabel(
             header_card.content_frame,
             text=self.title_text(),
@@ -194,7 +184,6 @@ class AtividadesFrame(ListFrameBase):
         )
         title_label.pack(anchor="w", pady=5)
         
-        # Subtítulo
         subtitle_label = StyledLabel(
             header_card.content_frame,
             text=self.subtitle_text(),
@@ -203,7 +192,6 @@ class AtividadesFrame(ListFrameBase):
         )
         subtitle_label.pack(anchor="w", pady=(5, 0))
         
-        # Botão adicionar
         add_button = StyledButton(
             header_card.content_frame,
             text=f"{self.add_button_text()}",
@@ -237,7 +225,6 @@ class AtividadesFrame(ListFrameBase):
         list_card = Card(container, title=f"{self.item_name_plural().title()}")
         list_card.pack(fill="both", expand=True, padx=10, pady=(0, 10))
         
-        # Container scrollável
         self.list_container = customtkinter.CTkScrollableFrame(
             list_card.content_frame,
             fg_color="transparent"

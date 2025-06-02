@@ -307,7 +307,7 @@ class AtividadeService(ABC, Database):
         if not atividades:
             return []
         hoje = datetime.today()
-        domingo = hoje - timedelta(days=hoje.weekday() + 1)  if hoje.weekday!=6 else hoje # Último domingo
+        domingo = hoje - timedelta(days=hoje.weekday() + 1)  if hoje.weekday!=6 else hoje 
         domingo = domingo.replace(hour=0, minute=0, second=0, microsecond=0)
         sabado = domingo + timedelta(days=6)
         result = []

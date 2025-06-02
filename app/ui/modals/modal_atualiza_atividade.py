@@ -48,7 +48,6 @@ class ModalAtualizaAtividade(ModalBase):
         """Build the form with dynamic fields based on activity type."""
         atividade = self.item
         
-        # Nome da atividade
         nome_field = self.add_field(
             key="nome",
             label="Nome da Atividade",
@@ -57,7 +56,6 @@ class ModalAtualizaAtividade(ModalBase):
         )
         nome_field.insert(0, getattr(atividade, "nome", ""))
         
-        # Tipo de atividade com callback para mudanças dinâmicas
         self.type = self.add_field(
             key="tipo",
             label="Tipo de Atividade",
@@ -68,7 +66,6 @@ class ModalAtualizaAtividade(ModalBase):
         )
         self.type.set(getattr(atividade, "tipo", ""))
         
-        # Data da atividade
         dates_container = customtkinter.CTkFrame(self.form_frame, fg_color="transparent")
         dates_container.pack(fill="x", pady=10)
         dates_container.grid_columnconfigure((0, 1), weight=1)
@@ -88,11 +85,9 @@ class ModalAtualizaAtividade(ModalBase):
             self.date_picker.insert(self._to_br_format(data_val))
         self.date_picker.grid(row=1, column=0, sticky="ew", padx=(0, 10))
         
-        # Container para campos dinâmicos
         self.dynamic_container = customtkinter.CTkFrame(self.form_frame, fg_color="transparent")
         self._update_dynamic_fields(self.type.get())
         
-        # Observações
         observacao_field = self.add_field(
             key="observacao",
             label="Observações",
@@ -101,7 +96,6 @@ class ModalAtualizaAtividade(ModalBase):
         )
         observacao_field.insert("1.0", getattr(atividade, "observacao", ""))
         
-        # Progresso
         progresso_field = self.add_field(
             key="progresso",
             label="Progresso",
@@ -118,23 +112,19 @@ class ModalAtualizaAtividade(ModalBase):
     
     def _update_dynamic_fields(self, tipo) -> None:
         """Update dynamic fields based on activity type."""
-        # Clear existing dynamic fields
         for widget in self.dynamic_container.winfo_children():
             widget.destroy()
         
-        # Reset dynamic field references - Corrigido: mais completo
         for attr in ['data_apresentacao_picker', 'local_entry', 'materia_entry', 'pontuacao_entry', 'nota_entry']:
             if hasattr(self, attr):
                 setattr(self, attr, None)
         
-        # Remove dynamic fields from form validation
         for key in ["pontuacao", "nota", "data_apresentacao", "local", "materia"]:
             if key in self.fields:
                 del self.fields[key]
 
         atividade = self.item
         
-        # Add grade field for Prova/Trabalho
         if tipo in ("Prova", "Trabalho"):
             nota_label = customtkinter.CTkLabel(
                 self.dynamic_container,
@@ -145,10 +135,9 @@ class ModalAtualizaAtividade(ModalBase):
             self.nota_entry = StyledEntry(
                 self.dynamic_container,
                 placeholder="Ex: 8.5",
-                validator=lambda value: value == '' or (value.replace('.', '', 1).isdigit() and float(value) >= 0),  # Corrigido: permite vazio
+                validator=lambda value: value == '' or (value.replace('.', '', 1).isdigit() and float(value) >= 0),   
             )
             self.nota_entry.pack(fill="x", padx=(0, 10))
-            # Pre-fill existing grade
             if hasattr(atividade, 'nota') and atividade.nota is not None:
                 self.nota_entry.insert(0, str(atividade.nota))
             
@@ -159,7 +148,6 @@ class ModalAtualizaAtividade(ModalBase):
                 'type': "entry"
             }
 
-        # Type-specific fields
         if tipo in ("Prova", "Trabalho"):
             self.dynamic_container.pack(fill="x", pady=10)
             label = customtkinter.CTkLabel(
@@ -174,7 +162,6 @@ class ModalAtualizaAtividade(ModalBase):
                 validator=lambda value: value.replace('.', '', 1).isdigit() and float(value) > 0,
             )
             self.pontuacao_entry.pack(fill="x", padx=(0, 10))
-            # Pre-fill existing pontuacao/nota_total
             if hasattr(atividade, 'nota_total') and atividade.nota_total is not None:
                 self.pontuacao_entry.insert(0, str(atividade.nota_total))
             elif hasattr(atividade, 'pontuacao') and atividade.pontuacao is not None:
@@ -196,7 +183,6 @@ class ModalAtualizaAtividade(ModalBase):
             )
             label.pack(anchor="w", padx=(0, 10))
             
-            # Importação corrigida
             from app.ui.components.date_picker import CTkDatePicker
             
             self.data_apresentacao_picker = CTkDatePicker(
@@ -205,7 +191,6 @@ class ModalAtualizaAtividade(ModalBase):
             )
             self.data_apresentacao_picker.set_date_format("%d/%m/%Y")
             self.data_apresentacao_picker.set_allow_manual_input(True)
-            # Pre-fill existing data_apresentacao
             if hasattr(atividade, 'data_apresentacao') and atividade.data_apresentacao:
                 if isinstance(atividade.data_apresentacao, str):
                     self.data_apresentacao_picker.insert(self._to_br_format(atividade.data_apresentacao))
@@ -224,7 +209,6 @@ class ModalAtualizaAtividade(ModalBase):
                 placeholder_text="Ex: Parque Nacional",
             )
             self.local_entry.pack(fill="x", padx=(0, 10))
-            # Pre-fill existing lugar
             if hasattr(atividade, 'lugar') and atividade.lugar:
                 self.local_entry.insert(0, atividade.lugar)
 
@@ -241,11 +225,9 @@ class ModalAtualizaAtividade(ModalBase):
                 placeholder_text="Capitulo 1, Livro X",
             )
             self.materia_entry.pack(fill="x", padx=(0, 10))
-            # Pre-fill existing materia
             if hasattr(atividade, 'materia') and atividade.materia:
                 self.materia_entry.insert(0, atividade.materia)
         
-        # Força atualização visual
         self.dynamic_container.update_idletasks()
 
     def _validate_data(self, value: str) -> bool:
@@ -267,12 +249,10 @@ class ModalAtualizaAtividade(ModalBase):
         if not data["tipo"]:
             return False, "O tipo da atividade é obrigatório."
         
-        # Validate type-specific fields
         if data["tipo"] in ("Prova", "Trabalho"):
             if not data.get("pontuacao") or not data["pontuacao"].replace('.', '', 1).isdigit() or float(data["pontuacao"]) <= 0:
                 return False, "A pontuação deve ser um número positivo."
         
-        # Validate presentation date for Trabalho
         try:
             if data["tipo"] == "Trabalho" and isinstance(data.get("data_apresentacao"), str) and data["data_apresentacao"]:
                 apresentacao = datetime.strptime(data["data_apresentacao"], "%d/%m/%Y")
@@ -289,7 +269,6 @@ class ModalAtualizaAtividade(ModalBase):
         try:
             atividade = self.item
             
-            # Temporarily allow tipo updates for this editing session
             atividade._allow_tipo_update = True
             
             atividade.nome = data["nome"]
@@ -298,7 +277,6 @@ class ModalAtualizaAtividade(ModalBase):
             atividade.observacao = data.get("observacao", "")
             atividade.progresso = data.get("progresso", "Não começou")
             
-            # Handle type-specific fields
             if data["tipo"] in ("Prova", "Trabalho"):
                 atividade.nota_total = float(data["pontuacao"]) if data.get("pontuacao") not in (None, "") else None
                 atividade.pontuacao = float(data["pontuacao"]) if data.get("pontuacao") not in (None, "") else None
@@ -313,14 +291,12 @@ class ModalAtualizaAtividade(ModalBase):
             if data["tipo"] == "Aula de revisão":
                 atividade.materia = data.get("materia", None)
             
-            # Ensure expected attributes for editar_bd
             for attr in ["disciplina_id", "lugar", "data_apresentacao", "materia"]:
                 if not hasattr(atividade, attr):
                     setattr(atividade, attr, None)
             
             self.service.atividade_service.editar_bd(atividade)
             
-            # Clean up the temporary flag
             if hasattr(atividade, '_allow_tipo_update'):
                 delattr(atividade, '_allow_tipo_update')
             
@@ -328,7 +304,6 @@ class ModalAtualizaAtividade(ModalBase):
                 self.callback()
             self.destroy()
         except Exception as e:
-            # Clean up the temporary flag in case of error
             if hasattr(self.item, '_allow_tipo_update'):
                 delattr(self.item, '_allow_tipo_update')
             CTkMessagebox(title="Erro", message=f"Não foi possível atualizar a atividade: {str(e)}", icon="cancel")
@@ -337,7 +312,6 @@ class ModalAtualizaAtividade(ModalBase):
         """Collect form data including dynamic fields."""
         data = super()._collect_data()
         
-        # Corrigido: verificação mais robusta para data_picker
         if hasattr(self, 'date_picker') and self.date_picker:
             data["data"] = self.date_picker.get_date()
         else:
@@ -345,7 +319,6 @@ class ModalAtualizaAtividade(ModalBase):
         
         tipo = self.type.get() if hasattr(self, 'type') and self.type else ""
         
-        # Collect type-specific data
         if tipo in ("Prova", "Trabalho"):
             data["pontuacao"] = self.pontuacao_entry.get() if hasattr(self, 'pontuacao_entry') and self.pontuacao_entry else ""
             if hasattr(self, 'nota_entry') and self.nota_entry:
@@ -360,10 +333,9 @@ class ModalAtualizaAtividade(ModalBase):
         if tipo == "Aula de revisão" and hasattr(self, 'materia_entry') and self.materia_entry:
             data["materia"] = self.materia_entry.get()
         
-        # Corrigido: verificação mais robusta para progresso
         if "progresso" in self.fields and self.fields["progresso"]["widget"]:
             data["progresso"] = self.fields["progresso"]["widget"].get()
         else:
-            data["progresso"] = "Não começou"  # Valor padrão
+            data["progresso"] = "Não começou" 
         
         return data

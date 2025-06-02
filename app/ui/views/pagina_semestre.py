@@ -51,13 +51,11 @@ class PaginaSemestre(BaseWindow):
             )
 
     def show_frame(self, disciplina):
-        # Remove o frame atual, se existir
         if hasattr(self, 'disciplinas_frame') and self.disciplinas_frame:
             self.disciplinas_frame.destroy()
         elif hasattr(self, 'atividades_frame') and self.atividades_frame:
             self.atividades_frame.destroy()
             
-        # Cria e exibe o frame de atividades da disciplina
         self.atividades_frame = AtividadesFrame(
             conexao=self.conexao,
             disciplina=disciplina,

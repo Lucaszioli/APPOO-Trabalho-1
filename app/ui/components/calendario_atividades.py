@@ -1,4 +1,3 @@
-# app/ui/components/calendario_atividades.py
 import customtkinter
 from datetime import datetime, timedelta
 from typing import List, Any, Optional
@@ -16,7 +15,6 @@ class AtividadeItem(customtkinter.CTkFrame):
         
     def _setup_ui(self):
         """Configura a interface do item de atividade."""
-        # Determinar cor baseada no tipo de atividade
         tipo_cores = {
             "Trabalho": ("red", "darkred"),
             "Prova": ("orange", "darkorange"), 
@@ -27,18 +25,15 @@ class AtividadeItem(customtkinter.CTkFrame):
         tipo = getattr(self.atividade, 'tipo', 'Outro')
         cor_normal, cor_hover = tipo_cores.get(tipo, ("gray", "darkgray"))
         
-        # Frame principal com cor baseada no tipo
         self.configure(
             fg_color=cor_normal,
             corner_radius=8,
             height=60
         )
         
-        # Container interno
         content_frame = customtkinter.CTkFrame(self, fg_color="transparent")
         content_frame.pack(fill="both", expand=True, padx=8, pady=6)
         
-        # Nome da atividade
         nome_label = StyledLabel(
             content_frame,
             text=self.atividade.nome,
@@ -47,10 +42,8 @@ class AtividadeItem(customtkinter.CTkFrame):
         )
         nome_label.pack(anchor="w")
         
-        # Data e disciplina
         data_str = self.atividade.data
         try:
-            # Converter data para formato brasileiro se necessário
             data_obj = datetime.strptime(data_str, "%d/%m/%Y")
             data_formatada = data_obj.strftime("%d/%m")
         except:
@@ -64,7 +57,6 @@ class AtividadeItem(customtkinter.CTkFrame):
         )
         info_label.pack(anchor="w")
         
-        # Progresso se disponível
         if hasattr(self.atividade, 'progresso'):
             progresso_label = StyledLabel(
                 content_frame,
@@ -81,7 +73,7 @@ class CalendarioAtividades(BaseComponent):
         self.service = service
         self.disciplina = disciplina
         self.semestre = semestre
-        self.current_period = "proximos_7_dias"  # Inicializar antes de _build_ui()
+        self.current_period = "proximos_7_dias"  
         super().__init__(master, **kwargs)
         
     def _setup_style(self):
@@ -90,14 +82,12 @@ class CalendarioAtividades(BaseComponent):
         
     def _build_ui(self):
         """Constrói a interface do calendário."""
-        # Cabeçalho
+        
         header_card = Card(self, title="Próximas Atividades")
         header_card.pack(fill="x", padx=10, pady=(0, 10))
         
-        # Filtros de período
         self._create_period_filters(header_card.content_frame)
         
-        # Container scrollável para as atividades
         self.atividades_container = customtkinter.CTkScrollableFrame(
             self,
             height=400,
@@ -105,7 +95,6 @@ class CalendarioAtividades(BaseComponent):
         )
         self.atividades_container.pack(fill="both", expand=True, padx=10, pady=(0, 10))
         
-        # Carregar atividades iniciais
         self.current_period = "proximos_7_dias"
         self._load_atividades()
         
@@ -114,7 +103,6 @@ class CalendarioAtividades(BaseComponent):
         filter_frame = customtkinter.CTkFrame(parent, fg_color="transparent")
         filter_frame.pack(fill="x", pady=(10, 0))
         
-        # Botões de filtro
         periods = [
             ("proximos_7_dias", "Próximos 7 dias"),
             ("proximos_15_dias", "Próximos 15 dias"),
@@ -146,7 +134,6 @@ class CalendarioAtividades(BaseComponent):
         
     def _update_filter_buttons(self):
         """Atualiza o estilo dos botões de filtro."""
-        # Reconstrói os filtros para atualizar os estilos
         for widget in self.children.values():
             if isinstance(widget, Card):
                 for child in widget.content_frame.winfo_children():
@@ -158,7 +145,6 @@ class CalendarioAtividades(BaseComponent):
                 
     def _load_atividades(self):
         """Carrega as atividades baseado no período selecionado."""
-        # Limpar container
         for widget in self.atividades_container.winfo_children():
             widget.destroy()
             
@@ -173,10 +159,8 @@ class CalendarioAtividades(BaseComponent):
                 self._show_empty_message()
                 return
                 
-            # Agrupar por data
             atividades_por_data = self._group_by_date(atividades_com_disciplina)
             
-            # Mostrar atividades agrupadas por data
             for data, atividades_data in atividades_por_data.items():
                 self._create_date_section(data, atividades_data)
                 
@@ -212,7 +196,6 @@ class CalendarioAtividades(BaseComponent):
         
         print(f"Período: {hoje} até {fim}")
             
-        # Buscar atividades
         if self.disciplina:
             print("Buscando atividades por disciplina")
             atividades = self.service.atividade_service.listar_por_disciplina(self.disciplina)
@@ -225,13 +208,11 @@ class CalendarioAtividades(BaseComponent):
         
         print(f"Atividades encontradas: {len(atividades)}")
             
-        # Filtrar por período
         atividades_filtradas = []
         for i, atividade in enumerate(atividades):
             try:
                 print(f"Processando atividade {i}: {atividade.nome}, data: {atividade.data}")
                 
-                # Verificar se a atividade tem data válida
                 if not hasattr(atividade, 'data') or not atividade.data:
                     print(f"Atividade {i} não tem data válida")
                     continue
@@ -246,15 +227,12 @@ class CalendarioAtividades(BaseComponent):
                     print(f"Atividade {i} fora do período")
                     
             except (ValueError, TypeError, AttributeError) as e:
-                # Ignorar atividades com datas inválidas
                 print(f"Erro ao processar atividade {i}: {e}")
                 continue
                 
-        # Ordenar por data
         try:
             atividades_filtradas.sort(key=lambda a: datetime.strptime(a.data, "%d/%m/%Y") if a.data else datetime.min)
         except (ValueError, TypeError, AttributeError):
-            # Se houver problemas com ordenação, manter a ordem original
             pass
         return atividades_filtradas
         
@@ -289,18 +267,15 @@ class CalendarioAtividades(BaseComponent):
                     grupos[data] = []
                 grupos[data].append((atividade, disciplina_nome))
             except Exception:
-                # Ignorar atividades com problemas
                 continue
         return grupos
         
     def _create_date_section(self, data: str, atividades_data: List[tuple]):
         """Cria uma seção para uma data específica."""
-        # Header da data
         try:
             data_obj = datetime.strptime(data, "%d/%m/%Y")
             data_formatada = data_obj.strftime("%d/%m/%Y (%A)")
             
-            # Destacar se é hoje ou amanhã
             hoje = datetime.now().date()
             if data_obj.date() == hoje:
                 data_formatada += " - HOJE"
@@ -309,11 +284,9 @@ class CalendarioAtividades(BaseComponent):
         except:
             data_formatada = data
             
-        # Card da data
         date_card = Card(self.atividades_container, title=data_formatada)
         date_card.pack(fill="x", pady=(0, 10))
         
-        # Atividades da data
         for atividade, disciplina_nome in atividades_data:
             atividade_item = AtividadeItem(
                 date_card.content_frame,

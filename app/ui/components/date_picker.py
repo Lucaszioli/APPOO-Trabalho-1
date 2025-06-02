@@ -91,7 +91,6 @@ class CTkDatePicker(ctk.CTkFrame):
         self.calendar_frame = ctk.CTkFrame(self.popup)
         self.calendar_frame.grid(row=0, column=0)
 
-        # Add months
         if self.add_months < 0:
             raise ValueError("add_months cannot be negative")
         for i in range(self.add_months):
@@ -101,7 +100,6 @@ class CTkDatePicker(ctk.CTkFrame):
             else:
                 self.current_month += 1
 
-        # Subtract months
         if self.subtract_months < 0:
             raise ValueError("subtract_months cannot be negative")
         for i in range(self.subtract_months):
@@ -111,7 +109,6 @@ class CTkDatePicker(ctk.CTkFrame):
             else:
                 self.current_month -= 1
 
-        # Month and Year Selector
         month_label = ctk.CTkLabel(self.calendar_frame, text=f"{calendar.month_name[self.current_month].capitalize()}, {self.current_year}")
         month_label.grid(row=0, column=1, columnspan=5)
 
@@ -122,13 +119,11 @@ class CTkDatePicker(ctk.CTkFrame):
             next_month_button = ctk.CTkButton(self.calendar_frame, text=">", width=5, command=self.next_month)
             next_month_button.grid(row=0, column=6)
 
-        # Days of the week header
         days = [calendar.day_name[i][:3].capitalize() for i in range(7)]
         for i, day in enumerate(days):
             lbl = ctk.CTkLabel(self.calendar_frame, text=day)
             lbl.grid(row=1, column=i)
 
-        # Days in month
         month_days = calendar.monthrange(self.current_year, self.current_month)[1]
         start_day = calendar.monthrange(self.current_year, self.current_month)[0]
         day = 1
@@ -189,11 +184,9 @@ class CTkDatePicker(ctk.CTkFrame):
         """
 
         self.selected_date = datetime(self.current_year, self.current_month, day)
-        # Temporarily enable the entry to set the date
         self.date_entry.configure(state='normal')
         self.date_entry.delete(0, tk.END)
         self.date_entry.insert(0, self.selected_date.strftime(self.date_format))
-        # Restore the disabled state if necessary
         if not self.allow_manual_input:
             self.date_entry.configure(state='disabled')
         self.popup.destroy()
@@ -267,5 +260,4 @@ class CTkDatePicker(ctk.CTkFrame):
 
         self.date_entry.delete(0, tk.END)
         
-        # Insere no formato %d/%m/%Y
         self.date_entry.insert(0, date)

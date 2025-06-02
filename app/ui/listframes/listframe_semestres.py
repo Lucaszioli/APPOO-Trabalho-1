@@ -13,7 +13,6 @@ class SemestreCard(ItemCard):
         info_container.pack(fill="x")
         info_container.grid_columnconfigure((0, 1), weight=1)
         
-        # Data de início
         inicio_text = self._format_date(self.item.data_inicio)
         inicio_label = StyledLabel(
             info_container,
@@ -22,7 +21,6 @@ class SemestreCard(ItemCard):
         )
         inicio_label.grid(row=0, column=0, sticky="w", padx=(0, 10))
         
-        # Data de fim
         fim_text = self._format_date(self.item.data_fim)
         fim_label = StyledLabel(
             info_container,
@@ -31,7 +29,6 @@ class SemestreCard(ItemCard):
         )
         fim_label.grid(row=0, column=1, sticky="e")
         
-        #NSG
         nsg_text = self.item.nsg if self.item.nsg is not None else 0
         nsg_label = StyledLabel(
             info_container,
@@ -47,7 +44,6 @@ class SemestreCard(ItemCard):
         else:
             nsg_label.configure(text_color="blue")
         
-        # Status (ativo/inativo)
         status_frame = customtkinter.CTkFrame(parent, fg_color="transparent")
         status_frame.pack(fill="x", pady=(5, 0))
         
@@ -60,7 +56,6 @@ class SemestreCard(ItemCard):
         )
         status_label.pack(anchor="w")
         
-        # Número de disciplinas (se disponível)
         if hasattr(self.item, 'disciplinas_count'):
             count_label = StyledLabel(
                 status_frame,

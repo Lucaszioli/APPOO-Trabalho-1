@@ -36,7 +36,6 @@ class ModalNovaAtividade(ModalBase):
             required=True,
             placeholder="Ex: Prova Final"
         )
-        # Adiciona seleção de tipo de atividade
         self.type = self.add_field(
             key="tipo",
             label="Tipo de Atividade",
@@ -93,7 +92,6 @@ class ModalNovaAtividade(ModalBase):
         if "pontuacao" in self.fields:
             del self.fields["pontuacao"]
 
-        # Adiciona campo de nota para Prova/Trabalho
         if tipo == "Prova" or tipo == "Trabalho":
             nota_label = customtkinter.CTkLabel(
                 self.dynamic_container,
@@ -189,7 +187,7 @@ class ModalNovaAtividade(ModalBase):
         """Valida se a data está no formato correto e é válida."""
         try:
             day, month, year = map(int, value.split('/'))
-            datetime(year, month, day)  # Verifica se a data é válida
+            datetime(year, month, day)
         except ValueError:
             CTkMessagebox(title="Erro", message="Data inválida. Use o formato DD/MM/AAAA.", icon="cancel")
             return False

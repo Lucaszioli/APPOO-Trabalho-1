@@ -29,7 +29,6 @@ class PaginaInicial(BaseWindow):
             )
 
     def show_frame(self, item: Any) -> None: 
-        # Remove o frame atual, se existir
         if hasattr(self, 'current_frame') and self.current_frame:
             self.current_frame.destroy()
         frame_kwargs = dict(conexao=self.conexao, service=self.service, master=self)
@@ -45,7 +44,6 @@ class PaginaInicial(BaseWindow):
             show_back = False
         self.current_frame.configure(corner_radius=0)
         self.current_frame.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
-        # Botão de voltar na sidebar
         if hasattr(self, 'sidebar') and hasattr(self.sidebar, 'set_back_button'):
             self.sidebar.set_back_button(show_back, self._go_back)
 

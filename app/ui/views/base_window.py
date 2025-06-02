@@ -132,7 +132,6 @@ class BaseWindow(customtkinter.CTk):
 
     def _rebuild_ui(self) -> None:
         try:
-            # Corrigido: verificação mais robusta da sidebar
             sidebar_open = (
                 hasattr(self, 'sidebar') and 
                 self.sidebar and
@@ -159,7 +158,6 @@ class BaseWindow(customtkinter.CTk):
 
     def _on_closing(self) -> None:
         try:
-            # Corrigido: verificação mais robusta antes de fechar sidebar
             if (hasattr(self, 'sidebar') and 
                 self.sidebar and
                 hasattr(self.sidebar, 'sidebar') and 
