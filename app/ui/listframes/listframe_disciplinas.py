@@ -44,11 +44,11 @@ class DisciplinaCard(ItemCard):
 class DisciplinasFrame(ListFrameBase):
     """Frame para listar e gerenciar disciplinas com calendário integrado."""
     
-    def __init__(self, conexao, semestre, service, master=None):
+    def __init__(self, semestre, service, master=None):
         self.calendario = None
-        super().__init__(conexao=conexao, semestre=semestre, service=service, master=master)
+        super().__init__(semestre=semestre, service=service, master=master)
 
-    def get_items(self, conexao: Any) -> list:
+    def get_items(self) -> list:
         """Retorna todas as disciplinas cadastradas."""
         return self.service.disciplina_service.listar_por_semestre(self.semestre)
 

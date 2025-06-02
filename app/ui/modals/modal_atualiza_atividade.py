@@ -14,7 +14,6 @@ class ModalAtualizaAtividade(ModalBase):
     def __init__(
         self,
         disciplina: Any = None,
-        conexao: Any = None,
         service: ServiceUniversal = None,
         master: Optional[Any] = None,
         callback: Optional[Callable] = None,
@@ -23,7 +22,6 @@ class ModalAtualizaAtividade(ModalBase):
         self.disciplina = disciplina
         self.item = item
         super().__init__(
-            conexao=conexao,
             service=service,
             master=master,
             callback=callback,
@@ -122,10 +120,12 @@ class ModalAtualizaAtividade(ModalBase):
         for widget in self.dynamic_container.winfo_children():
             widget.destroy()
         
-        # Reset dynamic field references - Corrigido: mais completo
-        for attr in ['data_apresentacao_picker', 'local_entry', 'materia_entry', 'pontuacao_entry', 'nota_entry']:
-            if hasattr(self, attr):
-                setattr(self, attr, None)
+        # Reset dynamic field references
+        self.data_apresentacao_picker = None
+        self.local_entry = None
+        self.materia_entry = None
+        self.pontuacao_entry = None
+        self.nota_entry = None
         
         # Remove dynamic fields from form validation
         for key in ["pontuacao", "nota", "data_apresentacao", "local", "materia"]:
@@ -145,7 +145,7 @@ class ModalAtualizaAtividade(ModalBase):
             self.nota_entry = StyledEntry(
                 self.dynamic_container,
                 placeholder="Ex: 8.5",
-                validator=lambda value: value == '' or (value.replace('.', '', 1).isdigit() and float(value) >= 0),  # Corrigido: permite vazio
+                validator=lambda value: value.replace('.', '', 1).isdigit() and float(value) >= 0,
             )
             self.nota_entry.pack(fill="x", padx=(0, 10))
             # Pre-fill existing grade
@@ -155,7 +155,7 @@ class ModalAtualizaAtividade(ModalBase):
             self.fields["nota"] = {
                 'widget': self.nota_entry,
                 'required': False,
-                'validator': lambda value: value == '' or (value.replace('.', '', 1).isdigit() and float(value) >= 0),
+                'validator': lambda value: value == '' or value.replace('.', '', 1).isdigit(),
                 'type': "entry"
             }
 
@@ -186,30 +186,24 @@ class ModalAtualizaAtividade(ModalBase):
                 'validator': lambda value: value.replace('.', '', 1).isdigit() and float(value) > 0,   
                 'type': "entry"
             }
-
-        elif tipo == "Trabalho":
-            self.dynamic_container.pack(fill="x", pady=10)
-            label = customtkinter.CTkLabel(
-                self.dynamic_container,
-                text="Data de Apresentação:",
-                font=customtkinter.CTkFont(size=14)
-            )
-            label.pack(anchor="w", padx=(0, 10))
             
-            # Importação corrigida
-            from app.ui.components.date_picker import CTkDatePicker
-            
-            self.data_apresentacao_picker = CTkDatePicker(
-                self.dynamic_container,
-                placeholder="Ex: 25/12/2024"
-            )
-            self.data_apresentacao_picker.set_date_format("%d/%m/%Y")
-            self.data_apresentacao_picker.set_allow_manual_input(True)
-            # Pre-fill existing data_apresentacao
-            if hasattr(atividade, 'data_apresentacao') and atividade.data_apresentacao:
-                if isinstance(atividade.data_apresentacao, str):
+            if tipo == "Trabalho":
+                label = customtkinter.CTkLabel(
+                    self.dynamic_container,
+                    text="Data da Apresentação:",
+                    font=customtkinter.CTkFont(size=14)
+                )
+                label.pack(anchor="w", padx=(0, 10), pady=(10, 0))
+                self.data_apresentacao_picker = CTkDatePicker(
+                    self.dynamic_container,
+                    placeholder="01/01/2023"    
+                )
+                self.data_apresentacao_picker.set_date_format("%d/%m/%Y")
+                self.data_apresentacao_picker.set_allow_manual_input(False)
+                # Pre-fill existing data_apresentacao
+                if hasattr(atividade, 'data_apresentacao') and atividade.data_apresentacao:
                     self.data_apresentacao_picker.insert(self._to_br_format(atividade.data_apresentacao))
-            self.data_apresentacao_picker.pack(fill="x", padx=(0, 10))
+                self.data_apresentacao_picker.pack(fill="x", padx=(0, 10))
 
         elif tipo == "Aula de campo":
             self.dynamic_container.pack(fill="x", pady=10)
@@ -244,9 +238,9 @@ class ModalAtualizaAtividade(ModalBase):
             # Pre-fill existing materia
             if hasattr(atividade, 'materia') and atividade.materia:
                 self.materia_entry.insert(0, atividade.materia)
-        
-        # Força atualização visual
-        self.dynamic_container.update_idletasks()
+        else:
+            self.dynamic_container.pack(pady=0)
+            self.dynamic_container.configure(height=0)
 
     def _validate_data(self, value: str) -> bool:
         """Validate date format and value."""
@@ -336,18 +330,13 @@ class ModalAtualizaAtividade(ModalBase):
     def _collect_data(self) -> dict:
         """Collect form data including dynamic fields."""
         data = super()._collect_data()
+        data["data"] = self.date_picker.get_date()
         
-        # Corrigido: verificação mais robusta para data_picker
-        if hasattr(self, 'date_picker') and self.date_picker:
-            data["data"] = self.date_picker.get_date()
-        else:
-            data["data"] = ""
-        
-        tipo = self.type.get() if hasattr(self, 'type') and self.type else ""
+        tipo = self.type.get()
         
         # Collect type-specific data
         if tipo in ("Prova", "Trabalho"):
-            data["pontuacao"] = self.pontuacao_entry.get() if hasattr(self, 'pontuacao_entry') and self.pontuacao_entry else ""
+            data["pontuacao"] = self.pontuacao_entry.get() if self.pontuacao_entry else ""
             if hasattr(self, 'nota_entry') and self.nota_entry:
                 data["nota"] = self.nota_entry.get()
             
@@ -360,10 +349,5 @@ class ModalAtualizaAtividade(ModalBase):
         if tipo == "Aula de revisão" and hasattr(self, 'materia_entry') and self.materia_entry:
             data["materia"] = self.materia_entry.get()
         
-        # Corrigido: verificação mais robusta para progresso
-        if "progresso" in self.fields and self.fields["progresso"]["widget"]:
-            data["progresso"] = self.fields["progresso"]["widget"].get()
-        else:
-            data["progresso"] = "Não começou"  # Valor padrão
-        
+        data["progresso"] = self.fields["progresso"]["widget"].get() if "progresso" in self.fields else "Não começou"
         return data

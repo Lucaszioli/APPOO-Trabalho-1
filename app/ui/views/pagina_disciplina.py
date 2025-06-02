@@ -3,11 +3,10 @@ from typing import Any
 
 class PaginaDisciplina(BaseWindow):
     """"Janela de detalhes de uma disciplina específica."""
-    def __init__(self, disciplina: Any, conexao: Any, service: Any) -> None:
+    def __init__(self, disciplina: Any, service: Any) -> None:
         self.disciplina = disciplina
         title = f"Disciplina: {disciplina.nome}"
         super().__init__(
-            conexao=conexao,
             title=title,
             service=service
         )
@@ -17,7 +16,6 @@ class PaginaDisciplina(BaseWindow):
             from app.ui.listframes.listframe_atividades import AtividadesFrame
             
             self.atividades_frame = AtividadesFrame(
-                conexao=self.conexao,
                 disciplina=self.disciplina,
                 service=self.service,
                 master=self
@@ -42,7 +40,6 @@ class PaginaDisciplina(BaseWindow):
         
         # Cria e exibe novamente o AtividadesFrame (pode ser adaptado para detalhe de atividade futuramente)
         self.atividades_frame = AtividadesFrame(
-            conexao=self.conexao,
             disciplina=self.disciplina,
             service=self.service,
             master=self

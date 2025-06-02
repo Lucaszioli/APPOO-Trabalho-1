@@ -60,12 +60,12 @@ class AtividadeCard(ItemCard):
 class AtividadesFrame(ListFrameBase):
     """Frame para listar e gerenciar atividades com calendário integrado."""
 
-    def __init__(self, conexao, disciplina, service, master=None):
+    def __init__(self, disciplina, service, master=None):
         self.disciplina = disciplina
         self.calendario = None
-        super().__init__(conexao=conexao, semestre=None, service=service, master=master)
+        super().__init__(semestre=None, service=service, master=master)
 
-    def get_items(self, conexao: Any) -> list:
+    def get_items(self) -> list:
         """Retorna todas as atividades cadastradas."""
         return self.service.atividade_service.listar_por_disciplina(self.disciplina)
 
@@ -130,7 +130,7 @@ class AtividadesFrame(ListFrameBase):
     
     def _on_add(self):
         cls = self.modal_class_add()
-        params = dict(conexao=self.conexao, service=self.service, master=self, callback=self._reload)
+        params = dict(service=self.service, master=self, callback=self._reload)
         params['disciplina'] = self.disciplina  # Corrige para passar a disciplina
         cls(**params)
     

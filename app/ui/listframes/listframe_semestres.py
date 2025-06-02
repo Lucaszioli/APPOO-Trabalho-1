@@ -110,7 +110,7 @@ class SemestreCard(ItemCard):
 class SemestresFrame(ListFrameBase):
     """Frame para listar e gerenciar semestres com design melhorado."""
 
-    def get_items(self, conexao: Any):
+    def get_items(self):
         """Retorna todos os semestres cadastrados e carrega suas disciplinas."""
         semestres = self.service.semestre_service.listar()
         for semestre in semestres:

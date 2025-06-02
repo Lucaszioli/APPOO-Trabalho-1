@@ -14,7 +14,6 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
     
     def __init__(
         self,
-        conexao,
         service: ServiceUniversal,  # Corrigido: era Type[ServiceUniversal]
         master=None,
         callback=None,
@@ -24,12 +23,6 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
     ):
         super().__init__(master)
         
-        if conexao is None:
-            CTkMessagebox(title="Erro", message="Conexão não fornecida.", icon="cancel")
-            self.destroy()
-            return
-            
-        self.conexao = conexao
         self.service = service
         self.callback = callback
         self.item = item
