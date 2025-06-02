@@ -96,6 +96,8 @@ class ModalAtualizaSemestre(ModalBase):
             
         # Validar se data de fim é posterior à data de início
         try:
+            from datetime import datetime
+            
             if isinstance(data["data_inicio"], str):
                 inicio = datetime.strptime(data["data_inicio"], "%d/%m/%Y")
             else:
@@ -105,12 +107,12 @@ class ModalAtualizaSemestre(ModalBase):
                 fim = datetime.strptime(data["data_fim"], "%d/%m/%Y")
             else:
                 fim = data["data_fim"]
-                
+            
             if fim <= inicio:
                 return False, "Data de fim deve ser posterior à data de início."
                 
-        except ValueError:
-            return False, "Formato de data inválido."
+        except (ValueError, TypeError) as e:  # Corrigido: captura mais específica
+            return False, f"Formato de data inválido: {str(e)}"
             
         return True, ""
 
