@@ -163,7 +163,10 @@ class CalendarioAtividades(BaseComponent):
             widget.destroy()
             
         try:
+            print(f"Carregando atividades para período: {self.current_period}")
             atividades = self._get_atividades_for_period()
+            print(f"Encontradas {len(atividades)} atividades")
+            
             atividades_com_disciplina = self._enrich_atividades_with_disciplina(atividades)
             
             if not atividades_com_disciplina:
@@ -178,6 +181,9 @@ class CalendarioAtividades(BaseComponent):
                 self._create_date_section(data, atividades_data)
                 
         except Exception as e:
+            print(f"Erro detalhado: {e}")
+            import traceback
+            traceback.print_exc()
             error_label = StyledLabel(
                 self.atividades_container,
                 text=f"Erro ao carregar atividades: {str(e)}",
@@ -188,6 +194,7 @@ class CalendarioAtividades(BaseComponent):
     def _get_atividades_for_period(self) -> List[Any]:
         """Obtém as atividades para o período selecionado."""
         hoje = datetime.now().date()
+        print(f"Data de hoje: {hoje}")
         
         if self.current_period == "proximos_7_dias":
             fim = hoje + timedelta(days=7)
@@ -202,30 +209,53 @@ class CalendarioAtividades(BaseComponent):
                 fim = hoje.replace(month=hoje.month + 1, day=calendar.monthrange(hoje.year, hoje.month + 1)[1])
         else:
             fim = hoje + timedelta(days=7)
+        
+        print(f"Período: {hoje} até {fim}")
             
         # Buscar atividades
         if self.disciplina:
-            # Atividades de uma disciplina específica
+            print("Buscando atividades por disciplina")
             atividades = self.service.atividade_service.listar_por_disciplina(self.disciplina)
         elif self.semestre:
-            # Atividades de um semestre
+            print(f"Buscando atividades por semestre: {self.semestre.nome}")
             atividades = self.service.atividade_service.listar_por_semestre(self.semestre)
         else:
-            # Todas as atividades
+            print("Buscando todas as atividades")
             atividades = self.service.atividade_service.listar()
+        
+        print(f"Atividades encontradas: {len(atividades)}")
             
         # Filtrar por período
         atividades_filtradas = []
-        for atividade in atividades:
+        for i, atividade in enumerate(atividades):
             try:
+                print(f"Processando atividade {i}: {atividade.nome}, data: {atividade.data}")
+                
+                # Verificar se a atividade tem data válida
+                if not hasattr(atividade, 'data') or not atividade.data:
+                    print(f"Atividade {i} não tem data válida")
+                    continue
+                    
                 data_atividade = datetime.strptime(atividade.data, "%d/%m/%Y").date()
+                print(f"Data convertida: {data_atividade}")
+                
                 if hoje <= data_atividade <= fim:
                     atividades_filtradas.append(atividade)
-            except:
+                    print(f"Atividade {i} incluída no período")
+                else:
+                    print(f"Atividade {i} fora do período")
+                    
+            except (ValueError, TypeError, AttributeError) as e:
+                # Ignorar atividades com datas inválidas
+                print(f"Erro ao processar atividade {i}: {e}")
                 continue
                 
         # Ordenar por data
-        atividades_filtradas.sort(key=lambda a: datetime.strptime(a.data, "%d/%m/%Y"))
+        try:
+            atividades_filtradas.sort(key=lambda a: datetime.strptime(a.data, "%d/%m/%Y") if a.data else datetime.min)
+        except (ValueError, TypeError, AttributeError):
+            # Se houver problemas com ordenação, manter a ordem original
+            pass
         return atividades_filtradas
         
     def _enrich_atividades_with_disciplina(self, atividades: List[Any]) -> List[tuple]:
@@ -233,23 +263,34 @@ class CalendarioAtividades(BaseComponent):
         resultado = []
         for atividade in atividades:
             try:
+                if not hasattr(atividade, 'disciplina_id') or atividade.disciplina_id is None:
+                    resultado.append((atividade, "Disciplina não definida"))
+                    continue
+                    
                 disciplina = self.service.disciplina_service.buscar_por_id(atividade.disciplina_id)
-                if disciplina:
+                if disciplina and hasattr(disciplina, 'nome'):
                     resultado.append((atividade, disciplina.nome))
                 else:
                     resultado.append((atividade, "Disciplina não encontrada"))
-            except:
-                resultado.append((atividade, "Erro ao carregar disciplina"))
+            except Exception as e:
+                resultado.append((atividade, f"Erro ao carregar disciplina: {str(e)}"))
         return resultado
         
     def _group_by_date(self, atividades_com_disciplina: List[tuple]) -> dict:
         """Agrupa atividades por data."""
         grupos = {}
         for atividade, disciplina_nome in atividades_com_disciplina:
-            data = atividade.data
-            if data not in grupos:
-                grupos[data] = []
-            grupos[data].append((atividade, disciplina_nome))
+            try:
+                data = getattr(atividade, 'data', None)
+                if not data:
+                    continue
+                    
+                if data not in grupos:
+                    grupos[data] = []
+                grupos[data].append((atividade, disciplina_nome))
+            except Exception:
+                # Ignorar atividades com problemas
+                continue
         return grupos
         
     def _create_date_section(self, data: str, atividades_data: List[tuple]):
