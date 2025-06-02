@@ -1,7 +1,9 @@
 from app.ui.views.base_window import BaseWindow
 from app.ui.listframes.listframe_disciplinas import DisciplinasFrame
 from app.ui.listframes.listframe_atividades import AtividadesFrame
+from app.ui.components.calendario_atividades import CalendarioAtividades
 from typing import Any
+import customtkinter
 
 class PaginaSemestre(BaseWindow):
     """Janela de detalhes de um semestre específico."""
@@ -54,12 +56,13 @@ class PaginaSemestre(BaseWindow):
             self.disciplinas_frame.destroy()
         elif hasattr(self, 'atividades_frame') and self.atividades_frame:
             self.atividades_frame.destroy()
+            
         # Cria e exibe o frame de atividades da disciplina
-        self.disciplinas_frame = AtividadesFrame(
+        self.atividades_frame = AtividadesFrame(
             conexao=self.conexao,
             disciplina=disciplina,
             service=self.service,
             master=self
         )
-        self.disciplinas_frame.configure(corner_radius=0)
-        self.disciplinas_frame.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
+        self.atividades_frame.configure(corner_radius=0)
+        self.atividades_frame.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
