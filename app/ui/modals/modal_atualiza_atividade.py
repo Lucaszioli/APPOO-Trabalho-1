@@ -184,14 +184,17 @@ class ModalAtualizaAtividade(ModalBase):
                     font=customtkinter.CTkFont(size=14)
                 )
                 label.pack(anchor="w", padx=(0, 10), pady=(10, 0))
+                
+                data_apresentacao_val = getattr(atividade, "data_apresentacao", "")
+                data_apresentacao_placeholder = self._to_br_format(data_apresentacao_val) if data_apresentacao_val else "Ex: 27/05/2025"
                 self.data_apresentacao_picker = CTkDatePicker(
                     self.dynamic_container,
-                    placeholder="01/01/2023"    
+                    placeholder=data_apresentacao_placeholder    
                 )
                 self.data_apresentacao_picker.set_date_format("%d/%m/%Y")
                 self.data_apresentacao_picker.set_allow_manual_input(False)
-                if hasattr(atividade, 'data_apresentacao') and atividade.data_apresentacao:
-                    self.data_apresentacao_picker.insert(self._to_br_format(atividade.data_apresentacao))
+                if data_apresentacao_val:
+                    self.data_apresentacao_picker.insert(self._to_br_format(data_apresentacao_val))
                 self.data_apresentacao_picker.pack(fill="x", padx=(0, 10))
 
         elif tipo == "Aula de campo":
