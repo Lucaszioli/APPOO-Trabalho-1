@@ -8,7 +8,7 @@ class Semestre:
     data_inicio: str, 
     data_fim: str, 
     id: Optional[int]=None,
-    nsg: Optional[int]=None,
+    nsg: Optional[float]=None,
     ):
         if not nome:
             raise ValueError("Nome do semestre não pode ser vazio.")
@@ -29,7 +29,7 @@ class Semestre:
         self._data_inicio = data_inicio
         self._data_fim = data_fim
         self._disciplinas = []
-        self.nsg = nsg
+        self._nsg = nsg
 
     @property
     def nome(self):
@@ -99,16 +99,22 @@ class Semestre:
     @disciplinas.setter
     def disciplinas(self, disciplinas: list[Disciplina]):
         self._disciplinas = disciplinas
+
+    @property
+    def nsg(self):
+        return self._nsg
     
-    def adicionar_disciplina(self, disciplina: "Disciplina"):
+    @nsg.setter
+    def nsg(self, nsg: int):
+        if nsg is not None and (not isinstance(nsg, float) or nsg < 0):
+            raise ValueError("NSG deve ser um número inteiro não negativo.")
+        self._nsg = nsg
+    
+    def adicionar_disciplina(self, disciplina: "Disciplina") -> None:
         if not isinstance(disciplina, Disciplina):
             raise ValueError("Disciplina deve ser uma instância da classe Disciplina.")
         self._disciplinas.append(disciplina)
    
-    def listar_disciplinas(self):
-        for disciplina in self._disciplinas:
-            print(f"Disciplina: {disciplina.nome}, Carga Horária: {disciplina.carga_horaria}, Código: {disciplina.codigo}, Observação: {disciplina.observacao}, Id: {disciplina.id}")
-
     def remover_disciplina(self, disciplina: "Disciplina"):
         if disciplina not in self._disciplinas:
             raise ValueError("Disciplina não encontrada no semestre.")
