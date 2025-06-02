@@ -273,7 +273,15 @@ class ListFrameBase(BaseComponent, ABC):
     def _on_select(self, item):
         # Novo comportamento: trocar o conteúdo da janela principal
         if hasattr(self.master, 'show_frame'):
-            self.master.show_frame(item)
+            try:
+                self.master.show_frame(item)
+            except Exception:
+                logger.exception("Erro ao exibir frame para item")
+                CTkMessagebox(
+                    title="Erro",
+                    message=f"Não foi possível exibir {self.item_name_singular()}.",
+                    icon="cancel"
+                )
         else:
             # Comportamento antigo (fallback)
             key = self.get_id(item)
