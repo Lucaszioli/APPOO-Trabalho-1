@@ -76,17 +76,6 @@ class AtividadeService(ABC, Database):
                     data_apresentacao=atividade[9],
                     progresso=progresso
                 ))
-                if atividade[9] : # Se houver data de apresentação, adiciona uma instância separada para a apresentação
-                    result.append(Trabalho(
-                        id=atividade[0], 
-                        nome=atividade[1]+" (apresentação)", 
-                        nota=None, 
-                        nota_total=None,
-                        disciplina_id=atividade[5], 
-                        observacao="Apresentação do trabalho",
-                        data=atividade[9], 
-                        progresso=atividade[11]
-                    ))
             elif atividade[6] == TipoAtividadeEnum().PROVA:
                 result.append(Prova(
                     id=atividade[0], 
@@ -335,6 +324,76 @@ class AtividadeService(ABC, Database):
             if domingo <= data_atividade <= sabado:
                 result.append(atividade)
         
+        return result
+    
+    def listar_calendario_disciplina(self, disciplina:"Disciplina"):
+        """Lista todas as atividades de uma disciplina específica ordenadas por data."""
+
+        self.query = "SELECT * FROM atividade WHERE disciplina_id = ? ORDER BY data ASC"
+        self.params = (disciplina.id,)
+        atividades = self._buscar_varios(self.query, self.params)
+        if not atividades:
+            return []
+        result = []
+        for atividade in atividades:
+            progresso = atividade[11] if len(atividade) > 11 else 'Não começou'
+            if atividade[6] == TipoAtividadeEnum().TRABALHO:
+                result.append(Trabalho(
+                    id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    nota=atividade[3], 
+                    nota_total=atividade[4], 
+                    disciplina_id=atividade[5], 
+                    observacao=atividade[7], 
+                    data_apresentacao=atividade[9],
+                    progresso=progresso
+                ))
+                if atividade[9] : # Se houver data de apresentação, adiciona uma instância separada para a apresentação
+                    result.append(Trabalho(
+                        id=atividade[0], 
+                        nome=atividade[1]+" (apresentação)", 
+                        nota=None, 
+                        nota_total=None,
+                        disciplina_id=atividade[5], 
+                        observacao="Apresentação do trabalho",
+                        data=atividade[9], 
+                        progresso=atividade[11]
+                    ))
+            elif atividade[6] == TipoAtividadeEnum().PROVA:
+                result.append(Prova(
+                    id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    nota=atividade[3], 
+                    nota_total=atividade[4], 
+                    disciplina_id=atividade[5], 
+                    observacao=atividade[7],
+                    progresso=progresso
+                ))
+            elif atividade[6] == TipoAtividadeEnum().CAMPO:
+                result.append(Aula_de_Campo(
+                    id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    disciplina_id=atividade[5], 
+                    observacao=atividade[7], 
+                    lugar=atividade[8],
+                    progresso=progresso
+                ))
+            elif atividade[6] == TipoAtividadeEnum().REVISAO:
+                result.append(Revisao(
+                    id=atividade[0], 
+                    nome=atividade[1], 
+                    data=atividade[2], 
+                    disciplina_id=atividade[5], 
+                    observacao=atividade[7], 
+                    materia=atividade[10],
+                    progresso=progresso
+                ))
+            else:   
+                raise ValueError("Tipo de atividade inválido")
+        result.sort(key = lambda atv: datetime.strptime(atv.data, "%d/%m/%Y"))
         return result
 
 

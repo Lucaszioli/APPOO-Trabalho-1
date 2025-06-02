@@ -198,7 +198,7 @@ class CalendarioAtividades(BaseComponent):
             
         if self.disciplina:
             print("Buscando atividades por disciplina")
-            atividades = self.service.atividade_service.listar_por_disciplina(self.disciplina)
+            atividades = self.service.atividade_service.listar_calendario_disciplina(self.disciplina)
         elif self.semestre:
             print(f"Buscando atividades por semestre: {self.semestre.nome}")
             atividades = self.service.atividade_service.listar_por_semestre(self.semestre)
