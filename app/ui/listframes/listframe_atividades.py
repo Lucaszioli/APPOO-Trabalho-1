@@ -182,7 +182,7 @@ class AtividadesFrame(ListFrameBase):
         """Cria o cabeçalho no container especificado."""
         from app.ui.components.components_base import Card, StyledLabel, StyledButton
         
-        header_card = Card(container, title="📋 Lista de Atividades")
+        header_card = Card(container, title="Lista de Atividades")
         header_card.pack(fill="x", padx=10, pady=(0, 10))
         
         # Título
