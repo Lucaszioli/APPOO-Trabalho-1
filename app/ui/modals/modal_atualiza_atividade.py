@@ -122,12 +122,10 @@ class ModalAtualizaAtividade(ModalBase):
         for widget in self.dynamic_container.winfo_children():
             widget.destroy()
         
-        # Reset dynamic field references
-        self.data_apresentacao_picker = None
-        self.local_entry = None
-        self.materia_entry = None
-        self.pontuacao_entry = None
-        self.nota_entry = None
+        # Reset dynamic field references - Corrigido: mais completo
+        for attr in ['data_apresentacao_picker', 'local_entry', 'materia_entry', 'pontuacao_entry', 'nota_entry']:
+            if hasattr(self, attr):
+                setattr(self, attr, None)
         
         # Remove dynamic fields from form validation
         for key in ["pontuacao", "nota", "data_apresentacao", "local", "materia"]:
@@ -147,7 +145,7 @@ class ModalAtualizaAtividade(ModalBase):
             self.nota_entry = StyledEntry(
                 self.dynamic_container,
                 placeholder="Ex: 8.5",
-                validator=lambda value: value.replace('.', '', 1).isdigit() and float(value) >= 0,
+                validator=lambda value: value == '' or (value.replace('.', '', 1).isdigit() and float(value) >= 0),  # Corrigido: permite vazio
             )
             self.nota_entry.pack(fill="x", padx=(0, 10))
             # Pre-fill existing grade
@@ -157,7 +155,7 @@ class ModalAtualizaAtividade(ModalBase):
             self.fields["nota"] = {
                 'widget': self.nota_entry,
                 'required': False,
-                'validator': lambda value: value == '' or value.replace('.', '', 1).isdigit(),
+                'validator': lambda value: value == '' or (value.replace('.', '', 1).isdigit() and float(value) >= 0),
                 'type': "entry"
             }
 
@@ -188,24 +186,30 @@ class ModalAtualizaAtividade(ModalBase):
                 'validator': lambda value: value.replace('.', '', 1).isdigit() and float(value) > 0,   
                 'type': "entry"
             }
+
+        elif tipo == "Trabalho":
+            self.dynamic_container.pack(fill="x", pady=10)
+            label = customtkinter.CTkLabel(
+                self.dynamic_container,
+                text="Data de Apresentação:",
+                font=customtkinter.CTkFont(size=14)
+            )
+            label.pack(anchor="w", padx=(0, 10))
             
-            if tipo == "Trabalho":
-                label = customtkinter.CTkLabel(
-                    self.dynamic_container,
-                    text="Data da Apresentação:",
-                    font=customtkinter.CTkFont(size=14)
-                )
-                label.pack(anchor="w", padx=(0, 10), pady=(10, 0))
-                self.data_apresentacao_picker = CTkDatePicker(
-                    self.dynamic_container,
-                    placeholder="01/01/2023"    
-                )
-                self.data_apresentacao_picker.set_date_format("%d/%m/%Y")
-                self.data_apresentacao_picker.set_allow_manual_input(False)
-                # Pre-fill existing data_apresentacao
-                if hasattr(atividade, 'data_apresentacao') and atividade.data_apresentacao:
+            # Importação corrigida
+            from app.ui.components.date_picker import CTkDatePicker
+            
+            self.data_apresentacao_picker = CTkDatePicker(
+                self.dynamic_container,
+                placeholder="Ex: 25/12/2024"
+            )
+            self.data_apresentacao_picker.set_date_format("%d/%m/%Y")
+            self.data_apresentacao_picker.set_allow_manual_input(True)
+            # Pre-fill existing data_apresentacao
+            if hasattr(atividade, 'data_apresentacao') and atividade.data_apresentacao:
+                if isinstance(atividade.data_apresentacao, str):
                     self.data_apresentacao_picker.insert(self._to_br_format(atividade.data_apresentacao))
-                self.data_apresentacao_picker.pack(fill="x", padx=(0, 10))
+            self.data_apresentacao_picker.pack(fill="x", padx=(0, 10))
 
         elif tipo == "Aula de campo":
             self.dynamic_container.pack(fill="x", pady=10)
@@ -240,9 +244,9 @@ class ModalAtualizaAtividade(ModalBase):
             # Pre-fill existing materia
             if hasattr(atividade, 'materia') and atividade.materia:
                 self.materia_entry.insert(0, atividade.materia)
-        else:
-            self.dynamic_container.pack(pady=0)
-            self.dynamic_container.configure(height=0)
+        
+        # Força atualização visual
+        self.dynamic_container.update_idletasks()
 
     def _validate_data(self, value: str) -> bool:
         """Validate date format and value."""
