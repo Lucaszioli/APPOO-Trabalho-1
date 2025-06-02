@@ -13,7 +13,6 @@ class SemestreCard(ItemCard):
         info_container.pack(fill="x")
         info_container.grid_columnconfigure((0, 1), weight=1)
         
-        # Data de início
         inicio_text = self._format_date(self.item.data_inicio)
         inicio_label = StyledLabel(
             info_container,
@@ -22,7 +21,6 @@ class SemestreCard(ItemCard):
         )
         inicio_label.grid(row=0, column=0, sticky="w", padx=(0, 10))
         
-        # Data de fim
         fim_text = self._format_date(self.item.data_fim)
         fim_label = StyledLabel(
             info_container,
@@ -31,7 +29,21 @@ class SemestreCard(ItemCard):
         )
         fim_label.grid(row=0, column=1, sticky="e")
         
-        # Status (ativo/inativo)
+        nsg_text = self.item.nsg if self.item.nsg is not None else 0
+        nsg_label = StyledLabel(
+            info_container,
+            text=f"NSG: {nsg_text}",
+            style='small'
+        )
+        nsg_label.grid(row=1, column=0, sticky="w", padx=(0, 10))
+        
+        if nsg_text < 50:
+            nsg_label.configure(text_color="red")
+        elif nsg_text < 80:
+            nsg_label.configure(text_color="green")
+        else:
+            nsg_label.configure(text_color="blue")
+        
         status_frame = customtkinter.CTkFrame(parent, fg_color="transparent")
         status_frame.pack(fill="x", pady=(5, 0))
         
@@ -44,7 +56,6 @@ class SemestreCard(ItemCard):
         )
         status_label.pack(anchor="w")
         
-        # Número de disciplinas (se disponível)
         if hasattr(self.item, 'disciplinas_count'):
             count_label = StyledLabel(
                 status_frame,
@@ -94,7 +105,7 @@ class SemestreCard(ItemCard):
 class SemestresFrame(ListFrameBase):
     """Frame para listar e gerenciar semestres com design melhorado."""
 
-    def get_items(self, conexao: Any):
+    def get_items(self):
         """Retorna todos os semestres cadastrados e carrega suas disciplinas."""
         semestres = self.service.semestre_service.listar()
         for semestre in semestres:

@@ -10,7 +10,6 @@ class ModalAtualizaSemestre(ModalBase):
     
     def __init__(
         self,
-        conexao: Any,
         service: "ServiceUniversal",
         master: Optional[Any] = None,
         callback: Optional[callable] = None,
@@ -18,7 +17,6 @@ class ModalAtualizaSemestre(ModalBase):
     ):
         self.item = item
         super().__init__(
-            conexao=conexao,
             service=service,
             master=master,
             callback=callback,
@@ -29,7 +27,6 @@ class ModalAtualizaSemestre(ModalBase):
 
     def _build_form(self) -> None:
         """Constrói o formulário de edição do semestre."""
-        # Nome do semestre
         nome_field = self.add_field(
             key="nome",
             label="Nome do Semestre",
@@ -39,12 +36,10 @@ class ModalAtualizaSemestre(ModalBase):
         if self.item:
             nome_field.insert(0, self.item.nome)
         
-        # Container para datas
         dates_container = customtkinter.CTkFrame(self.form_frame, fg_color="transparent")
         dates_container.pack(fill="x", pady=10)
         dates_container.grid_columnconfigure((0, 1), weight=1)
         
-        # Data de início
         inicio_label = customtkinter.CTkLabel(
             dates_container,
             text="Data de Início*:",
@@ -60,7 +55,6 @@ class ModalAtualizaSemestre(ModalBase):
             self.date_inicio.insert(self._to_br_format(self.item.data_inicio))
         self.date_inicio.grid(row=1, column=0, sticky="ew", padx=(0, 10))
         
-        # Data de fim
         fim_label = customtkinter.CTkLabel(
             dates_container,
             text="Data de Fim*:",
@@ -94,8 +88,9 @@ class ModalAtualizaSemestre(ModalBase):
         if not data.get("data_fim"):
             return False, "Data de fim é obrigatória."
             
-        # Validar se data de fim é posterior à data de início
         try:
+            from datetime import datetime
+            
             if isinstance(data["data_inicio"], str):
                 inicio = datetime.strptime(data["data_inicio"], "%d/%m/%Y")
             else:
@@ -105,12 +100,12 @@ class ModalAtualizaSemestre(ModalBase):
                 fim = datetime.strptime(data["data_fim"], "%d/%m/%Y")
             else:
                 fim = data["data_fim"]
-                
+            
             if fim <= inicio:
                 return False, "Data de fim deve ser posterior à data de início."
                 
-        except ValueError:
-            return False, "Formato de data inválido."
+        except (ValueError, TypeError) as e:  
+            return False, f"Formato de data inválido: {str(e)}"
             
         return True, ""
 
@@ -125,12 +120,10 @@ class ModalAtualizaSemestre(ModalBase):
     def _to_iso(self, date_str):
         from datetime import datetime
         try:
-            # Se já está no formato ISO
             datetime.fromisoformat(date_str)
             return date_str
         except ValueError:
             try:
-                # Tenta converter do formato brasileiro
                 return datetime.strptime(date_str, "%d/%m/%Y").date().isoformat()
             except Exception:
                 return date_str
@@ -138,12 +131,10 @@ class ModalAtualizaSemestre(ModalBase):
     def _to_br_format(self, date_str):
         from datetime import datetime
         try:
-            # Se já está no formato brasileiro
             datetime.strptime(date_str, "%d/%m/%Y")
             return date_str
         except ValueError:
             try:
-                # Se está no formato ISO
                 return datetime.strptime(date_str, "%Y-%m-%d").strftime("%d/%m/%Y")
             except Exception:
                 return date_str

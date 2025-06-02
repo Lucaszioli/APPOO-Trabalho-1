@@ -1,7 +1,9 @@
 from app.ui.listframes.listframe_base import ListFrameBase, ItemCard
 from app.ui.components.components_base import StyledLabel
+from app.ui.components.calendario_atividades import CalendarioAtividades
 from app.services.atividade_services import AtividadeService
 from typing import Any
+import customtkinter
 
 class AtividadeCard(ItemCard):
     """Card para exibir informações de uma atividade."""
@@ -25,13 +27,29 @@ class AtividadeCard(ItemCard):
         data_label.grid(row=0, column=1, sticky="e")
         
         if hasattr(self.item, 'tipo') and (self.item.tipo == "Trabalho" or self.item.tipo == "Prova"):
-            pontuacao_label = StyledLabel(
+            print(self.item.__dict__)
+            if hasattr(self.item, 'nota_total') and self.item.nota_total is not None:
+                pontuacao_label = StyledLabel(
+                    info_container,
+                    text=f"Pontuação: {self.item.nota_total} pontos",
+                    style='small'
+                )
+                pontuacao_label.grid(row=1, column=1, sticky="e")
+            if hasattr(self.item, 'nota') and self.item.nota is not None:
+                nota_label = StyledLabel(
+                    info_container,
+                    text=f"Nota: {self.item.nota} pontos",
+                    style='small'
+                )
+                nota_label.grid(row=1, column=0, sticky="w", padx=(0, 10))
+        if hasattr(self.item, 'progresso'):
+            progresso_label = StyledLabel(
                 info_container,
-                text=f"Pontuação: {self.item.nota_total} pontos",
-                style='small'
+                text=f"Progresso: {self.item.progresso}",
+                style='caption',
+                wraplength=300
             )
-            pontuacao_label.grid(row=1, column=0, sticky="w", padx=(0, 10))
-            
+            progresso_label.grid(row=2, column=0, sticky="w", padx=(0, 10))
         if hasattr(self.item, 'observacao') and self.item.observacao:
             obs_label = StyledLabel(
                 parent,
@@ -39,16 +57,17 @@ class AtividadeCard(ItemCard):
                 style='caption',
                 wraplength=300
             )
-            obs_label.pack(anchor="w", pady=(5, 0))
-            
+            obs_label.grid(row=3, column=0, sticky="w", padx=(0, 10))
+
 class AtividadesFrame(ListFrameBase):
-    """Frame para listar e gerenciar atividades."""
+    """Frame para listar e gerenciar atividades com calendário integrado."""
 
-    def __init__(self, conexao, disciplina, service, master=None):
+    def __init__(self, disciplina, service, master=None):
         self.disciplina = disciplina
-        super().__init__(conexao=conexao, semestre=None, service=service, master=master)
+        self.calendario = None
+        super().__init__(semestre=None, service=service, master=master)
 
-    def get_items(self, conexao: Any) -> list:
+    def get_items(self) -> list:
         """Retorna todas as atividades cadastradas."""
         return self.service.atividade_service.listar_por_disciplina(self.disciplina)
 
@@ -97,9 +116,9 @@ class AtividadesFrame(ListFrameBase):
         
     def _create_item_card(self, item):
         return AtividadeCard(
-            self.list_container,  # master
+            self.list_container,   
             item,
-            self  # list_frame
+            self  
         )
         
     def _get_stats_text(self):
@@ -107,12 +126,134 @@ class AtividadesFrame(ListFrameBase):
         if total_atividades == 0:
             return "Nenhuma atividade cadastrada"
         total_pontuacao = sum(
-            int(getattr(item, 'pontuacao', 0) or 0) for item in self.items
+            int(getattr(item, 'nota_total', 0) or 0) for item in self.items
         )
         return f"Total de atividades: {total_atividades} • Pontuação total distribuida: {total_pontuacao}"
     
     def _on_add(self):
         cls = self.modal_class_add()
-        params = dict(conexao=self.conexao, service=self.service, master=self, callback=self._reload)
+
+        params = dict(service=self.service, master=self, callback=self._reload)
         params['disciplina'] = self.disciplina  # Corrige para passar a disciplina
         cls(**params)
+    
+    def _build_ui(self):
+        """Constrói a interface melhorada com calendário."""
+        main_container = customtkinter.CTkFrame(self, fg_color="transparent")
+        main_container.pack(fill="both", expand=True)
+        main_container.grid_columnconfigure(0, weight=1)  
+        main_container.grid_columnconfigure(1, weight=1)  
+        main_container.grid_rowconfigure(0, weight=1)
+        
+        calendario_frame = customtkinter.CTkFrame(main_container, fg_color="transparent")
+        calendario_frame.grid(row=0, column=0, sticky="nsew", padx=(0, 5))
+        
+        self.calendario = CalendarioAtividades(
+            calendario_frame, 
+            service=self.service, 
+            disciplina=self.disciplina
+        )
+        self.calendario.pack(fill="both", expand=True)
+        
+        list_frame = customtkinter.CTkFrame(main_container, fg_color="transparent")
+        list_frame.grid(row=0, column=1, sticky="nsew", padx=(5, 0))
+        
+        self.list_main_container = list_frame
+        
+        self._create_list_components()
+        
+    def _create_list_components(self):
+        """Cria os componentes da lista de atividades."""
+        self._create_header_in_container(self.list_main_container)
+        
+        self._create_search_bar_in_container(self.list_main_container)
+        
+        self._create_items_list_in_container(self.list_main_container)
+        
+        self._create_footer_in_container(self.list_main_container)
+        
+    def _create_header_in_container(self, container):
+        """Cria o cabeçalho no container especificado."""
+        from app.ui.components.components_base import Card, StyledLabel, StyledButton
+        
+        header_card = Card(container, title="Lista de Atividades")
+        header_card.pack(fill="x", padx=10, pady=(0, 10))
+        
+        title_label = StyledLabel(
+            header_card.content_frame,
+            text=self.title_text(),
+            style='title',
+            text_color=("gray10", "white"),
+        )
+        title_label.pack(anchor="w", pady=5)
+        
+        subtitle_label = StyledLabel(
+            header_card.content_frame,
+            text=self.subtitle_text(),
+            style='normal',
+            text_color=("gray40", "gray70")
+        )
+        subtitle_label.pack(anchor="w", pady=(5, 0))
+        
+        add_button = StyledButton(
+            header_card.content_frame,
+            text=f"{self.add_button_text()}",
+            style='success',
+            command=self._on_add,
+            height=40,
+            font=customtkinter.CTkFont(size=14, weight="bold")
+        )
+        add_button.pack(pady=(10, 0), fill="x")
+        
+    def _create_search_bar_in_container(self, container):
+        """Cria a barra de busca no container especificado."""
+        from app.ui.components.components_base import Card
+        
+        search_card = Card(container, title="Buscar")
+        search_card.pack(fill="x", padx=10, pady=(0, 10))
+        
+        self.search_entry = customtkinter.CTkEntry(
+            search_card.content_frame,
+            textvariable=self.search_var,
+            placeholder_text=f"Buscar {self.item_name_plural()}...",
+            height=35,
+            corner_radius=8
+        )
+        self.search_entry.pack(fill="x", pady=5)
+        
+    def _create_items_list_in_container(self, container):
+        """Cria a lista de itens no container especificado."""
+        from app.ui.components.components_base import Card
+        
+        list_card = Card(container, title=f"{self.item_name_plural().title()}")
+        list_card.pack(fill="both", expand=True, padx=10, pady=(0, 10))
+        
+        self.list_container = customtkinter.CTkScrollableFrame(
+            list_card.content_frame,
+            fg_color="transparent"
+        )
+        self.list_container.pack(fill="both", expand=True)
+        
+        self._populate_list()
+        
+    def _create_footer_in_container(self, container):
+        """Cria o rodapé no container especificado."""
+        from app.ui.components.components_base import Card, StyledLabel
+        
+        footer_card = Card(container)
+        footer_card.pack(fill="x", padx=10, pady=(10, 0))
+        footer_card.configure(border_width=1, border_color=("gray80", "gray20"))
+
+        self.stats_label = StyledLabel(
+            footer_card.content_frame,
+            text=self._get_stats_text(),
+            style='small', 
+            text_color=("gray50", "gray60")
+        )
+        self.stats_label.pack()
+        
+    def _reload(self):
+        """Recarrega itens e atualiza interface, incluindo o calendário."""
+        super()._reload()
+        if self.calendario:
+            self.calendario.refresh()

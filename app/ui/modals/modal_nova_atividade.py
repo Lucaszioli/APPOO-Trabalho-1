@@ -14,14 +14,12 @@ class ModalNovaAtividade(ModalBase):
     def __init__(
         self,
         disciplina: Any,
-        conexao: Any,
         service: ServiceUniversal,
         master: Optional[Any] = None,
         callback: Optional[Callable] = None
     ) -> None:
         self.disciplina = disciplina
         super().__init__(
-            conexao=conexao,
             service=service,
             master=master,
             callback=callback,
@@ -36,7 +34,6 @@ class ModalNovaAtividade(ModalBase):
             required=True,
             placeholder="Ex: Prova Final"
         )
-        # Adiciona seleção de tipo de atividade
         self.type = self.add_field(
             key="tipo",
             label="Tipo de Atividade",
@@ -69,6 +66,14 @@ class ModalNovaAtividade(ModalBase):
             field_type="textbox",
             required=False
         )
+        self.add_field(
+            key="progresso",
+            label="Progresso",
+            field_type="combobox",
+            values=["Não começou", "Em andamento", "Concluída", "Entregue"],
+            required=True,
+            default="Não começou"
+        )
 
     def _on_type_change(self, value):
         self._update_dynamic_fields(value)
@@ -81,8 +86,32 @@ class ModalNovaAtividade(ModalBase):
         self.local_entry = None
         self.materia_entry = None
         self.pontuacao_entry = None
+        self.nota_entry = None
         if "pontuacao" in self.fields:
             del self.fields["pontuacao"]
+
+        if tipo == "Prova" or tipo == "Trabalho":
+            nota_label = customtkinter.CTkLabel(
+                self.dynamic_container,
+                text="Nota Obtida:",
+                font=customtkinter.CTkFont(size=14)
+            )
+            nota_label.pack(anchor="w", padx=(0, 10))
+            self.nota_entry = StyledEntry(
+                self.dynamic_container,
+                placeholder="Ex: 8.5",
+                validator=lambda value: value.replace('.', '', 1).isdigit() and float(value) >= 0,
+            )
+            self.nota_entry.pack(fill="x", padx=(0, 10))
+            self.fields["nota"] = {
+                'widget': self.nota_entry,
+                'required': False,
+                'validator': lambda value: value == '' or value.replace('.', '', 1).isdigit(),
+                'type': "entry"
+            }
+        else:
+            if "nota" in self.fields:
+                del self.fields["nota"]
 
         if tipo == "Prova" or tipo == "Trabalho":
             self.dynamic_container.pack(fill="x", pady=10)
@@ -156,7 +185,7 @@ class ModalNovaAtividade(ModalBase):
         """Valida se a data está no formato correto e é válida."""
         try:
             day, month, year = map(int, value.split('/'))
-            datetime(year, month, day)  # Verifica se a data é válida
+            datetime(year, month, day)
         except ValueError:
             CTkMessagebox(title="Erro", message="Data inválida. Use o formato DD/MM/AAAA.", icon="cancel")
             return False
@@ -190,9 +219,11 @@ class ModalNovaAtividade(ModalBase):
                 tipo=data["tipo"],
                 observacao=data.get("observacao", ""),
                 nota_total = float(data["pontuacao"]) if data.get("pontuacao") not in (None, "") else None,
+                nota = float(data["nota"]) if data.get("nota") not in (None, "") else None,
                 data_apresentacao=data.get("data_apresentacao", None),
                 lugar=data.get("local", None),
-                materia=data.get("materia", None)
+                materia=data.get("materia", None),
+                progresso=data.get("progresso", "Não começou")
             )
             if self.callback:
                 self.callback()
@@ -206,6 +237,8 @@ class ModalNovaAtividade(ModalBase):
         tipo = self.type.get()
         if tipo in ("Prova", "Trabalho"):
             data["pontuacao"] = self.pontuacao_entry.get()
+            if hasattr(self, 'nota_entry'):
+                data["nota"] = self.nota_entry.get()
             
         if tipo == "Trabalho" and hasattr(self, 'data_apresentacao_picker') and self.data_apresentacao_picker:
             data["data_apresentacao"] = self.data_apresentacao_picker.get_date()
@@ -215,4 +248,5 @@ class ModalNovaAtividade(ModalBase):
         
         if tipo == "Aula de revisão" and hasattr(self, 'materia_entry') and self.materia_entry:
             data["materia"] = self.materia_entry.get()
+        data["progresso"] = self.fields["progresso"]["widget"].get() if "progresso" in self.fields else "Não começou"
         return data

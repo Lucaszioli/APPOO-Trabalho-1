@@ -54,15 +54,20 @@ class SemestreService(ServiceBase):
         self.semestres = self._buscar_varios(self.query, self.params)
         if not self.semestres:
             return []
-        return [Semestre(
+        semestres = [Semestre(
             id=row[0], 
             nome=row[1], 
             data_inicio=row[2], 
             data_fim=row[3]
         ) for row in self.semestres]
+        for semestre in semestres:
+            semestre.nsg = self.calcular_nsg(semestre)
+        return semestres
     
 
     def buscar_ultimo_semestre(self) -> Optional["Semestre"]:
+        """Busca o último semestre cadastrado no banco de dados."""
+
         self.query = "SELECT * FROM semestre ORDER BY id DESC LIMIT 1"
         self.params = ()
         self.semestre = self._buscar_um(self.query, self.params)
@@ -77,6 +82,8 @@ class SemestreService(ServiceBase):
     
     
     def carregar_disciplinas(self, semestre:"Semestre") -> list["Disciplina"]:
+        """Carrega as disciplinas associadas a um semestre."""
+
         semestre.disciplinas = []
         self.query = "SELECT * FROM disciplina WHERE semestre_id = ?"
         self.params = (semestre.id,)
@@ -94,6 +101,8 @@ class SemestreService(ServiceBase):
         return semestre.disciplinas
 
     def buscar_por_nome(self,nome:str) -> Optional["Semestre"]:
+        """Busca um semestre pelo nome."""
+
         self.query = "SELECT * FROM semestre WHERE nome = ?"
         self.params = (nome,)
         row = self._buscar_um(self.query, self.params)
@@ -107,6 +116,8 @@ class SemestreService(ServiceBase):
         return None
             
     def criar_semestre(self, nome:str, data_inicio:str, data_fim:str) -> "Semestre":
+        """Cria um novo semestre e o adiciona ao banco de dados."""
+
         self.semestreExistente = self.buscar_por_nome(nome)
         if self.semestreExistente:
             raise NomeRepetidoError(nome)
@@ -114,12 +125,16 @@ class SemestreService(ServiceBase):
         self._adicionar_bd(semestre)
         return semestre
     
-    def calcular_nsg(self, semestre:"Semestre", disciplina_service:"DisciplinaService") -> float:
+    def calcular_nsg(self, semestre:"Semestre") -> float:
+        """Calcula o NSG (Nota Semestral Geral) de um semestre."""
+        
+        from app.services.disciplinas_services import DisciplinaService
         self.carregar_disciplinas(semestre)
         if not semestre.disciplinas:
             return 0.0
         total_nota = 0.0
         total_creditos = 0
+        disciplina_service = DisciplinaService()
         for disciplina in semestre.disciplinas:
             nota_final = disciplina_service.pegar_nota_total(disciplina)
             if nota_final:

@@ -1,16 +1,17 @@
 from app.ui.views.base_window import BaseWindow
 from app.ui.listframes.listframe_disciplinas import DisciplinasFrame
 from app.ui.listframes.listframe_atividades import AtividadesFrame
+from app.ui.components.calendario_atividades import CalendarioAtividades
 from typing import Any
+import customtkinter
 
 class PaginaSemestre(BaseWindow):
     """Janela de detalhes de um semestre específico."""
-    def __init__(self, semestre: Any, conexao: Any, service: Any) -> None:
+    def __init__(self, semestre: Any, service: Any) -> None:
         self.semestre = semestre
         periodo = self._format_periodo(semestre)
         title = f"Semestre: {semestre.nome} {periodo}"
         super().__init__(
-            conexao=conexao,
             title=title,
             service=service
         )
@@ -35,7 +36,6 @@ class PaginaSemestre(BaseWindow):
     def _create_body(self) -> None:
         try:
             self.disciplinas_frame = DisciplinasFrame(
-                conexao=self.conexao,
                 semestre=self.semestre,
                 service=self.service,
                 master=self
@@ -49,17 +49,15 @@ class PaginaSemestre(BaseWindow):
             )
 
     def show_frame(self, disciplina):
-        # Remove o frame atual, se existir
         if hasattr(self, 'disciplinas_frame') and self.disciplinas_frame:
             self.disciplinas_frame.destroy()
         elif hasattr(self, 'atividades_frame') and self.atividades_frame:
             self.atividades_frame.destroy()
-        # Cria e exibe o frame de atividades da disciplina
-        self.disciplinas_frame = AtividadesFrame(
-            conexao=self.conexao,
+            
+        self.atividades_frame = AtividadesFrame(
             disciplina=disciplina,
             service=self.service,
             master=self
         )
-        self.disciplinas_frame.configure(corner_radius=0)
-        self.disciplinas_frame.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
+        self.atividades_frame.configure(corner_radius=0)
+        self.atividades_frame.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)

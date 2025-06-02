@@ -27,5 +27,6 @@ CREATE TABLE IF NOT EXISTS atividade(
     lugar TEXT,
     data_apresentacao TEXT,
     materia TEXT,
+    progresso TEXT DEFAULT 'Não começou',
     FOREIGN KEY (disciplina_id) REFERENCES disciplina(id) ON DELETE CASCADE
 );

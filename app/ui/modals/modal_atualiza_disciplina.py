@@ -8,7 +8,6 @@ class ModalAtualizaDisciplina(ModalBase):
 
     def __init__(
         self,
-        conexao: Any,
         service: ServiceUniversal,
         master: Optional[Any] = None,
         callback: Optional[callable] = None,
@@ -16,7 +15,6 @@ class ModalAtualizaDisciplina(ModalBase):
     ) -> None:
         self.item = item
         super().__init__(
-            conexao=conexao,
             service=service,
             master=master,
             callback=callback,

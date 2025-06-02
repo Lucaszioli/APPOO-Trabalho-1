@@ -5,7 +5,7 @@ from CTkMessagebox import CTkMessagebox
 from app.errors.nomeSemestre import NomeRepetidoError
 from app.services.service_universal import ServiceUniversal
 from app.ui.components.components_base import StyledLabel, StyledEntry, StyledButton, Card
-from typing import Type, Optional, Callable, Dict, Any
+from typing import Optional, Callable, Dict, Any
 
 logger = logging.getLogger(__name__)
 
@@ -14,8 +14,8 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
     
     def __init__(
         self,
-        conexao,
-        service: Type[ServiceUniversal],
+
+        service: ServiceUniversal,  # Corrigido: era Type[ServiceUniversal]
         master=None,
         callback=None,
         title: str = "Modal",
@@ -24,12 +24,6 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
     ):
         super().__init__(master)
         
-        if conexao is None:
-            CTkMessagebox(title="Erro", message="Conexão não fornecida.", icon="cancel")
-            self.destroy()
-            return
-            
-        self.conexao = conexao
         self.service = service
         self.callback = callback
         self.item = item
@@ -37,37 +31,31 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
         
         self._setup_window(title, size)
         self._build_ui()
-        
+
     def _setup_window(self, title: str, size: tuple[int, int]):
         """Configura a janela do modal."""
         self.title(title)
         self.geometry(f"{size[0]}x{size[1]}")
         self.resizable(False, False)
         
-        # Centraliza na tela
         self.update_idletasks()
         x = (self.winfo_screenwidth() // 2) - (size[0] // 2)
         y = (self.winfo_screenheight() // 2) - (size[1] // 2)
         self.geometry(f"{size[0]}x{size[1]}+{x}+{y}")
         
-        # Torna modal
         self.transient(self.master)
         self.grab_set()
         
-        # Foco no modal
         self.focus()
-        
+
     def _build_ui(self):
         """Constrói a interface do modal."""
-        # Container principal
         main_container = customtkinter.CTkFrame(self, fg_color="transparent")
         main_container.pack(fill="both", expand=True, padx=20, pady=20)
         
-        # Card do conteúdo
         content_card = Card(main_container)
         content_card.pack(fill="both", expand=True)
         
-        # Área do formulário
         self.form_frame = customtkinter.CTkScrollableFrame(
             content_card.content_frame,
             fg_color="transparent",
@@ -76,16 +64,14 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
         
         self._build_form()
         
-        # Botões de ação
         self._build_action_buttons(content_card.content_frame)
-        
+
     def _build_action_buttons(self, parent):
         """Cria os botões de ação."""
         buttons_frame = customtkinter.CTkFrame(parent, fg_color="transparent")
-        buttons_frame.pack(fill="x")
+        buttons_frame.pack(fill="x", pady=(10, 0))
         buttons_frame.grid_columnconfigure((0, 1), weight=1)
         
-        # Botão cancelar
         cancel_btn = StyledButton(
             buttons_frame,
             text="Cancelar",
@@ -95,7 +81,6 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
         )
         cancel_btn.grid(row=0, column=0, padx=(0, 10), sticky="ew")
         
-        # Botão salvar
         save_btn = StyledButton(
             buttons_frame,
             text="Salvar",
@@ -104,11 +89,10 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
             height=40
         )
         save_btn.grid(row=0, column=1, sticky="ew")
-        
+
     def add_field(self, key: str, label: str, field_type: str = "entry", 
                   required: bool = True, validator: Optional[Callable] = None, **kwargs):
         """Adiciona um campo ao formulário."""
-        # Label
         field_label = StyledLabel(
             self.form_frame,
             text=f"{label}{'*' if required else ''}:",
@@ -116,7 +100,6 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
         )
         field_label.pack(anchor="w", pady=(10, 5))
         
-        # Campo
         if field_type == "entry":
             field = StyledEntry(
                 self.form_frame,
@@ -131,7 +114,6 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
                 **kwargs
             )
         elif field_type == "combobox":
-            # Suporte ao combobox
             values = kwargs.get("values", [])
             field = customtkinter.CTkComboBox(
                 self.form_frame,
@@ -139,7 +121,7 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
                 state="readonly"
             )
             if values:
-                field.set(values[0])  # valor padrão
+                field.set(values[0])  
             if "command" in kwargs:
                 field.configure(command=kwargs["command"])
         else:
@@ -147,7 +129,6 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
             
         field.pack(fill="x", pady=(0, 5))
         
-        # Armazena referência
         self.fields[key] = {
             'widget': field,
             'required': required,
@@ -156,34 +137,36 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
         }
         
         return field
-        
+
     def _on_submit(self):
         """Processa o envio do formulário."""
-        # Coleta dados
         data = self._collect_data()
         
-        # Valida
         is_valid, error_msg = self._validate_all(data)
         if not is_valid:
-            self.grab_release()
+            if self.grab_current() == self:
+                self.grab_release()
             CTkMessagebox(title="Erro de Validação", message=error_msg, icon="cancel")
+            self.grab_set()  
             return
             
-        # Salva
         try:
             self._save(data)
         except NomeRepetidoError as e:
             logger.exception("Nome repetido")
-            self.grab_release()
+            if self.grab_current() == self:
+                self.grab_release()
             CTkMessagebox(title="Erro", message=str(e), icon="cancel")
+            self.grab_set()  
             return
         except Exception as e:
             logger.exception("Erro ao salvar")
-            self.grab_release()
+            if self.grab_current() == self:
+                self.grab_release()
             CTkMessagebox(title="Erro", message=f"Falha ao salvar: {str(e)}", icon="cancel")
+            self.grab_set()  
             return
             
-        # Callback e fechar
         if self.callback:
             try:
                 self.callback()
@@ -191,7 +174,7 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
                 logger.warning("Callback falhou")
                 
         self.destroy()
-        
+
     def _collect_data(self) -> dict:
         """Coleta dados de todos os campos."""
         data = {}
@@ -207,26 +190,23 @@ class ModalBase(customtkinter.CTkToplevel, ABC):
                 data[key] = widget.get().strip()
                 
         return data
-        
+
     def _validate_all(self, data: dict) -> tuple[bool, str]:
         """Valida todos os campos."""
-        # Campos obrigatórios
         for key, field_info in self.fields.items():
             if field_info['required'] and not data.get(key):
-                return False, f"Campo obrigatório não preenchido."
+                return False, f"Campo '{key}' é obrigatório." 
                 
-            # Validador customizado
             if field_info['validator'] and data.get(key):
                 if not field_info['validator'](data[key]):
-                    return False, f"Valor inválido no campo."
+                    return False, f"Valor inválido no campo '{key}'." 
                     
-        # Validação customizada
         return self._validate_custom(data)
         
     def _validate_custom(self, data: dict) -> tuple[bool, str]:
         """Validação customizada. Pode ser sobrescrita."""
         return True, ""
-        
+
     @abstractmethod
     def _build_form(self):
         """Constrói o formulário. Deve ser implementado pelas subclasses."""
