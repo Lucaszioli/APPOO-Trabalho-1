@@ -54,12 +54,15 @@ class SemestreService(ServiceBase):
         self.semestres = self._buscar_varios(self.query, self.params)
         if not self.semestres:
             return []
-        return [Semestre(
+        semestres = [Semestre(
             id=row[0], 
             nome=row[1], 
             data_inicio=row[2], 
             data_fim=row[3]
         ) for row in self.semestres]
+        for semestre in semestres:
+            semestre.nsg = self.calcular_nsg(semestre)
+        return semestres
     
 
     def buscar_ultimo_semestre(self) -> Optional["Semestre"]:
@@ -114,12 +117,14 @@ class SemestreService(ServiceBase):
         self._adicionar_bd(semestre)
         return semestre
     
-    def calcular_nsg(self, semestre:"Semestre", disciplina_service:"DisciplinaService") -> float:
+    def calcular_nsg(self, semestre:"Semestre") -> float:
+        from app.services.disciplinas_services import DisciplinaService
         self.carregar_disciplinas(semestre)
         if not semestre.disciplinas:
             return 0.0
         total_nota = 0.0
         total_creditos = 0
+        disciplina_service = DisciplinaService()
         for disciplina in semestre.disciplinas:
             nota_final = disciplina_service.pegar_nota_total(disciplina)
             if nota_final:
