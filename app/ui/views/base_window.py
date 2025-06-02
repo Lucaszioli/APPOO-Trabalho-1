@@ -132,16 +132,22 @@ class BaseWindow(customtkinter.CTk):
 
     def _rebuild_ui(self) -> None:
         try:
+            # Corrigido: verificação mais robusta da sidebar
             sidebar_open = (
+                hasattr(self, 'sidebar') and 
+                self.sidebar and
                 hasattr(self.sidebar, 'sidebar') and 
                 self.sidebar.sidebar and 
                 self.sidebar.sidebar.winfo_exists()
             )
+            
             for widget in self.winfo_children():
                 widget.destroy()
+                
             self._create_sidebar()
             self._create_body()
-            if sidebar_open:
+            
+            if sidebar_open and hasattr(self.sidebar, '_open_sidebar'):
                 self.sidebar._open_sidebar()
         except Exception:
             logger.exception("Erro ao reconstruir interface")
@@ -153,7 +159,12 @@ class BaseWindow(customtkinter.CTk):
 
     def _on_closing(self) -> None:
         try:
-            if hasattr(self.sidebar, 'sidebar') and self.sidebar.sidebar:
+            # Corrigido: verificação mais robusta antes de fechar sidebar
+            if (hasattr(self, 'sidebar') and 
+                self.sidebar and
+                hasattr(self.sidebar, 'sidebar') and 
+                self.sidebar.sidebar and
+                hasattr(self.sidebar, '_close_sidebar')):
                 self.sidebar._close_sidebar()
             self.destroy()
         except Exception:
