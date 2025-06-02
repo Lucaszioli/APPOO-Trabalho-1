@@ -88,6 +88,29 @@ class ModalAtualizaAtividade(ModalBase):
             field_type="textbox",
             required=False
         ).insert("1.0", getattr(atividade, "observacao", ""))
+        self.add_field(
+            key="progresso",
+            label="Progresso",
+            field_type="combobox",
+            values=["Não começou", "Em andamento", "Concluída", "Entregue"],
+            required=True
+        ).set(getattr(atividade, "progresso", "Não começou"))
+        # Adiciona campo de nota se tipo for Prova ou Trabalho
+        if getattr(atividade, "tipo", None) in ("Prova", "Trabalho"):
+            nota_label = customtkinter.CTkLabel(
+                self.form_frame,
+                text="Nota Obtida:",
+                font=customtkinter.CTkFont(size=14)
+            )
+            nota_label.pack(anchor="w", padx=(0, 10))
+            self.nota_entry = self.add_field(
+                key="nota",
+                label="Nota Obtida",
+                required=False,
+                placeholder="Ex: 8.5",
+                validator=lambda value: value == '' or value.replace('.', '', 1).isdigit()
+            )
+            self.nota_entry.insert(0, str(getattr(atividade, "nota", "")))
 
     def _validate_data(self, value: str) -> bool:
         try:
@@ -118,8 +141,11 @@ class ModalAtualizaAtividade(ModalBase):
             atividade.nota_total = int(data["pontuação"])
             atividade.pontuacao = int(data["pontuação"])
             atividade.observacao = data.get("observacao", "")
+            atividade.progresso = data.get("progresso", "Não começou")
+            if "nota" in data and data["nota"] not in (None, ""):
+                atividade.nota = float(data["nota"])
             # Garante atributos esperados pelo editar_bd
-            for attr in ["disciplina_id", "nota", "lugar", "data_apresentacao"]:
+            for attr in ["disciplina_id", "lugar", "data_apresentacao"]:
                 if not hasattr(atividade, attr):
                     setattr(atividade, attr, None)
             self.service.atividade_service.editar_bd(atividade)
@@ -133,4 +159,7 @@ class ModalAtualizaAtividade(ModalBase):
     def _collect_data(self) -> dict:
         data = super()._collect_data()
         data["data"] = self.date_picker.get_date()
+        if hasattr(self, 'nota_entry'):
+            data["nota"] = self.nota_entry.get()
+        data["progresso"] = self.fields["progresso"]["widget"].get() if "progresso" in self.fields else "Não começou"
         return data
