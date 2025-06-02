@@ -18,7 +18,8 @@ class Atividade(ABC):
         disciplina_id: int, 
         observacao: Optional[str] = None, 
         id: Optional[int]=None,
-        tipo: Optional[TipoAtividadeEnum] = None
+        tipo: Optional[TipoAtividadeEnum] = None,
+        progresso: Optional[str] = 'Não começou'
         ):
         if not nome:
             raise ValueError("Nome da atividade não pode ser vazio.")
@@ -44,6 +45,7 @@ class Atividade(ABC):
         self._disciplina_id = disciplina_id
         self._observacao = observacao
         self._tipo = tipo
+        self._progresso = progresso
 
     @property
     def id(self) -> Optional[int]:
@@ -116,6 +118,16 @@ class Atividade(ABC):
             raise ValueError("Tipo de atividade já está definido e não pode ser alterado.")
         self._tipo = tipo
 
+    @property
+    def progresso(self) -> str:
+        return self._progresso
+    
+    @progresso.setter
+    def progresso(self, progresso: str) -> None:
+        if progresso not in ['Não começou', 'Em andamento', 'Concluída', 'Entregue']:
+            raise ValueError("Progresso inválido.")
+        self._progresso = progresso
+
 class Trabalho(Atividade):
     def __init__(
         self, 
@@ -126,7 +138,8 @@ class Trabalho(Atividade):
         data_apresentacao: Optional[str] = None, 
         nota: Optional[float] = None, 
         observacao: Optional[str] = None, 
-        id: Optional[int] = None
+        id: Optional[int] = None,
+        progresso: Optional[str] = 'Não começou'
         ):
         if nota_total <= 0:
             raise ValueError("Nota total deve ser um número positivo.")
@@ -138,7 +151,7 @@ class Trabalho(Atividade):
             raise ValueError("Nota total deve ser um número.")
         if data_apresentacao is not None and not isinstance(data_apresentacao, str):
             raise ValueError("Data de apresentação deve ser uma string.")
-        super().__init__(nome, data, disciplina_id, observacao, id)
+        super().__init__(nome, data, disciplina_id, observacao, id, progresso=progresso)
         if data_apresentacao:
             try:
                 datetime.strptime(data_apresentacao, "%d/%m/%Y")
@@ -207,9 +220,10 @@ class Prova(Atividade):
         nota_total: float, 
         nota: Optional[float] = None, 
         observacao: Optional[float] = None, 
-        id: Optional[int]=None
+        id: Optional[int]=None,
+        progresso: Optional[str] = 'Não começou'
         ):
-        super().__init__(nome, data, disciplina_id, observacao, id)
+        super().__init__(nome, data, disciplina_id, observacao, id, progresso=progresso)
         if nota_total <= 0:
             raise ValueError("Nota total deve ser um número positivo.")
         if nota is not None and (nota < 0 or nota > nota_total):
@@ -265,9 +279,10 @@ class Aula_de_Campo(Atividade):
         disciplina_id: int, 
         lugar: Optional[str], 
         observacao: Optional[str] = None, 
-        id: Optional[int]=None
+        id: Optional[int]=None,
+        progresso: Optional[str] = 'Não começou'
         ):
-        super().__init__(nome, data, disciplina_id, observacao, id)
+        super().__init__(nome, data, disciplina_id, observacao, id, progresso=progresso)
         if lugar and not isinstance(lugar, str):
             raise ValueError("Lugar deve ser uma string.")
         self.tipo = TipoAtividadeEnum().CAMPO
@@ -292,9 +307,10 @@ class Revisao(Atividade):
         disciplina_id: str,
         materia: Optional[str] = None,
         observacao: Optional[str] = None, 
-        id: Optional[str]=None
+        id: Optional[str]=None,
+        progresso: Optional[str] = 'Não começou'
         ):
-        super().__init__(nome, data, disciplina_id, observacao, id)
+        super().__init__(nome, data, disciplina_id, observacao, id, progresso=progresso)
         self._tipo = TipoAtividadeEnum().REVISAO
         if materia is not None and not isinstance(materia, str):
             raise ValueError("Matéria deve ser uma string.")
