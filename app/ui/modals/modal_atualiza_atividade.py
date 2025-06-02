@@ -336,13 +336,18 @@ class ModalAtualizaAtividade(ModalBase):
     def _collect_data(self) -> dict:
         """Collect form data including dynamic fields."""
         data = super()._collect_data()
-        data["data"] = self.date_picker.get_date()
         
-        tipo = self.type.get()
+        # Corrigido: verificação mais robusta para data_picker
+        if hasattr(self, 'date_picker') and self.date_picker:
+            data["data"] = self.date_picker.get_date()
+        else:
+            data["data"] = ""
+        
+        tipo = self.type.get() if hasattr(self, 'type') and self.type else ""
         
         # Collect type-specific data
         if tipo in ("Prova", "Trabalho"):
-            data["pontuacao"] = self.pontuacao_entry.get() if self.pontuacao_entry else ""
+            data["pontuacao"] = self.pontuacao_entry.get() if hasattr(self, 'pontuacao_entry') and self.pontuacao_entry else ""
             if hasattr(self, 'nota_entry') and self.nota_entry:
                 data["nota"] = self.nota_entry.get()
             
@@ -355,5 +360,10 @@ class ModalAtualizaAtividade(ModalBase):
         if tipo == "Aula de revisão" and hasattr(self, 'materia_entry') and self.materia_entry:
             data["materia"] = self.materia_entry.get()
         
-        data["progresso"] = self.fields["progresso"]["widget"].get() if "progresso" in self.fields else "Não começou"
+        # Corrigido: verificação mais robusta para progresso
+        if "progresso" in self.fields and self.fields["progresso"]["widget"]:
+            data["progresso"] = self.fields["progresso"]["widget"].get()
+        else:
+            data["progresso"] = "Não começou"  # Valor padrão
+        
         return data
