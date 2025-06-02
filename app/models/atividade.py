@@ -283,7 +283,7 @@ class Aula_de_Campo(Atividade):
         nome: str, 
         data: str, 
         disciplina_id: int, 
-        lugar: Optional[str], 
+        lugar: Optional[str] = None, 
         observacao: Optional[str] = None, 
         id: Optional[int]=None,
         progresso: Optional[str] = 'Não começou'
