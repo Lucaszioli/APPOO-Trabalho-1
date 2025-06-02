@@ -66,6 +66,8 @@ class SemestreService(ServiceBase):
     
 
     def buscar_ultimo_semestre(self) -> Optional["Semestre"]:
+        """Busca o último semestre cadastrado no banco de dados."""
+
         self.query = "SELECT * FROM semestre ORDER BY id DESC LIMIT 1"
         self.params = ()
         self.semestre = self._buscar_um(self.query, self.params)
@@ -80,6 +82,8 @@ class SemestreService(ServiceBase):
     
     
     def carregar_disciplinas(self, semestre:"Semestre") -> list["Disciplina"]:
+        """Carrega as disciplinas associadas a um semestre."""
+
         semestre.disciplinas = []
         self.query = "SELECT * FROM disciplina WHERE semestre_id = ?"
         self.params = (semestre.id,)
@@ -97,6 +101,8 @@ class SemestreService(ServiceBase):
         return semestre.disciplinas
 
     def buscar_por_nome(self,nome:str) -> Optional["Semestre"]:
+        """Busca um semestre pelo nome."""
+
         self.query = "SELECT * FROM semestre WHERE nome = ?"
         self.params = (nome,)
         row = self._buscar_um(self.query, self.params)
@@ -110,6 +116,8 @@ class SemestreService(ServiceBase):
         return None
             
     def criar_semestre(self, nome:str, data_inicio:str, data_fim:str) -> "Semestre":
+        """Cria um novo semestre e o adiciona ao banco de dados."""
+
         self.semestreExistente = self.buscar_por_nome(nome)
         if self.semestreExistente:
             raise NomeRepetidoError(nome)
@@ -118,6 +126,8 @@ class SemestreService(ServiceBase):
         return semestre
     
     def calcular_nsg(self, semestre:"Semestre") -> float:
+        """Calcula o NSG (Nota Semestral Geral) de um semestre."""
+        
         from app.services.disciplinas_services import DisciplinaService
         self.carregar_disciplinas(semestre)
         if not semestre.disciplinas:

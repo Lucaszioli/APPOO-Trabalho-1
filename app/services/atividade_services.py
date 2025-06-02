@@ -54,6 +54,8 @@ class AtividadeService(ABC, Database):
         return result
     
     def listar_por_disciplina(self, disciplina:"Disciplina") -> list[Atividade]:
+        """Lista todas as atividades de uma disciplina específica ordenadas por data."""
+
         self.query = "SELECT * FROM atividade WHERE disciplina_id = ? ORDER BY data ASC"
         self.params = (disciplina.id,)
         atividades = self._buscar_varios(self.query, self.params)
@@ -74,7 +76,7 @@ class AtividadeService(ABC, Database):
                     data_apresentacao=atividade[9],
                     progresso=progresso
                 ))
-                if atividade[9] :
+                if atividade[9] : # Se houver data de apresentação, adiciona uma instância separada para a apresentação
                     result.append(Trabalho(
                         id=atividade[0], 
                         nome=atividade[1]+" (apresentação)", 
@@ -207,6 +209,8 @@ class AtividadeService(ABC, Database):
         progresso:str = 'Não começou'
         ) -> Atividade:
         self.semestreExistente = SemestreService(self._db_path).buscar_por_id(disciplina.semestre_id)
+        """Cria uma nova atividade e a adiciona ao banco de dados e à disciplina associada."""
+
         if not self.semestreExistente:
             raise SemestreNotFoundError()
         self.disciplinaExistente = DisciplinaService(self._db_path).buscar_por_id(disciplina.id)
@@ -242,6 +246,8 @@ class AtividadeService(ABC, Database):
         return atividade
     
     def listar_por_semestre(self, semestre:"Semestre") -> list[Atividade]:
+        """Lista todas as atividades de um semestre específico ordenadas por data."""
+
         self.query = (
             "SELECT * FROM atividade "
             "WHERE disciplina_id IN (SELECT id FROM disciplina WHERE semestre_id = ?) "
@@ -270,7 +276,7 @@ class AtividadeService(ABC, Database):
                     observacao=atividade[7], 
                     data_apresentacao=atividade[9]
                 ))
-                if atividade[9] :
+                if atividade[9] : # Se houver data de apresentação, adiciona uma instância separada para a apresentação
                     result.append(Trabalho(
                         id=atividade[0], 
                         nome=atividade[1]+" (apresentação)", 
@@ -315,6 +321,7 @@ class AtividadeService(ABC, Database):
         return result
     
     def listar_semana(self, semestre:"SemestreService"):
+        """Lista todas as atividades de um semestre específico que ocorrem na semana atual."""
         atividades = self.listar_por_semestre(semestre)
         if not atividades:
             return []

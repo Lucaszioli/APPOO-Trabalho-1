@@ -44,6 +44,7 @@ class DisciplinaService(ServiceBase):
         return self.rows
 
     def carregar_atividades(self, disciplina:"Disciplina") -> list[Atividade]:
+        """Carrega as atividades associadas a uma disciplina."""
         self.query = "SELECT * FROM atividade WHERE disciplina_id = ?"
         self.params = (disciplina.id,)
         self.atividades = self._buscar_varios(self.query, self.params)
@@ -94,6 +95,8 @@ class DisciplinaService(ServiceBase):
         semestre:"Semestre", 
         observacao:str = None
     ):
+        """Cria uma nova disciplina e a associa a um semestre."""
+
         self.disciplina = Disciplina(nome, carga_horaria, semestre.id, codigo, observacao)
         self._adicionar_bd(self.disciplina)
         semestre.adicionar_disciplina(self.disciplina)
@@ -101,6 +104,8 @@ class DisciplinaService(ServiceBase):
     
 
     def listar_por_semestre(self,semestre:"Semestre"):
+        """Lista todas as disciplinas associadas a um semestre específico."""
+        
         self.query = "SELECT * FROM disciplina WHERE semestre_id = ?"
         self.params = (semestre.id,)
         self.disciplinas = self._buscar_varios(self.query, self.params)
