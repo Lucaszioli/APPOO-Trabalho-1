@@ -163,6 +163,7 @@ package "Services Layer" SERVICE_COLOR {
         + editar_bd(atividade: Atividade): Atividade
         + deletar(atividade: Atividade): int
         + _adicionar_bd(atividade: Atividade): Atividade
+        + listar_calendario_disciplina(disciplina: Disciplina): List[Atividade]
     }
 
     class DisciplinaService {
