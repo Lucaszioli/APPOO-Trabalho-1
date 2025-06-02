@@ -132,14 +132,13 @@ class ModalAtualizaAtividade(ModalBase):
                 text="Nota Obtida:",
                 font=customtkinter.CTkFont(size=14)
             )
-            nota_label.pack(anchor="w", padx=(0, 10))
+            nota_label.pack(anchor="w")
             self.nota_entry = StyledEntry(
                 self.dynamic_container,
                 placeholder="Ex: 8.5",
-
                 validator=lambda value: value.replace('.', '', 1).isdigit() and float(value) >= 0,
             )
-            self.nota_entry.pack(fill="x", padx=(0, 10))
+            self.nota_entry.pack(fill="x")
             if hasattr(atividade, 'nota') and atividade.nota is not None:
                 self.nota_entry.insert(0, str(atividade.nota))
             
@@ -157,13 +156,13 @@ class ModalAtualizaAtividade(ModalBase):
                 text="Pontuação Máxima*",
                 font=customtkinter.CTkFont(size=14)
             )
-            label.pack(anchor="w", padx=(0, 10))
+            label.pack(anchor="w")
             self.pontuacao_entry = StyledEntry(
                 self.dynamic_container,
                 placeholder="Ex: 10",
                 validator=lambda value: value.replace('.', '', 1).isdigit() and float(value) > 0,
             )
-            self.pontuacao_entry.pack(fill="x", padx=(0, 10))
+            self.pontuacao_entry.pack(fill="x")
             if hasattr(atividade, 'nota_total') and atividade.nota_total is not None:
                 self.pontuacao_entry.insert(0, str(atividade.nota_total))
             elif hasattr(atividade, 'pontuacao') and atividade.pontuacao is not None:
@@ -183,7 +182,7 @@ class ModalAtualizaAtividade(ModalBase):
                     text="Data da Apresentação:",
                     font=customtkinter.CTkFont(size=14)
                 )
-                label.pack(anchor="w", padx=(0, 10), pady=(10, 0))
+                label.pack(anchor="w", pady=(10, 0))
                 
                 data_apresentacao_val = getattr(atividade, "data_apresentacao", "")
                 data_apresentacao_placeholder = self._to_br_format(data_apresentacao_val) if data_apresentacao_val else "Ex: 27/05/2025"
@@ -195,7 +194,7 @@ class ModalAtualizaAtividade(ModalBase):
                 self.data_apresentacao_picker.set_allow_manual_input(False)
                 if data_apresentacao_val:
                     self.data_apresentacao_picker.insert(self._to_br_format(data_apresentacao_val))
-                self.data_apresentacao_picker.pack(fill="x", padx=(0, 10))
+                self.data_apresentacao_picker.pack(fill="x")
 
         elif tipo == "Aula de campo":
             self.dynamic_container.pack(fill="x", pady=10)
@@ -204,12 +203,12 @@ class ModalAtualizaAtividade(ModalBase):
                 text="Local da Atividade:",
                 font=customtkinter.CTkFont(size=14)
             )
-            label.pack(anchor="w", padx=(0, 10))
+            label.pack(anchor="w")
             self.local_entry = customtkinter.CTkEntry(
                 self.dynamic_container,
                 placeholder_text="Ex: Parque Nacional",
             )
-            self.local_entry.pack(fill="x", padx=(0, 10))
+            self.local_entry.pack(fill="x")
             if hasattr(atividade, 'lugar') and atividade.lugar:
                 self.local_entry.insert(0, atividade.lugar)
 
@@ -220,12 +219,12 @@ class ModalAtualizaAtividade(ModalBase):
                 text="Matéria da Revisão:",
                 font=customtkinter.CTkFont(size=14)
             )
-            label.pack(anchor="w", padx=(0, 10))
+            label.pack(anchor="w")
             self.materia_entry = customtkinter.CTkEntry(
                 self.dynamic_container,
                 placeholder_text="Capitulo 1, Livro X",
             )
-            self.materia_entry.pack(fill="x", padx=(0, 10))
+            self.materia_entry.pack(fill="x")
             if hasattr(atividade, 'materia') and atividade.materia:
                 self.materia_entry.insert(0, atividade.materia)
         else:
