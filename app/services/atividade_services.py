@@ -299,7 +299,7 @@ class AtividadeService(ABC, Database):
                 ))
             else:   
                 raise ValueError("Tipo de atividade inválido")
-            result.sort(key=lambda atv: datetime.strptime(atv.data, "%Y-%m-%d"))
+        result.sort(key=lambda atv: datetime.strptime(atv.data, "%d/%m/%Y"))
         return result
     
     def listar_semana(self, semestre:"SemestreService"):
@@ -312,7 +312,7 @@ class AtividadeService(ABC, Database):
         sabado = domingo + timedelta(days=6)
         result = []
         for atividade in atividades:
-            data_atividade = datetime.strptime(atividade.data, "%Y-%m-%d")
+            data_atividade = datetime.strptime(atividade.data, "%d/%m/%Y")
             if domingo <= data_atividade <= sabado:
                 result.append(atividade)
         
