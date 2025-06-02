@@ -7,7 +7,6 @@ from app.services.atividade_services import AtividadeService
 from app.services.service_universal import ServiceUniversal
 
 def main():
-    db = Database(db_path="db.db")
     service = ServiceUniversal(db_path="db.db")
     app = PaginaInicial(service=service)
 
