@@ -1,7 +1,9 @@
 from app.ui.listframes.listframe_base import ListFrameBase, ItemCard
 from app.ui.components.components_base import StyledLabel
+from app.ui.components.calendario_atividades import CalendarioAtividades
 from app.services.atividade_services import AtividadeService
 from typing import Any
+import customtkinter
 
 class AtividadeCard(ItemCard):
     """Card para exibir informações de uma atividade."""
@@ -56,10 +58,11 @@ class AtividadeCard(ItemCard):
             obs_label.pack(anchor="w", pady=(5, 0))
             
 class AtividadesFrame(ListFrameBase):
-    """Frame para listar e gerenciar atividades."""
+    """Frame para listar e gerenciar atividades com calendário integrado."""
 
     def __init__(self, conexao, disciplina, service, master=None):
         self.disciplina = disciplina
+        self.calendario = None
         super().__init__(conexao=conexao, semestre=None, service=service, master=master)
 
     def get_items(self, conexao: Any) -> list:
@@ -130,3 +133,137 @@ class AtividadesFrame(ListFrameBase):
         params = dict(conexao=self.conexao, service=self.service, master=self, callback=self._reload)
         params['disciplina'] = self.disciplina  # Corrige para passar a disciplina
         cls(**params)
+    
+    def _build_ui(self):
+        """Constrói a interface melhorada com calendário."""
+        # Criar container principal com duas colunas
+        main_container = customtkinter.CTkFrame(self, fg_color="transparent")
+        main_container.pack(fill="both", expand=True)
+        main_container.grid_columnconfigure(0, weight=1)  # Coluna do calendário
+        main_container.grid_columnconfigure(1, weight=1)  # Coluna da lista
+        main_container.grid_rowconfigure(0, weight=1)
+        
+        # Lado esquerdo: Calendário de atividades
+        calendario_frame = customtkinter.CTkFrame(main_container, fg_color="transparent")
+        calendario_frame.grid(row=0, column=0, sticky="nsew", padx=(0, 5))
+        
+        self.calendario = CalendarioAtividades(
+            calendario_frame, 
+            service=self.service, 
+            disciplina=self.disciplina
+        )
+        self.calendario.pack(fill="both", expand=True)
+        
+        # Lado direito: Lista tradicional de atividades
+        list_frame = customtkinter.CTkFrame(main_container, fg_color="transparent")
+        list_frame.grid(row=0, column=1, sticky="nsew", padx=(5, 0))
+        
+        # Configurar o frame da lista como container
+        self.list_main_container = list_frame
+        
+        # Criar componentes da lista no frame direito
+        self._create_list_components()
+        
+    def _create_list_components(self):
+        """Cria os componentes da lista de atividades."""
+        # Cabeçalho da lista
+        self._create_header_in_container(self.list_main_container)
+        
+        # Barra de busca
+        self._create_search_bar_in_container(self.list_main_container)
+        
+        # Lista de itens
+        self._create_items_list_in_container(self.list_main_container)
+        
+        # Rodapé
+        self._create_footer_in_container(self.list_main_container)
+        
+    def _create_header_in_container(self, container):
+        """Cria o cabeçalho no container especificado."""
+        from app.ui.components.components_base import Card, StyledLabel, StyledButton
+        
+        header_card = Card(container, title="📋 Lista de Atividades")
+        header_card.pack(fill="x", padx=10, pady=(0, 10))
+        
+        # Título
+        title_label = StyledLabel(
+            header_card.content_frame,
+            text=self.title_text(),
+            style='title',
+            text_color=("gray10", "white"),
+        )
+        title_label.pack(anchor="w", pady=5)
+        
+        # Subtítulo
+        subtitle_label = StyledLabel(
+            header_card.content_frame,
+            text=self.subtitle_text(),
+            style='normal',
+            text_color=("gray40", "gray70")
+        )
+        subtitle_label.pack(anchor="w", pady=(5, 0))
+        
+        # Botão adicionar
+        add_button = StyledButton(
+            header_card.content_frame,
+            text=f"{self.add_button_text()}",
+            style='success',
+            command=self._on_add,
+            height=40,
+            font=customtkinter.CTkFont(size=14, weight="bold")
+        )
+        add_button.pack(pady=(10, 0), fill="x")
+        
+    def _create_search_bar_in_container(self, container):
+        """Cria a barra de busca no container especificado."""
+        from app.ui.components.components_base import Card
+        
+        search_card = Card(container, title="Buscar")
+        search_card.pack(fill="x", padx=10, pady=(0, 10))
+        
+        self.search_entry = customtkinter.CTkEntry(
+            search_card.content_frame,
+            textvariable=self.search_var,
+            placeholder_text=f"Buscar {self.item_name_plural()}...",
+            height=35,
+            corner_radius=8
+        )
+        self.search_entry.pack(fill="x", pady=5)
+        
+    def _create_items_list_in_container(self, container):
+        """Cria a lista de itens no container especificado."""
+        from app.ui.components.components_base import Card
+        
+        list_card = Card(container, title=f"{self.item_name_plural().title()}")
+        list_card.pack(fill="both", expand=True, padx=10, pady=(0, 10))
+        
+        # Container scrollável
+        self.list_container = customtkinter.CTkScrollableFrame(
+            list_card.content_frame,
+            fg_color="transparent"
+        )
+        self.list_container.pack(fill="both", expand=True)
+        
+        self._populate_list()
+        
+    def _create_footer_in_container(self, container):
+        """Cria o rodapé no container especificado."""
+        from app.ui.components.components_base import Card, StyledLabel
+        
+        footer_card = Card(container)
+        footer_card.pack(fill="x", padx=10, pady=(10, 0))
+        footer_card.configure(border_width=1, border_color=("gray80", "gray20"))
+
+        self.stats_label = StyledLabel(
+            footer_card.content_frame,
+            text=self._get_stats_text(),
+            style='small', 
+            text_color=("gray50", "gray60")
+        )
+        self.stats_label.pack()
+        
+    def _reload(self):
+        """Recarrega itens e atualiza interface, incluindo o calendário."""
+        super()._reload()
+        if self.calendario:
+            self.calendario.refresh()
