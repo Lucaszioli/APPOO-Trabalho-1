@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 class NotFoundError(Exception):
     @abstractmethod
     def __init__(self, message):
+        """Exceção base para objetos não encontrados."""
         super().__init__(message)
 
 class SemestreNotFoundError(NotFoundError):

@@ -111,11 +111,13 @@ class Semestre:
         self._nsg = nsg
     
     def adicionar_disciplina(self, disciplina: "Disciplina") -> None:
+        """Adiciona uma disciplina ao semestre."""
         if not isinstance(disciplina, Disciplina):
             raise ValueError("Disciplina deve ser uma instância da classe Disciplina.")
         self._disciplinas.append(disciplina)
    
     def remover_disciplina(self, disciplina: "Disciplina"):
+        """Remove uma disciplina do semestre."""
         if disciplina not in self._disciplinas:
             raise ValueError("Disciplina não encontrada no semestre.")
         if not isinstance(disciplina, Disciplina):
