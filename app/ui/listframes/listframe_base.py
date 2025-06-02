@@ -63,10 +63,7 @@ class ItemCard(Card):
 class ListFrameBase(BaseComponent, ABC):
     """Frame de lista melhorado com design moderno."""
     
-    def __init__(self, conexao, semestre, service: "ServiceUniversal", master=None):
-        if conexao is None:
-            raise ValueError("Conexão não pode ser nula.")
-        self.conexao = conexao
+    def __init__(self, semestre, service: "ServiceUniversal", master=None):
         self.semestre = semestre
         self.service = service
         self.items = []
@@ -215,7 +212,7 @@ class ListFrameBase(BaseComponent, ABC):
     def _load_items(self):
         """Carrega itens do serviço."""
         try:
-            self.items = self.get_items(self.conexao)
+            self.items = self.get_items()
         except Exception:
             logger.exception("Falha ao carregar %s", self.item_name_plural())
             CTkMessagebox(
@@ -232,7 +229,7 @@ class ListFrameBase(BaseComponent, ABC):
         
     def _on_add(self):
         cls = self.modal_class_add()
-        params = dict(conexao=self.conexao, service=self.service, master=self, callback=self._reload)
+        params = dict(service=self.service, master=self, callback=self._reload)
         if 'semestre' in inspect.signature(cls.__init__).parameters:
             params['semestre'] = self.semestre
         cls(**params)
@@ -256,7 +253,7 @@ class ListFrameBase(BaseComponent, ABC):
             
     def _on_update(self, item):
         cls = self.modal_class_update()
-        cls(conexao=self.conexao, service=self.service, master=self, callback=self._reload, item=item)
+        cls(service=self.service, master=self, callback=self._reload, item=item)
         
     def _on_select(self, item):
         if hasattr(self.master, 'show_frame'):
@@ -281,7 +278,7 @@ class ListFrameBase(BaseComponent, ABC):
                     logger.warning("Não conseguiu focar %s %s", self.item_name_singular(), key)
             else:
                 try:
-                    win = self.detail_view_class()(item, self.conexao, self.service)
+                    win = self.detail_view_class()(item, self.service)
                     win.protocol("WM_DELETE_WINDOW", lambda k=key: self._on_close(k))
                     self.item_views[key] = win
                 except Exception:
@@ -298,7 +295,7 @@ class ListFrameBase(BaseComponent, ABC):
             win.destroy()
             
     @abstractmethod
-    def get_items(self, conexao): ...
+    def get_items(self): ...
     
     @abstractmethod
     def modal_class_add(self): ...

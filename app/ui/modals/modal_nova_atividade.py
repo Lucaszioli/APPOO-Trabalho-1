@@ -14,14 +14,12 @@ class ModalNovaAtividade(ModalBase):
     def __init__(
         self,
         disciplina: Any,
-        conexao: Any,
         service: ServiceUniversal,
         master: Optional[Any] = None,
         callback: Optional[Callable] = None
     ) -> None:
         self.disciplina = disciplina
         super().__init__(
-            conexao=conexao,
             service=service,
             master=master,
             callback=callback,

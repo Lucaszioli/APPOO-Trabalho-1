@@ -10,7 +10,6 @@ class ModalAtualizaSemestre(ModalBase):
     
     def __init__(
         self,
-        conexao: Any,
         service: "ServiceUniversal",
         master: Optional[Any] = None,
         callback: Optional[callable] = None,
@@ -18,7 +17,6 @@ class ModalAtualizaSemestre(ModalBase):
     ):
         self.item = item
         super().__init__(
-            conexao=conexao,
             service=service,
             master=master,
             callback=callback,

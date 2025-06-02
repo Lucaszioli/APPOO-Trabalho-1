@@ -9,14 +9,12 @@ class ModalNovaDisciplina(ModalBase):
     def __init__(
         self,
         semestre: Any,
-        conexao: Any,
         service: ServiceUniversal,
         master: Optional[Any] = None,
         callback: Optional[callable] = None
     ) -> None:
         self.semestre = semestre
         super().__init__(
-            conexao=conexao,
             service=service,
             master=master,
             callback=callback,

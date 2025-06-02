@@ -10,13 +10,11 @@ class ModalNovoSemestre(ModalBase):
 
     def __init__(
         self,
-        conexao: Any,
         service: ServiceUniversal,
         master: Optional[Any] = None,
         callback: Optional[callable] = None,
     ) -> None:
         super().__init__(
-            conexao=conexao,
             service=service,
             master=master,
             callback=callback,

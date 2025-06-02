@@ -7,12 +7,11 @@ import customtkinter
 
 class PaginaSemestre(BaseWindow):
     """Janela de detalhes de um semestre específico."""
-    def __init__(self, semestre: Any, conexao: Any, service: Any) -> None:
+    def __init__(self, semestre: Any, service: Any) -> None:
         self.semestre = semestre
         periodo = self._format_periodo(semestre)
         title = f"Semestre: {semestre.nome} {periodo}"
         super().__init__(
-            conexao=conexao,
             title=title,
             service=service
         )
@@ -37,7 +36,6 @@ class PaginaSemestre(BaseWindow):
     def _create_body(self) -> None:
         try:
             self.disciplinas_frame = DisciplinasFrame(
-                conexao=self.conexao,
                 semestre=self.semestre,
                 service=self.service,
                 master=self
@@ -57,7 +55,6 @@ class PaginaSemestre(BaseWindow):
             self.atividades_frame.destroy()
             
         self.atividades_frame = AtividadesFrame(
-            conexao=self.conexao,
             disciplina=disciplina,
             service=self.service,
             master=self

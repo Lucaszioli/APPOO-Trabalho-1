@@ -5,9 +5,8 @@ from app.ui.listframes.listframe_atividades import AtividadesFrame
 
 class PaginaInicial(BaseWindow):
     """Janela principal que lista todos os semestres disponíveis."""
-    def __init__(self, conexao: Any, service: Any) -> None:
+    def __init__(self, service: Any) -> None:
         super().__init__(
-            conexao=conexao,
             title="Sistema de Gerenciamento Acadêmico",
             service=service
         )
@@ -15,7 +14,6 @@ class PaginaInicial(BaseWindow):
     def _create_body(self) -> None:
         try:
             self.current_frame = SemestresFrame(
-                conexao=self.conexao,
                 service=self.service,
                 semestre=None,
                 master=self
@@ -31,7 +29,7 @@ class PaginaInicial(BaseWindow):
     def show_frame(self, item: Any) -> None: 
         if hasattr(self, 'current_frame') and self.current_frame:
             self.current_frame.destroy()
-        frame_kwargs = dict(conexao=self.conexao, service=self.service, master=self)
+        frame_kwargs = dict(service=self.service, master=self)
         show_back = True
         if hasattr(item, 'data_inicio') and hasattr(item, 'data_fim'):
             from app.ui.listframes.listframe_disciplinas import DisciplinasFrame
