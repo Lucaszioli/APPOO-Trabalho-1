@@ -7,7 +7,8 @@ class Semestre:
     nome: str, 
     data_inicio: str, 
     data_fim: str, 
-    id: Optional[int]=None
+    id: Optional[int]=None,
+    nsg: Optional[int]=None,
     ):
         if not nome:
             raise ValueError("Nome do semestre não pode ser vazio.")
@@ -28,6 +29,7 @@ class Semestre:
         self._data_inicio = data_inicio
         self._data_fim = data_fim
         self._disciplinas = []
+        self.nsg = nsg
 
     @property
     def nome(self):
@@ -102,7 +104,6 @@ class Semestre:
         if not isinstance(disciplina, Disciplina):
             raise ValueError("Disciplina deve ser uma instância da classe Disciplina.")
         self._disciplinas.append(disciplina)
-
    
     def listar_disciplinas(self):
         for disciplina in self._disciplinas:
